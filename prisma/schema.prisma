@@ -1,0 +1,56 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("POSTGRES_URL")
+  directUrl  = env("POSTGRES_DIRECT_URL")
+  extensions = [uuidOssp(map: "uuid-ossp")]
+}
+
+model User {
+  id                    Int                    @id() @default(autoincrement())
+  login                 String                 @unique()
+  email                 String                 @unique()
+  passwordHash          String
+  createdAt             DateTime               @default(now()) @db.Timestamp()
+  emailConfirmationInfo UserEmailConfirmation?
+  passwordRecoveryInfo  UserPasswordRecovery?
+  device                Device[]
+
+  @@unique([id, login])
+  @@map("user")
+}
+
+model UserEmailConfirmation {
+  confirmationCode String   @default(dbgenerated("uuid_generate_v4()")) @db.Uuid()
+  expirationDate   DateTime @db.Timestamp()
+  isConfirmed      Boolean  @default(false)
+  user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId           Int      @id()
+
+  @@map("user_email_confirmation")
+}
+
+model UserPasswordRecovery {
+  recoveryCode   String   @default(dbgenerated("uuid_generate_v4()")) @db.Uuid()
+  expirationDate DateTime @db.Timestamp()
+  isConfirmed    Boolean  @default(false)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId         Int      @id()
+
+  @@map("user_password_recovery")
+}
+
+model Device {
+  id         String   @id() @default(dbgenerated("uuid_generate_v4()")) @db.Uuid()
+  ip         String
+  deviceName String
+  issuedAt   DateTime @db.Timestamp()
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+
+  @@map("device")
+}
