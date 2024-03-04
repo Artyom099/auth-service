@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsString, Length, Matches } from 'class-validator';
+import { UniqueLoginAndEmail } from '../../../../../infrastructure/decorators/unique.login.and.email.decorator';
 
 export class RegistrationInputModel {
   @ApiProperty({
@@ -11,6 +12,7 @@ export class RegistrationInputModel {
   @IsString()
   @Transform(({ value }) => value.trim())
   @Length(6, 30)
+  @UniqueLoginAndEmail()
   login: string;
   @ApiProperty({
     minimum: 6,
@@ -21,6 +23,7 @@ export class RegistrationInputModel {
   @Transform(({ value }) => value.trim())
   @Length(6, 100)
   @Matches('^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$')
+  @UniqueLoginAndEmail()
   email: string;
   @ApiProperty({
     minimum: 6,

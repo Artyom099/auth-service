@@ -22,7 +22,7 @@ import { ValidRecoveryCodePipe } from './infrastructure/pipes/valid.recovery.cod
 import { ValidConfirmationCodePipe } from './infrastructure/pipes/valid.confirmation.code.pipe';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
-import { AppController } from './features/auth/api/app.controller';
+import { AuthController } from './features/auth/api/auth.controller';
 import { LocalStrategy } from './features/auth/strategies/local.srtategy';
 import { JwtAccessStrategy } from './features/auth/strategies/jwt.access.strategy';
 import { JwtRefreshStrategy } from './features/auth/strategies/jwt.refresh.strategy';
@@ -72,7 +72,7 @@ const infrastructureModules = [AppConfigModule, configModule];
     }),
     ...infrastructureModules,
   ],
-  controllers: [AppController],
+  controllers: [AuthController],
   providers: [
     ...services,
     ...useCases,

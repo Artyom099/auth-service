@@ -1,11 +1,10 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { AuthRepository } from '../../infrastructure/auth.repository';
-import { genSalt, hash } from 'bcrypt';
+import { hash } from 'bcrypt';
 import { add } from 'date-fns';
 import { Prisma } from '@prisma/client';
 import { Contract } from '../../../../infrastructure/contract/contract';
 import { InternalCode } from '../../../../infrastructure/utils/enums';
-import { GlobalConfigService } from '../../../../config/config.service';
 
 export class CreateUserCommand {
   constructor(

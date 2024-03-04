@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { AuthRepository } from '../../infrastructure/auth.repository';
-import { genSalt, hash } from 'bcrypt';
+import { hash } from 'bcrypt';
 import { sub } from 'date-fns';
 import { UpdatePasswordInputModel } from '../../api/models/input/update.password.input.model';
 import { UpdateCodeDTO } from '../../api/models/dto/update.code.dto';
@@ -15,6 +15,8 @@ export class UpdatePasswordCommand {
 export class UpdatePasswordUseCase
   implements ICommandHandler<UpdatePasswordCommand>
 {
+  private readonly SALT_ROUND: 10;
+
   constructor(private authRepository: AuthRepository) {}
 
   async execute(command: UpdatePasswordCommand): Promise<Contract<null>> {
@@ -25,9 +27,7 @@ export class UpdatePasswordUseCase
     if (recoveryDataResult.hasError())
       return new Contract(InternalCode.Internal_Server);
 
-    const round = 10;
-    const passwordSalt = await genSalt(round);
-    const passwordHash = await hash(newPassword, passwordSalt);
+    const passwordHash = await hash(newPassword, this.SALT_ROUND);
 
     await this.authRepository.updatePassword(
       recoveryDataResult.payload.userId,

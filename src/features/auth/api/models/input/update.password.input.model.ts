@@ -1,6 +1,7 @@
 import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, Length, Matches } from 'class-validator';
+import { ValidCode } from '../../../../../infrastructure/decorators/valid.code.decorator';
 
 export class UpdatePasswordInputModel {
   @ApiProperty({
@@ -19,6 +20,6 @@ export class UpdatePasswordInputModel {
   @ApiProperty()
   @IsString()
   @Transform(({ value }) => value.trim())
-  // @IsValidCode()
+  @ValidCode()
   recoveryCode: string;
 }

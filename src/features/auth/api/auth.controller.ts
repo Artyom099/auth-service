@@ -60,7 +60,7 @@ import { BAD_REQUEST_SCHEMA } from '../../../infrastructure/utils/bad.request.sc
 @ApiTags('Auth')
 @Controller('auth')
 @Controller()
-export class AppController extends ExceptionResponseHandler {
+export class AuthController extends ExceptionResponseHandler {
   constructor(
     private commandBus: CommandBus,
     private configService: GlobalConfigService,
