@@ -10,7 +10,7 @@
 
 ## Description
 
-Project stack: Nest, Postgres, Typeorm, Jest
+Project stack: Nest, Postgres, Prisma
 
 ## Distribute
 
