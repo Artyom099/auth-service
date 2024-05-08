@@ -21,23 +21,19 @@ export class GithubOauthCommand extends BaseOauthCommand {}
 export class GithubOauthUseCase extends BaseOauthUseCase<GithubOauthCommand> {
   OAUTH_SERVICE_TYPE = OauthServicesTypesEnum.GITHUB;
 
-  GET_TOKENS_URL = 'https://github.com/login/oauth/access_token';
   GET_USER_URL = 'https://api.github.com/user';
   GET_EMAILS_URL = 'https://api.github.com/user/emails';
+  GET_TOKENS_URL = 'https://github.com/login/oauth/access_token';
 
-  defaultConfig = {
-    headers: {
-      accept: 'application/json',
-    },
-  };
+  defaultConfig = { headers: { accept: 'application/json' } };
 
   constructor(
-    protected httpService: HttpService,
-    @Inject(AppConfig.name) protected appConfig: AppConfig,
-    protected usersRepository: UserRepository,
-    protected tokenService: TokenService,
-    protected i18nAdapter: I18nAdapter,
     protected prisma: PrismaService,
+    protected i18nAdapter: I18nAdapter,
+    protected httpService: HttpService,
+    protected tokenService: TokenService,
+    protected usersRepository: UserRepository,
+    @Inject(AppConfig.name) protected appConfig: AppConfig,
   ) {
     super(prisma, i18nAdapter, tokenService, usersRepository);
   }
@@ -88,6 +84,7 @@ export class GithubOauthUseCase extends BaseOauthUseCase<GithubOauthCommand> {
           })
           .pipe(map((res) => res.data)),
       ),
+
       lastValueFrom(
         this.httpService
           .get<GithubUserEmails>(this.GET_EMAILS_URL, {
@@ -99,6 +96,7 @@ export class GithubOauthUseCase extends BaseOauthUseCase<GithubOauthCommand> {
           .pipe(map((res) => res.data)),
       ),
     ]);
+
     return { ...user, emails };
   }
 }

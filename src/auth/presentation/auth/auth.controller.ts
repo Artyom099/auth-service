@@ -107,37 +107,6 @@ export class AuthController {
     );
   }
 
-  @OAuthEndpoint()
-  @Post('oauth/:type')
-  async authenticateThroughOauth(
-    @Param('type') type: OauthServicesTypesEnum,
-    @Body() body: OauthInputModel,
-    @Res({ passthrough: true }) res: Response,
-  ) {
-    const OauthCommand = OauthCommandByType[type];
-
-    if (!OauthCommand) throw new BadRequestException();
-
-    try {
-      const { accessToken, refreshToken } = await this.commandBus.execute<
-        BaseOauthCommand,
-        PairTokensType
-      >(new OauthCommand(body.code));
-
-      res.cookie(
-        this.REFRESH_TOKEN_COOKIE_KEY,
-        refreshToken,
-        this.cookieOptions,
-      );
-      res.cookie(this.ACCESS_TOKEN_COOKIE_KEY, accessToken, this.cookieOptions);
-
-      return { accessToken };
-    } catch (e) {
-      console.log({ oauth_endpoint: e });
-      throw new BadRequestException();
-    }
-  }
-
   @PasswordRecoveryEndpoint()
   @Post('password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -228,5 +197,36 @@ export class AuthController {
     @RefreshToken() token: string,
   ): Promise<void> {
     return this.commandBus.execute(new LogOutCommand(userId, token));
+  }
+
+  @OAuthEndpoint()
+  @Post('oauth/:type')
+  async authenticateThroughOauth(
+    @Param('type') type: OauthServicesTypesEnum,
+    @Body() body: OauthInputModel,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    const OauthCommand = OauthCommandByType[type];
+
+    if (!OauthCommand) throw new BadRequestException();
+
+    try {
+      const { accessToken, refreshToken } = await this.commandBus.execute<
+        BaseOauthCommand,
+        PairTokensType
+      >(new OauthCommand(body.code));
+
+      res.cookie(
+        this.REFRESH_TOKEN_COOKIE_KEY,
+        refreshToken,
+        this.cookieOptions,
+      );
+      res.cookie(this.ACCESS_TOKEN_COOKIE_KEY, accessToken, this.cookieOptions);
+
+      return { accessToken };
+    } catch (e) {
+      console.log({ oauth_endpoint: e });
+      throw new BadRequestException();
+    }
   }
 }

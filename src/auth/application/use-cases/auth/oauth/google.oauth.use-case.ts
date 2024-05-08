@@ -25,10 +25,10 @@ export class GoogleOauthUseCase extends BaseOauthUseCase<GoogleOauthCommand> {
   constructor(
     protected prisma: PrismaService,
     protected i18nAdapter: I18nAdapter,
-    @Inject('GOOGLE-AUTH') protected readonly googleApi: OAuth2Client,
-    @Inject(AppConfig.name) protected appConfig: AppConfig,
-    protected usersRepository: UserRepository,
     protected tokenService: TokenService,
+    protected usersRepository: UserRepository,
+    @Inject(AppConfig.name) protected appConfig: AppConfig,
+    @Inject('GOOGLE-AUTH') protected readonly googleApi: OAuth2Client,
   ) {
     super(prisma, i18nAdapter, tokenService, usersRepository);
   }
@@ -37,6 +37,7 @@ export class GoogleOauthUseCase extends BaseOauthUseCase<GoogleOauthCommand> {
     const {
       tokens: { access_token },
     } = await this.googleApi.getToken(code);
+
     const user = await this.googleApi.getTokenInfo(access_token);
     return this.mapToProviderData(user);
   }

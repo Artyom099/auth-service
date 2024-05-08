@@ -56,6 +56,7 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand>
             extensions: [{ field: 'email', message }],
           });
         }
+
         await this.connectProviderToUser(
           userWithSameEmailAsFromProvider.id,
           providerData,
@@ -99,6 +100,7 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand>
         login = login.slice(0, -1) + (parseInt(login.slice(-1)) + 1); // change last digit
       }
     }
+
     return login;
   }
 

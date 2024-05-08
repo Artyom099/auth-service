@@ -22,6 +22,5 @@ export class UpdatePasswordInputModel {
   @ApiProperty()
   @IsString()
   @Transform(({ value }) => value.trim())
-  // @ValidCode()
   recoveryCode: string;
 }
