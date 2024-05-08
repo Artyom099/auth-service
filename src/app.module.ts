@@ -95,9 +95,9 @@ const infrastructureModules = [AppConfigModule, I18nLocalModule];
       },
       inject: [AppConfig.name],
     }),
-    ...infrastructureModules,
     ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
     HttpModule.register({ timeout: 10000 }),
+    ...infrastructureModules,
   ],
   controllers: [AuthController, DeviceController],
   providers: [
