@@ -1,86 +1,125 @@
 import { Module } from '@nestjs/common';
-import { configModule } from './config/config.module';
 import { PrismaService } from '../prisma/prisma.service';
-import { CreateUserUseCase } from './features/auth/application/user/create.user.use.case';
-import { ValidateUserUseCase } from './features/auth/application/auth/validate.user.use.case';
-import { RegistrationUseCase } from './features/auth/application/auth/registration.use.case';
-import { LogInUseCase } from './features/auth/application/auth/log.in.use.case';
-import { LogOutUseCase } from './features/auth/application/auth/log.out.use.case';
-import { RefreshSessionUseCase } from './features/auth/application/auth/refresh.session.use.case';
-import { UpdatePasswordUseCase } from './features/auth/application/password.recovery/update.password.use.case';
-import { PasswordRecoveryUseCase } from './features/auth/application/password.recovery/password.recovery.use.case';
-import { SendEmailUseCase } from './infrastructure/email/application/send.email.use.case';
-import { ConfirmEmailUseCase } from './features/auth/application/email.confirmation/confirm.email.use.case';
-import { ResendEmailConfirmationUseCase } from './features/auth/application/email.confirmation/resend.email.confirmation.use.case';
-import { CreateDeviceUseCase } from './features/device/application/create.device.use.case';
-import { UpdateSessionUseCase } from './features/device/application/update.session.use.case';
-import { DeleteDeviceUseCase } from './features/device/application/delete.device.use.case';
-import { AuthRepository } from './features/auth/infrastructure/auth.repository';
-import { AuthQueryRepository } from './features/auth/infrastructure/auth.query.repository';
-import { DeviceRepository } from './features/device/infrastructure/devices.repository';
-import { ValidRecoveryCodePipe } from './infrastructure/pipes/valid.recovery.code.pipe';
-import { ValidConfirmationCodePipe } from './infrastructure/pipes/valid.confirmation.code.pipe';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
-import { AuthController } from './features/auth/api/auth.controller';
-import { LocalStrategy } from './features/auth/strategies/local.srtategy';
-import { JwtAccessStrategy } from './features/auth/strategies/jwt.access.strategy';
-import { JwtRefreshStrategy } from './features/auth/strategies/jwt.refresh.strategy';
-import { EmailManager } from './infrastructure/email/manager/email.manager';
-import { EmailAdapter } from './infrastructure/email/adapter/email.adapter';
+import { EmailAdapter } from './infrastructure/email/email.adapter';
+import { AppConfigModule } from './config/app-config.module';
+import { RegistrationUseCase } from './auth/application/use-cases/auth/registration.use.case';
+import { LogInUseCase } from './auth/application/use-cases/auth/log.in.use.case';
+import { LogOutUseCase } from './auth/application/use-cases/auth/log.out.use.case';
+import { RefreshSessionUseCase } from './auth/application/use-cases/auth/refresh.session.use.case';
+import { UpdatePasswordUseCase } from './auth/application/use-cases/password-recovery/update.password.use.case';
+import { PasswordRecoveryUseCase } from './auth/application/use-cases/password-recovery/password.recovery.use.case';
+import { ConfirmEmailUseCase } from './auth/application/use-cases/email-confirmation/confirm.email.use.case';
+import { ResendEmailConfirmationUseCase } from './auth/application/use-cases/email-confirmation/resend.email.confirmation.use.case';
+import { UserQueryRepository } from './auth/repositories/user/user.query.repository';
+import { DeviceRepository } from './auth/repositories/device/device.repository';
+import { AuthController } from './auth/presentation/auth/auth.controller';
+import { EmailService } from './auth/application/services/email.service';
+import { AuthService } from './auth/application/services/auth.service';
+import { ConfirmPasswordRecoveryUseCase } from './auth/application/use-cases/password-recovery/confirm.password.recovery.use.case';
+import { UserRepository } from './auth/repositories/user/user.repository';
+import { TokenService } from './auth/application/services/token.service';
+import { AppConfig } from './config/app-config';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { EmailConfirmationRepository } from './auth/repositories/email-confirmation/email.confirmation.repository';
+import { PasswordRecoveryRepository } from './auth/repositories/password-recovery/password.recovery.repository';
+import { I18nLocalModule } from './i18n/i18n.local.module';
+import { HttpModule } from '@nestjs/axios';
+import { google } from 'googleapis';
+import { GithubOauthUseCase } from './auth/application/use-cases/auth/oauth/github-oauth.use-case';
+import { GoogleOauthUseCase } from './auth/application/use-cases/auth/oauth/google.oauth.use-case';
+import { DeviceController } from './auth/presentation/device/device.controller';
+import { DeviceQueryRepository } from './auth/repositories/device/device.query.repository';
+import { DeleteDeviceUseCase } from './auth/application/use-cases/device/delete.device.use.case';
+import { DeleteOtherDevicesUseCase } from './auth/application/use-cases/device/delete.other.devices.use.case';
 
-import { GlobalConfigService } from './config/config.service';
-import { AppConfigModule } from './config 2/app-config.module';
-
-const services = [GlobalConfigService, PrismaService];
+const services = [PrismaService, EmailService, AuthService, TokenService];
 
 const useCases = [
-  CreateUserUseCase,
-  ValidateUserUseCase,
-
-  RegistrationUseCase,
   LogInUseCase,
   LogOutUseCase,
   RefreshSessionUseCase,
+  RegistrationUseCase,
 
-  UpdatePasswordUseCase,
-  PasswordRecoveryUseCase,
+  GithubOauthUseCase,
+  GoogleOauthUseCase,
 
-  SendEmailUseCase,
   ConfirmEmailUseCase,
   ResendEmailConfirmationUseCase,
 
-  CreateDeviceUseCase,
-  UpdateSessionUseCase,
+  UpdatePasswordUseCase,
+  PasswordRecoveryUseCase,
+  ConfirmPasswordRecoveryUseCase,
+
   DeleteDeviceUseCase,
+  DeleteOtherDevicesUseCase,
 ];
 
-const repositories = [AuthRepository, AuthQueryRepository, DeviceRepository];
+const repositories = [
+  UserRepository,
+  UserQueryRepository,
+  DeviceRepository,
+  DeviceQueryRepository,
+  EmailConfirmationRepository,
+  PasswordRecoveryRepository,
+];
 
-const pipes = [ValidRecoveryCodePipe, ValidConfirmationCodePipe];
-
-const strategies = [LocalStrategy, JwtAccessStrategy, JwtRefreshStrategy];
-
-const infrastructureModules = [AppConfigModule, configModule];
+const infrastructureModules = [AppConfigModule, I18nLocalModule];
 
 @Module({
   imports: [
     CqrsModule,
-    JwtModule.register({
-      global: true,
-      secret: process.env.JWT_SECRET,
+    JwtModule.registerAsync({
+      useFactory: (appConfig: AppConfig) => {
+        const { SECRET, PUBLIC_KEY, PRIVATE_KEY, PASSPHRASE, ENCRYPTION_TYPE } =
+          appConfig.settings.jwt;
+
+        const encryptionTypes = {
+          DEFAULT: { secret: SECRET },
+          ASYMMETRY: {
+            publicKey: PUBLIC_KEY,
+            privateKey: {
+              key: PRIVATE_KEY,
+              passphrase: PASSPHRASE,
+            },
+            signOptions: { algorithm: 'RS256' },
+            verifyOptions: { algorithms: ['RS256'] },
+          },
+        };
+
+        return {
+          global: true,
+          ...encryptionTypes[ENCRYPTION_TYPE],
+        };
+      },
+      inject: [AppConfig.name],
     }),
     ...infrastructureModules,
+    ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
+    HttpModule.register({ timeout: 10000 }),
   ],
-  controllers: [AuthController],
+  controllers: [AuthController, DeviceController],
   providers: [
     ...services,
     ...useCases,
     ...repositories,
-    ...pipes,
-    ...strategies,
     EmailAdapter,
-    EmailManager,
+    {
+      provide: 'GOOGLE-AUTH',
+      useFactory: (appConfig: AppConfig) => {
+        const { CLIENT_ID, CLIENT_SECRET, CLIENT_REDIRECT_URI } =
+          appConfig.settings.oauth.GOOGLE;
+
+        return new google.auth.OAuth2({
+          clientId: CLIENT_ID,
+          clientSecret: CLIENT_SECRET,
+          redirectUri: CLIENT_REDIRECT_URI,
+        });
+      },
+      inject: [AppConfig.name],
+    },
   ],
+  exports: [UserRepository],
 })
 export class AppModule {}

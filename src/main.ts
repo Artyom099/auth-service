@@ -1,18 +1,16 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { appSettings } from './infrastructure/settings/app.settings';
-import { GlobalConfigService } from './config/config.service';
+import { appSettings } from './settings/app.settings';
+import { appConfig } from './config/app-config';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { abortOnError: false });
   appSettings<AppModule>(app, AppModule);
 
-  const configService = app.get(GlobalConfigService);
-  const serviceData = configService.getConnectionData('users');
-
-  await app.listen(serviceData.port, () => {
-    console.log(`App started at http://localhost:${serviceData.port}/api/v1`);
-    console.log(`Swagger http://localhost:${serviceData.port}/api/v1/swagger`);
+  const port = appConfig.settings.backend.PORT;
+  await app.listen(port, () => {
+    console.log(`App started at http://localhost:${port}/api/v1`);
+    console.log(`Swagger http://localhost:${port}/api/v1/swagger`);
   });
 }
 bootstrap();

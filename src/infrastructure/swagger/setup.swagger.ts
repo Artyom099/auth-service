@@ -1,8 +1,8 @@
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
 
-const operationIdFactory = (controllerKey: string, methodKey: string) =>
-  `${methodKey}`;
+// const operationIdFactory = (controllerKey: string, methodKey: string) =>
+//   `${methodKey}`;
 
 export const setupSwagger = (app: INestApplication) => {
   const config = new DocumentBuilder()
@@ -12,7 +12,7 @@ export const setupSwagger = (app: INestApplication) => {
     .build();
 
   const document = SwaggerModule.createDocument(app, config, {
-    operationIdFactory,
+    // operationIdFactory,
   });
 
   SwaggerModule.setup('api/v1/swagger', app, document);

@@ -1,0 +1,32 @@
+{
+  "field": {
+    "code": "code",
+    "login": "login",
+    "email": "email",
+    "password": "password"
+  },
+  "message": {
+    "loginExist": "login already exist",
+    "wrongPassword": "wrong password",
+    "wrongLogin": "wrong login",
+    "emailExist": "email already exist",
+    "password": "pass too simple",
+    "isEmail": "it is not an email",
+    "emailConfirm": "email already confirm",
+    "emailNotConfirm": "email not confirm",
+    "codeExpired": "code expired",
+    "emailNotExist": "user with this email not exist",
+    "emailNotRegister": "email not register",
+    "recoveryConfirm": "recovery already confirm",
+    "recoveryNotConfirm": "recovery not confirm via email yet",
+    "IS_UUID": "wrong format of code"
+
+  },
+  "cat_name": "Cat: {name}",
+  "day_interval": {
+    "one": "Every day",
+    "other": "Every {count} days"
+  },
+  "nested": "We go shopping: $t(test.day_interval, {{\"count\": {count} }})",
+  "INVALID_EMAIL": "email is invalid"
+}
