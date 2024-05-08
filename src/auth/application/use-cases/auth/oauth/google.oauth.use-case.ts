@@ -4,7 +4,7 @@ import {
   ProviderDataType,
 } from './base-oauth.use-case';
 import { CommandHandler } from '@nestjs/cqrs';
-import { UserOauthServicesTypesEnum } from '../../../../enums/user.oauth.services.types.enum';
+import { OauthServicesTypesEnum } from '../../../../enums/oauth.services.types.enum';
 import { Inject } from '@nestjs/common';
 import {
   OAuth2Client,
@@ -20,7 +20,7 @@ export class GoogleOauthCommand extends BaseOauthCommand {}
 
 @CommandHandler(GoogleOauthCommand)
 export class GoogleOauthUseCase extends BaseOauthUseCase<GoogleOauthCommand> {
-  OAUTH_SERVICE_TYPE = UserOauthServicesTypesEnum.GOOGLE;
+  OAUTH_SERVICE_TYPE = OauthServicesTypesEnum.GOOGLE;
 
   constructor(
     protected prisma: PrismaService,

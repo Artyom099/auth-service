@@ -11,6 +11,9 @@ import {
   InternalErrorCode,
 } from '../../infrastructure/error-handling/result';
 
+// AuthGuard использующий Bearer токен для авторизации,
+// написан с использованием интерфеса CanActivate для прозрачности процесса аутентификации
+
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(private tokenService: TokenService) {}
@@ -18,6 +21,7 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
+
     if (!token)
       throw new UnauthorizedException(
         new ErrorResult({

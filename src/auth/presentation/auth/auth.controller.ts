@@ -53,17 +53,17 @@ import { UserQueryRepository } from '../../repositories/user/user.query.reposito
 import { AppConfig } from '../../../config/app-config';
 import { PairTokensType } from './models/dto/pair.tokens.type';
 import { OauthInputModel } from './models/input/oauth.input.model';
-import { UserOauthServicesTypesEnum } from '../../enums/user.oauth.services.types.enum';
+import { OauthServicesTypesEnum } from '../../enums/oauth.services.types.enum';
 import { GoogleOauthCommand } from '../../application/use-cases/auth/oauth/google.oauth.use-case';
 import { GithubOauthCommand } from '../../application/use-cases/auth/oauth/github-oauth.use-case';
 import { BaseOauthCommand } from '../../application/use-cases/auth/oauth/base-oauth.use-case';
 import { OAuthEndpoint } from './swagger-docs/oauth.endpoint';
 
 const OauthCommandByType: {
-  [key in UserOauthServicesTypesEnum]: typeof BaseOauthCommand;
+  [key in OauthServicesTypesEnum]: typeof BaseOauthCommand;
 } = {
-  [UserOauthServicesTypesEnum.GITHUB]: GithubOauthCommand,
-  [UserOauthServicesTypesEnum.GOOGLE]: GoogleOauthCommand,
+  [OauthServicesTypesEnum.GITHUB]: GithubOauthCommand,
+  [OauthServicesTypesEnum.GOOGLE]: GoogleOauthCommand,
 };
 
 @ApiTags('Auth')
@@ -110,7 +110,7 @@ export class AuthController {
   @OAuthEndpoint()
   @Post('oauth/:type')
   async authenticateThroughOauth(
-    @Param('type') type: UserOauthServicesTypesEnum,
+    @Param('type') type: OauthServicesTypesEnum,
     @Body() body: OauthInputModel,
     @Res({ passthrough: true }) res: Response,
   ) {

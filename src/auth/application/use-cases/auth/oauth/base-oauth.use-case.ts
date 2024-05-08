@@ -1,7 +1,7 @@
 import { ICommandHandler } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
 import { TransactionType } from '../../../../../infrastructure/database/transaction.type';
-import { UserOauthServicesTypesEnum } from '../../../../enums/user.oauth.services.types.enum';
+import { OauthServicesTypesEnum } from '../../../../enums/oauth.services.types.enum';
 import {
   ErrorResult,
   InternalErrorCode,
@@ -20,7 +20,7 @@ export class BaseOauthCommand {
 export abstract class BaseOauthUseCase<T extends BaseOauthCommand>
   implements ICommandHandler<T>
 {
-  OAUTH_SERVICE_TYPE: UserOauthServicesTypesEnum;
+  OAUTH_SERVICE_TYPE: OauthServicesTypesEnum;
 
   constructor(
     protected prisma: PrismaService,

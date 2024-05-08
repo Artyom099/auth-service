@@ -2,6 +2,9 @@ import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AccessTokenPayloadType } from '../presentation/auth/models/dto/access.token.payload.type';
 
+// декоратор, который достает userId из request, если ендпоинт защищен AuthGuard
+// или из токена, если ендпоинт публичный
+
 export const CurrentUserId = createParamDecorator(
   (data: unknown, context: ExecutionContext) => {
     const request = context.switchToHttp().getRequest();

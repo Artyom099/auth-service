@@ -2,14 +2,14 @@ import { Prisma, User } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { TransactionType } from '../../../infrastructure/database/transaction.type';
-import { UserOauthServicesTypesEnum } from '../../enums/user.oauth.services.types.enum';
+import { OauthServicesTypesEnum } from '../../enums/oauth.services.types.enum';
 
 @Injectable()
 export class UserRepository {
   constructor(private prisma: PrismaService) {}
 
   async getByProvider(
-    provider: UserOauthServicesTypesEnum,
+    provider: OauthServicesTypesEnum,
     id: number | string,
     tx?: TransactionType,
   ): Promise<User> {

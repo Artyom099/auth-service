@@ -4,7 +4,7 @@ import {
   ProviderDataType,
 } from './base-oauth.use-case';
 import { CommandHandler } from '@nestjs/cqrs';
-import { UserOauthServicesTypesEnum } from '../../../../enums/user.oauth.services.types.enum';
+import { OauthServicesTypesEnum } from '../../../../enums/oauth.services.types.enum';
 import { HttpService } from '@nestjs/axios';
 import { AppConfig } from '../../../../../config/app-config';
 import { lastValueFrom } from 'rxjs';
@@ -19,7 +19,7 @@ export class GithubOauthCommand extends BaseOauthCommand {}
 
 @CommandHandler(GithubOauthCommand)
 export class GithubOauthUseCase extends BaseOauthUseCase<GithubOauthCommand> {
-  OAUTH_SERVICE_TYPE = UserOauthServicesTypesEnum.GITHUB;
+  OAUTH_SERVICE_TYPE = OauthServicesTypesEnum.GITHUB;
 
   GET_TOKENS_URL = 'https://github.com/login/oauth/access_token';
   GET_USER_URL = 'https://api.github.com/user';

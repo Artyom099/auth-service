@@ -1,5 +1,4 @@
 import * as process from 'process';
-import { OauthSettings } from './settings/oauth.settings';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
@@ -121,6 +120,30 @@ export class I18nSettings {
   constructor(envVariables: EnvironmentVariable) {
     this.FALLBACK_LANGUAGE = envVariables.FALLBACK_LANGUAGE!;
     this.I18N_PATH = envVariables.I18N_PATH!;
+  }
+}
+
+export type OauthParamsType = {
+  CLIENT_ID: string;
+  CLIENT_SECRET: string;
+  CLIENT_REDIRECT_URI: string;
+};
+
+export class OauthSettings {
+  GITHUB: OauthParamsType;
+  GOOGLE: OauthParamsType;
+
+  constructor(envVariables: EnvironmentVariable) {
+    this.GITHUB = {
+      CLIENT_ID: envVariables.GITHUB_CLIENT_ID!,
+      CLIENT_SECRET: envVariables.GITHUB_CLIENT_SECRET!,
+      CLIENT_REDIRECT_URI: envVariables.GITHUB_CLIENT_REDIRECT_URI!,
+    };
+    this.GOOGLE = {
+      CLIENT_ID: envVariables.GOOGLE_CLIENT_ID!,
+      CLIENT_SECRET: envVariables.GOOGLE_CLIENT_SECRET!,
+      CLIENT_REDIRECT_URI: envVariables.GOOGLE_CLIENT_REDIRECT_URI!,
+    };
   }
 }
 
