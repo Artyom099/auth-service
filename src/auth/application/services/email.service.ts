@@ -1,4 +1,4 @@
-import { EmailAdapter } from '../../../infrastructure/email/email.adapter';
+import { EmailAdapter } from '../../../libs/email/EmailAdapter';
 import { Inject, Injectable } from '@nestjs/common';
 import { AppConfig } from '../../../config/app-config';
 import {
@@ -6,7 +6,7 @@ import {
   InternalErrorCode,
   ResultType,
   SuccessResult,
-} from '../../../infrastructure/error-handling/result';
+} from '../../../libs/error-handling/result';
 
 @Injectable()
 export class EmailService {

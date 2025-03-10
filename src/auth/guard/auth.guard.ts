@@ -9,7 +9,7 @@ import {
 import {
   ErrorResult,
   InternalErrorCode,
-} from '../../infrastructure/error-handling/result';
+} from '../../libs/error-handling/result';
 
 // AuthGuard использующий Bearer токен для авторизации,
 // написан с использованием интерфеса CanActivate для прозрачности процесса аутентификации

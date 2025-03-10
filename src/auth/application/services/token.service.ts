@@ -1,9 +1,9 @@
 import { JwtService } from '@nestjs/jwt';
 import { Inject, Injectable } from '@nestjs/common';
 import { AppConfig } from '../../../config/app-config';
-import { RefreshTokenPayloadType } from '../../presentation/auth/models/dto/refresh.token.payload.type';
-import { PairTokensType } from '../../presentation/auth/models/dto/pair.tokens.type';
-import { AccessTokenPayloadType } from '../../presentation/auth/models/dto/access.token.payload.type';
+import { RefreshTokenPayloadType } from '../../api/models/dto/refresh.token.payload.type';
+import { PairTokensType } from '../../api/models/dto/pair.tokens.type';
+import { AccessTokenPayloadType } from '../../api/models/dto/access.token.payload.type';
 
 @Injectable()
 export class TokenService {

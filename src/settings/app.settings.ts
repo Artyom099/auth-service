@@ -7,18 +7,18 @@ import {
 } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
 import { useContainer } from 'class-validator';
-import { setupSwagger } from '../infrastructure/swagger/setup.swagger';
+import { setupSwagger } from '../libs';
 import {
   I18nValidationException,
   I18nValidationExceptionFilter,
   I18nValidationPipe,
 } from 'nestjs-i18n';
-import { ResponseInterceptor } from '../infrastructure/error-handling/response.interceptor';
+import { ResponseInterceptor } from '../libs/error-handling/response.interceptor';
 import {
   ErrorExtensionType,
   ErrorResult,
   InternalErrorCode,
-} from '../infrastructure/error-handling/result';
+} from '../libs/error-handling/result';
 
 export const appSettings = <T>(app: INestApplication, module: T) => {
   useContainer(app.select(module as DynamicModule), { fallbackOnErrors: true });
@@ -29,6 +29,7 @@ export const appSettings = <T>(app: INestApplication, module: T) => {
     new ValidationPipe({
       transform: true,
       forbidUnknownValues: false,
+
       exceptionFactory: (errors) => {
         const extensions: ErrorExtensionType[] = errors.map(
           (err: ValidationError) => {

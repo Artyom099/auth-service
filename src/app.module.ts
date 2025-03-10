@@ -2,37 +2,39 @@ import { Module } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
-import { EmailAdapter } from './infrastructure/email/email.adapter';
+import { EmailAdapter } from './libs/email/EmailAdapter';
 import { AppConfigModule } from './config/app-config.module';
-import { RegistrationUseCase } from './auth/application/use-cases/auth/registration.use.case';
-import { LogInUseCase } from './auth/application/use-cases/auth/log.in.use.case';
-import { LogOutUseCase } from './auth/application/use-cases/auth/log.out.use.case';
-import { RefreshSessionUseCase } from './auth/application/use-cases/auth/refresh.session.use.case';
-import { UpdatePasswordUseCase } from './auth/application/use-cases/password-recovery/update.password.use.case';
-import { PasswordRecoveryUseCase } from './auth/application/use-cases/password-recovery/password.recovery.use.case';
-import { ConfirmEmailUseCase } from './auth/application/use-cases/email-confirmation/confirm.email.use.case';
-import { ResendEmailConfirmationUseCase } from './auth/application/use-cases/email-confirmation/resend.email.confirmation.use.case';
-import { UserQueryRepository } from './auth/repositories/user/user.query.repository';
-import { DeviceRepository } from './auth/repositories/device/device.repository';
-import { AuthController } from './auth/presentation/auth/auth.controller';
-import { EmailService } from './auth/application/services/email.service';
-import { AuthService } from './auth/application/services/auth.service';
-import { ConfirmPasswordRecoveryUseCase } from './auth/application/use-cases/password-recovery/confirm.password.recovery.use.case';
-import { UserRepository } from './auth/repositories/user/user.repository';
-import { TokenService } from './auth/application/services/token.service';
+import {
+  AuthController,
+  AuthService,
+  ConfirmEmailUseCase,
+  ConfirmPasswordRecoveryUseCase,
+  DeleteDeviceUseCase,
+  DeleteOtherDevicesUseCase,
+  DeviceController,
+  DeviceQueryRepository,
+  DeviceRepository,
+  EmailConfirmationRepository,
+  EmailService,
+  GithubOauthUseCase,
+  GoogleOauthUseCase,
+  LogInUseCase,
+  LogOutUseCase,
+  PasswordRecoveryRepository,
+  PasswordRecoveryUseCase,
+  RefreshSessionUseCase,
+  RegistrationUseCase,
+  ResendEmailConfirmationUseCase,
+  TokenService,
+  UpdatePasswordUseCase,
+  UserQueryRepository,
+  UserRepository,
+} from './auth';
 import { AppConfig } from './config/app-config';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { EmailConfirmationRepository } from './auth/repositories/email-confirmation/email.confirmation.repository';
-import { PasswordRecoveryRepository } from './auth/repositories/password-recovery/password.recovery.repository';
-import { I18nLocalModule } from './i18n/i18n.local.module';
+import { I18nLocalModule } from './libs';
 import { HttpModule } from '@nestjs/axios';
 import { google } from 'googleapis';
-import { GithubOauthUseCase } from './auth/application/use-cases/auth/oauth/github-oauth.use-case';
-import { GoogleOauthUseCase } from './auth/application/use-cases/auth/oauth/google.oauth.use-case';
-import { DeviceController } from './auth/presentation/device/device.controller';
-import { DeviceQueryRepository } from './auth/repositories/device/device.query.repository';
-import { DeleteDeviceUseCase } from './auth/application/use-cases/device/delete.device.use.case';
-import { DeleteOtherDevicesUseCase } from './auth/application/use-cases/device/delete.other.devices.use.case';
 
 const services = [PrismaService, EmailService, AuthService, TokenService];
 

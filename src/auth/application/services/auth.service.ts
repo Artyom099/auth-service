@@ -1,16 +1,16 @@
-import { UserRepository } from '../../repositories/user/user.repository';
+import { UserRepository } from '../../repositories/user/UserRepository';
 import { Injectable } from '@nestjs/common';
 import {
   ErrorResult,
   InternalErrorCode,
   ResultType,
   SuccessResult,
-} from '../../../infrastructure/error-handling/result';
+} from '../../../libs/error-handling/result';
 import { compare } from 'bcryptjs';
-import { TransactionType } from '../../../infrastructure/database/transaction.type';
+import { TransactionType } from '../../../libs/db/TransactionType';
 import { TokenService } from './token.service';
-import { DeviceRepository } from '../../repositories/device/device.repository';
-import { I18nAdapter } from '../../../i18n/i18n.adapter';
+import { DeviceRepository } from '../../repositories/device/DeviceRepository';
+import { I18nAdapter } from '../../../libs/i18n/i18n.adapter';
 
 @Injectable()
 export class AuthService {
