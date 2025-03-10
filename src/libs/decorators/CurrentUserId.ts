@@ -1,4 +1,4 @@
-import { createParamDecorator, ExecutionContext } from '@nestjs/common';
+import { ExecutionContext, createParamDecorator } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { AccessTokenPayloadType } from '../../auth/api/models/dto/access.token.payload.type';
 

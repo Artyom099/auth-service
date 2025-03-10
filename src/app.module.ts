@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
-import { EmailAdapter } from './libs/email/EmailAdapter';
+import { EmailAdapter } from './libs';
 import { AppConfigModule } from './config/app-config.module';
 import {
   AuthController,

@@ -32,7 +32,7 @@ import {
   UpdatePasswordCommand,
 } from '../application';
 import { LogInDTO } from './models/dto/log.in.dto';
-import { RefreshToken, CurrentUserId } from '../../libs';
+import { CurrentUserId, RefreshToken } from '../../libs';
 import { CodeInputModel } from './models/input/code.input.model';
 import {
   ConfirmPasswordRecoveryApi,

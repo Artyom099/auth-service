@@ -16,9 +16,9 @@ import { DeleteOtherDevicesCommand } from '../application';
 import { DeleteDeviceCommand } from '../application';
 import { AuthGuard } from '../guard/auth.guard';
 import {
-  GetDevicesApi,
   DeleteDeviceApi,
   DeleteOtherDevicesApi,
+  GetDevicesApi,
 } from '../../libs/swagger/decorators';
 
 @ApiTags('Device')
