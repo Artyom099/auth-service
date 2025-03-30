@@ -51,13 +51,15 @@ import { AuthGuard } from '../guard/auth.guard';
 import { ResultType, SuccessResult } from '../../libs/error-handling/result';
 import { ApiTags } from '@nestjs/swagger';
 import { UserQueryRepository } from '../repositories';
-import { AppConfig } from '../../config/app-config';
+import { AppConfig } from '../../config';
 import { PairTokensType } from './models/dto/pair.tokens.type';
 import { OauthInputModel } from './models/input/oauth.input.model';
 import { OauthServicesTypesEnum } from '../enums/oauth.services.types.enum';
-import { GoogleOauthCommand } from '../application';
-import { GithubOauthCommand } from '../application';
-import { BaseOauthCommand } from '../application';
+import {
+  BaseOauthCommand,
+  GithubOauthCommand,
+  GoogleOauthCommand,
+} from '../application';
 
 const OauthCommandByType: {
   [key in OauthServicesTypesEnum]: typeof BaseOauthCommand;

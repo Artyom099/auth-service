@@ -1,6 +1,6 @@
 import { EmailAdapter } from '../../../libs/email/EmailAdapter';
 import { Inject, Injectable } from '@nestjs/common';
-import { AppConfig } from '../../../config/app-config';
+import { AppConfig } from '../../../config/AppConfig';
 import {
   ErrorResult,
   InternalErrorCode,

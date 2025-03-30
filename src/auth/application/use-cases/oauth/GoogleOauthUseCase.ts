@@ -10,7 +10,7 @@ import {
   OAuth2Client,
   TokenInfo,
 } from 'google-auth-library/build/src/auth/oauth2client';
-import { AppConfig } from '../../../../config/app-config';
+import { AppConfig } from '../../../../config/AppConfig';
 import { UserRepository } from '../../../repositories/user/UserRepository';
 import { PrismaService } from '../../../../../prisma/prisma.service';
 import { I18nAdapter } from '../../../../libs/i18n';

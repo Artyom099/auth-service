@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
-import { EmailAdapter } from './libs';
-import { AppConfigModule } from './config/app-config.module';
+import { EmailAdapter, I18nLocalModule } from './libs';
+import { AppConfigModule, AppConfig } from './config';
 import {
   AuthController,
   AuthService,
@@ -30,9 +30,7 @@ import {
   UserQueryRepository,
   UserRepository,
 } from './auth';
-import { AppConfig } from './config/app-config';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { I18nLocalModule } from './libs';
 import { HttpModule } from '@nestjs/axios';
 import { google } from 'googleapis';
 
@@ -98,7 +96,7 @@ const infrastructureModules = [AppConfigModule, I18nLocalModule];
       inject: [AppConfig.name],
     }),
     ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
-    HttpModule.register({ timeout: 10000 }),
+    HttpModule.register({ timeout: 10_000 }),
     ...infrastructureModules,
   ],
   controllers: [AuthController, DeviceController],
