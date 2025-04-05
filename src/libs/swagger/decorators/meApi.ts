@@ -6,6 +6,7 @@ import {
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+
 import { UserViewModel } from '../../../auth/api/models/view/user.view.model';
 
 export function MeApi() {

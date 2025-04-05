@@ -1,24 +1,18 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { isAfter } from 'date-fns';
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-  SuccessResult,
-} from '../../../../libs/error-handling/result';
+
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { EmailConfirmationRepository } from '../../../repositories/email-confirmation/EmailConfirmationRepository';
-import { I18nAdapter } from '../../../../libs/i18n/i18n.adapter';
-import { UserRepository } from '../../../repositories/user/UserRepository';
+import { I18nAdapter } from '../../../../libs';
+import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { EmailConfirmationRepository } from '../../../repositories';
+import { UserRepository } from '../../../repositories';
 
 export class ConfirmEmailCommand {
   constructor(public code: string) {}
 }
 
 @CommandHandler(ConfirmEmailCommand)
-export class ConfirmEmailUseCase
-  implements ICommandHandler<ConfirmEmailCommand>
-{
+export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailCommand> {
   constructor(
     private prisma: PrismaService,
     private i18nAdapter: I18nAdapter,
@@ -30,11 +24,7 @@ export class ConfirmEmailUseCase
     const { code } = command;
 
     return this.prisma.$transaction(async (tx) => {
-      const confirmationData =
-        await this.emailConfirmationRepository.getConfirmationDataByCode(
-          code,
-          tx,
-        );
+      const confirmationData = await this.emailConfirmationRepository.getConfirmationDataByCode(code, tx);
 
       // если почта уже подтверждена, кидаем ошибку
       if (confirmationData.isConfirmed) {
@@ -58,10 +48,7 @@ export class ConfirmEmailUseCase
         });
       }
 
-      await this.emailConfirmationRepository.confirmEmail(
-        confirmationData.userId,
-        tx,
-      );
+      await this.emailConfirmationRepository.confirmEmail(confirmationData.userId, tx);
 
       await this.userRepository.update(confirmationData.userId, {
         email: confirmationData.email,

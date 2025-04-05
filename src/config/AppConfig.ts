@@ -4,11 +4,7 @@ require('dotenv').config();
 
 export type EnvironmentVariable = { [key: string]: string | undefined };
 
-export type EnvironmentsTypes =
-  | 'DEVELOPMENT'
-  | 'STAGING'
-  | 'PRODUCTION'
-  | 'TEST';
+export type EnvironmentsTypes = 'DEVELOPMENT' | 'STAGING' | 'PRODUCTION' | 'TEST';
 
 export class EnvironmentSettings {
   constructor(private env: EnvironmentsTypes) {}
@@ -78,12 +74,8 @@ export class JwtSettings {
     this.PASSPHRASE = envVariables.PASSPHRASE!;
     this.PUBLIC_KEY = decodeURIComponent(envVariables.PUBLIC_KEY!);
     this.PRIVATE_KEY = decodeURIComponent(envVariables.PRIVATE_KEY!);
-    this.ACCESS_TOKEN_LIFETIME_SECONDS = Number(
-      envVariables.ACCESS_TOKEN_LIFETIME_SECONDS!,
-    );
-    this.REFRESH_TOKEN_LIFETIME_SECONDS = Number(
-      envVariables.REFRESH_TOKEN_LIFETIME_SECONDS!,
-    );
+    this.ACCESS_TOKEN_LIFETIME_SECONDS = Number(envVariables.ACCESS_TOKEN_LIFETIME_SECONDS!);
+    this.REFRESH_TOKEN_LIFETIME_SECONDS = Number(envVariables.REFRESH_TOKEN_LIFETIME_SECONDS!);
     this.ENCRYPTION_TYPE = envVariables.ENCRYPTION_TYPE!;
   }
 }
@@ -106,10 +98,8 @@ export class FrontData {
   FRONTEND_EMAIL_CONFIRMATION_URL: string;
 
   constructor(envVariables: EnvironmentVariable) {
-    this.FRONTEND_PASSWORD_RESET_URL =
-      envVariables.FRONTEND_PASSWORD_RESET_URL!;
-    this.FRONTEND_EMAIL_CONFIRMATION_URL =
-      envVariables.FRONTEND_EMAIL_CONFIRMATION_URL!;
+    this.FRONTEND_PASSWORD_RESET_URL = envVariables.FRONTEND_PASSWORD_RESET_URL!;
+    this.FRONTEND_EMAIL_CONFIRMATION_URL = envVariables.FRONTEND_EMAIL_CONFIRMATION_URL!;
   }
 }
 
@@ -157,9 +147,7 @@ export class AppConfig {
   }
 }
 
-const envSettings = new EnvironmentSettings(
-  (process.env.ENV_TYPE || 'DEVELOPMENT') as EnvironmentsTypes,
-);
+const envSettings = new EnvironmentSettings((process.env.ENV_TYPE || 'DEVELOPMENT') as EnvironmentsTypes);
 
 const originSettings = new OriginSettings(process.env);
 const emailSettings = new EmailSettings(process.env);

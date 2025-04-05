@@ -1,27 +1,22 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { RegistrationInputModel } from '../../../api/models/input/registration.input.model';
-import { UserRepository } from '../../../repositories/user/UserRepository';
-import { hash } from 'bcryptjs';
 import { Prisma } from '@prisma/client';
+import { hash } from 'bcryptjs';
 import { add } from 'date-fns';
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-} from '../../../../libs/error-handling/result';
-import { EmailService } from '../../services/email.service';
+
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { I18nAdapter } from '../../../../libs/i18n/i18n.adapter';
-import { EmailConfirmationRepository } from '../../../repositories/email-confirmation/EmailConfirmationRepository';
+import { I18nAdapter } from '../../../../libs';
+import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
+import { RegistrationInputModel } from '../../../api/models/input/registration.input.model';
+import { EmailConfirmationRepository } from '../../../repositories';
+import { UserRepository } from '../../../repositories';
+import { EmailService } from '../../services';
 
 export class RegistrationCommand {
   constructor(public body: RegistrationInputModel) {}
 }
 
 @CommandHandler(RegistrationCommand)
-export class RegistrationUseCase
-  implements ICommandHandler<RegistrationCommand>
-{
+export class RegistrationUseCase implements ICommandHandler<RegistrationCommand> {
   private readonly SALT_ROUND: number = 10;
 
   constructor(
@@ -37,10 +32,7 @@ export class RegistrationUseCase
 
     return this.prisma.$transaction(async (tx) => {
       // проверка уникальности login & email
-      const userByEmail = await this.userRepository.getUserByLoginOrEmail(
-        email,
-        tx,
-      );
+      const userByEmail = await this.userRepository.getUserByLoginOrEmail(email, tx);
 
       if (userByEmail) {
         const message = await this.i18nAdapter.getMessage('emailExist');
@@ -52,10 +44,7 @@ export class RegistrationUseCase
         });
       }
 
-      const userByLogin = await this.userRepository.getUserByLoginOrEmail(
-        login,
-        tx,
-      );
+      const userByLogin = await this.userRepository.getUserByLoginOrEmail(login, tx);
       if (userByLogin) {
         const message = await this.i18nAdapter.getMessage('loginExist');
         const field = 'login';
@@ -81,14 +70,12 @@ export class RegistrationUseCase
       );
 
       try {
-        const sendEmailResult =
-          await this.emailService.sendEmailConfirmationMessage(
-            email,
-            emailConfirmation.confirmationCode,
-          );
+        const sendEmailResult = await this.emailService.sendEmailConfirmationMessage(
+          email,
+          emailConfirmation.confirmationCode,
+        );
 
-        if (sendEmailResult.hasError)
-          await this.userRepository.deleteUser(user.id, tx);
+        if (sendEmailResult.hasError) await this.userRepository.deleteUser(user.id, tx);
 
         return sendEmailResult;
       } catch (e) {

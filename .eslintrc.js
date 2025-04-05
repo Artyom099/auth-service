@@ -5,7 +5,7 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  plugins: ['@typescript-eslint/eslint-plugin'],
+  plugins: ['@typescript-eslint/eslint-plugin', 'import'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
@@ -21,23 +21,42 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
-    // 'import/order': [
-    //   'error',
-    //   {
-    //     groups: [
-    //       'external',
-    //       'internal',
-    //       'builtin',
-    //       'sibling',
-    //       'parent',
-    //       'index',
-    //     ],
-    //     'newlines-between': 'always',
-    //     alphabetize: {
-    //       order: 'asc',
-    //       caseInsensitive: true,
-    //     },
-    //   },
-    // ],
+    '@typescript-eslint/quotes': [
+      'error',
+      'single',
+      {
+        avoidEscape: true,
+        allowTemplateLiterals: true,
+      },
+    ],
+    '@typescript-eslint/lines-between-class-members':[
+      'error',
+      {
+        enforce: [
+          { blankLine: 'always', prev: '*', next: 'method' },
+          { blankLine: 'always', prev: 'method', next: '*' },
+          { blankLine: 'always', prev: 'field', next: 'field' },
+        ]
+      },
+      { 'exceptAfterSingleLine': true },
+    ],
+    'import/order': [
+      'error',
+      {
+        groups: [
+          'external',
+          'internal',
+          'builtin',
+          'sibling',
+          'parent',
+          'index',
+        ],
+        'newlines-between': 'always',
+        alphabetize: {
+          order: 'asc',
+          caseInsensitive: true,
+        },
+      },
+    ],
   },
 };

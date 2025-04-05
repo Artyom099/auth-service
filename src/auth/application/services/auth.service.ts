@@ -1,16 +1,13 @@
-import { UserRepository } from '../../repositories/user/UserRepository';
 import { Injectable } from '@nestjs/common';
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-  SuccessResult,
-} from '../../../libs/error-handling/result';
 import { compare } from 'bcryptjs';
-import { TransactionType } from '../../../libs/db/TransactionType';
+
 import { TokenService } from './token.service';
-import { DeviceRepository } from '../../repositories/device/DeviceRepository';
-import { I18nAdapter } from '../../../libs/i18n/i18n.adapter';
+
+import { I18nAdapter } from '../../../libs';
+import { TransactionType } from '../../../libs/db';
+import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../libs/error-handling/result';
+import { DeviceRepository } from '../../repositories';
+import { UserRepository } from '../../repositories';
 
 @Injectable()
 export class AuthService {
@@ -52,11 +49,7 @@ export class AuthService {
     return new SuccessResult(null);
   }
 
-  async validateRefreshToken(
-    userId: number,
-    token: string,
-    tx?: TransactionType,
-  ): Promise<ResultType<any>> {
+  async validateRefreshToken(userId: number, token: string, tx?: TransactionType): Promise<ResultType<any>> {
     const payload = await this.tokenService.verifyRefreshToken(token);
     const tokenIssuedAt = payload.issuedAt;
 

@@ -1,19 +1,14 @@
-import {
-  BaseOauthCommand,
-  BaseOauthUseCase,
-  ProviderDataType,
-} from './BaseOauthUseCase';
-import { CommandHandler } from '@nestjs/cqrs';
-import { OauthServicesTypesEnum } from '../../../enums/oauth.services.types.enum';
 import { Inject } from '@nestjs/common';
-import {
-  OAuth2Client,
-  TokenInfo,
-} from 'google-auth-library/build/src/auth/oauth2client';
-import { AppConfig } from '../../../../config/AppConfig';
-import { UserRepository } from '../../../repositories/user/UserRepository';
+import { CommandHandler } from '@nestjs/cqrs';
+import { OAuth2Client, TokenInfo } from 'google-auth-library/build/src/auth/oauth2client';
+
+import { BaseOauthCommand, BaseOauthUseCase, ProviderDataType } from './BaseOauthUseCase';
+
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { I18nAdapter } from '../../../../libs/i18n';
+import { AppConfig } from '../../../../config';
+import { I18nAdapter } from '../../../../libs';
+import { OauthServicesTypesEnum } from '../../../enums/oauth.services.types.enum';
+import { UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
 export class GoogleOauthCommand extends BaseOauthCommand {}

@@ -6,6 +6,7 @@ import {
   ApiTooManyRequestsResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+
 import { BAD_REQUEST_SCHEMA } from '../../error-handling/bad.request.schema';
 
 export function LogInApi() {

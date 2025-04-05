@@ -1,4 +1,3 @@
-import { InternalErrorCode, ResultType, SuccessResult } from '../result';
 import {
   BadRequestException,
   ForbiddenException,
@@ -6,7 +5,10 @@ import {
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
+
 import { HandlerType } from './handler.type';
+
+import { InternalErrorCode, ResultType, SuccessResult } from '../result';
 
 export const httpHandler: HandlerType = <T>(result: ResultType<T>) => {
   if (result.hasError) {

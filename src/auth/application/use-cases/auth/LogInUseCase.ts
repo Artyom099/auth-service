@@ -1,20 +1,17 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { UserRepository } from '../../../repositories/user/UserRepository';
-import { LogInDTO } from '../../../api/models/dto/log.in.dto';
-import { CreateDeviceDTO } from '../../../api/models/dto/create.device.dto';
-import { AuthService } from '../../services/auth.service';
-import { TokenService } from '../../services/token.service';
+
 import { randomUUID } from 'crypto';
+
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-  SuccessResult,
-} from '../../../../libs/error-handling/result';
-import { I18nAdapter } from '../../../../libs/i18n/i18n.adapter';
-import { DeviceRepository } from '../../../repositories/device/DeviceRepository';
+import { I18nAdapter } from '../../../../libs';
+import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { CreateDeviceDTO } from '../../../api/models/dto/create.device.dto';
+import { LogInDTO } from '../../../api/models/dto/log.in.dto';
 import { PairTokensType } from '../../../api/models/dto/pair.tokens.type';
+import { DeviceRepository } from '../../../repositories';
+import { UserRepository } from '../../../repositories';
+import { AuthService } from '../../services';
+import { TokenService } from '../../services';
 
 export class LogInCommand {
   constructor(public dto: LogInDTO) {}
@@ -57,12 +54,7 @@ export class LogInUseCase implements ICommandHandler<LogInCommand> {
         });
       }
 
-      const validationResult = await this.authService.validateUser(
-        email,
-        password,
-        user.passwordHash,
-        tx,
-      );
+      const validationResult = await this.authService.validateUser(email, password, user.passwordHash, tx);
 
       if (validationResult.hasError) return validationResult;
 

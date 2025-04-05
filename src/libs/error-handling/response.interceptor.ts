@@ -1,7 +1,8 @@
 import { ContextType, Injectable, NestInterceptor } from '@nestjs/common';
-import { map } from 'rxjs';
 import { ExecutionContext } from '@nestjs/common/interfaces/features/execution-context.interface';
 import { CallHandler } from '@nestjs/common/interfaces/features/nest-interceptor.interface';
+import { map } from 'rxjs';
+
 import { HandlerType } from './handlers/handler.type';
 import { httpHandler } from './handlers/http.handler';
 import { Result, ResultType, SuccessResult } from './result';

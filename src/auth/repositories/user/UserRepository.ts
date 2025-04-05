@@ -1,18 +1,15 @@
-import { Prisma, User } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
+import { Prisma, User } from '@prisma/client';
+
 import { PrismaService } from '../../../../prisma/prisma.service';
-import { TransactionType } from '../../../libs/db/TransactionType';
+import { TransactionType } from '../../../libs/db';
 import { OauthServicesTypesEnum } from '../../enums/oauth.services.types.enum';
 
 @Injectable()
 export class UserRepository {
   constructor(private prisma: PrismaService) {}
 
-  async getByProvider(
-    provider: OauthServicesTypesEnum,
-    id: number | string,
-    tx?: TransactionType,
-  ): Promise<User> {
+  async getByProvider(provider: OauthServicesTypesEnum, id: number | string, tx?: TransactionType): Promise<User> {
     const context = tx || this.prisma;
 
     return context.user.findFirst({
@@ -31,10 +28,7 @@ export class UserRepository {
     return context.user.findFirst({ where: params, include: additionalFields });
   }
 
-  async getUserByLoginOrEmail(
-    loginOrEmail: string,
-    tx?: TransactionType,
-  ): Promise<User> {
+  async getUserByLoginOrEmail(loginOrEmail: string, tx?: TransactionType): Promise<User> {
     const context = tx || this.prisma;
 
     return context.user.findFirst({
@@ -44,10 +38,7 @@ export class UserRepository {
     });
   }
 
-  async create(
-    data: Prisma.UserCreateInput,
-    tx?: TransactionType,
-  ): Promise<{ id: number }> {
+  async create(data: Prisma.UserCreateInput, tx?: TransactionType): Promise<{ id: number }> {
     const context = tx || this.prisma;
 
     return context.user.create({
@@ -62,11 +53,7 @@ export class UserRepository {
     await context.user.delete({ where: { id } });
   }
 
-  async update(
-    id: number,
-    user: Prisma.UserUpdateInput,
-    tx?: TransactionType,
-  ): Promise<void> {
+  async update(id: number, user: Prisma.UserUpdateInput, tx?: TransactionType): Promise<void> {
     const context = tx || this.prisma;
 
     await context.user.update({

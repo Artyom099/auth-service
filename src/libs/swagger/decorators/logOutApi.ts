@@ -7,6 +7,7 @@ import {
   ApiOperation,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
+
 import { BAD_REQUEST_SCHEMA } from '../../error-handling/bad.request.schema';
 
 export function LogOutApi() {
@@ -27,8 +28,7 @@ export function LogOutApi() {
     }),
     ApiNoContentResponse({ description: 'No Content' }),
     ApiBadRequestResponse({
-      description:
-        'If refreshToken inside cookie is missing, expired or incorrect',
+      description: 'If refreshToken inside cookie is missing, expired or incorrect',
       schema: BAD_REQUEST_SCHEMA,
     }),
     ApiTooManyRequestsResponse({

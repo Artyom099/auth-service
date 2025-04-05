@@ -1,37 +1,28 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { isAfter } from 'date-fns';
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-  SuccessResult,
-} from '../../../../libs/error-handling/result';
+
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { PasswordRecoveryRepository } from '../../../repositories/password-recovery/PasswordRecoveryRepository';
-import { I18nAdapter } from '../../../../libs/i18n/i18n.adapter';
+import { I18nAdapter } from '../../../../libs';
+import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { PasswordRecoveryRepository } from '../../../repositories';
 
 export class ConfirmPasswordRecoveryCommand {
   constructor(public code: string) {}
 }
 
 @CommandHandler(ConfirmPasswordRecoveryCommand)
-export class ConfirmPasswordRecoveryUseCase
-  implements ICommandHandler<ConfirmPasswordRecoveryCommand>
-{
+export class ConfirmPasswordRecoveryUseCase implements ICommandHandler<ConfirmPasswordRecoveryCommand> {
   constructor(
     private prisma: PrismaService,
     private i18nAdapter: I18nAdapter,
     private passwordRecoveryRepository: PasswordRecoveryRepository,
   ) {}
 
-  async execute(
-    command: ConfirmPasswordRecoveryCommand,
-  ): Promise<ResultType<null>> {
+  async execute(command: ConfirmPasswordRecoveryCommand): Promise<ResultType<null>> {
     const { code } = command;
 
     return this.prisma.$transaction(async (tx) => {
-      const recoveryData =
-        await this.passwordRecoveryRepository.getRecoveryData(code, tx);
+      const recoveryData = await this.passwordRecoveryRepository.getRecoveryData(code, tx);
 
       // если обновление пароля уже подтверждено, кидаем ошибку
       if (recoveryData.isConfirmed) {
@@ -55,10 +46,7 @@ export class ConfirmPasswordRecoveryUseCase
         });
       }
 
-      await this.passwordRecoveryRepository.confirmRecoveryPassword(
-        recoveryData.userId,
-        tx,
-      );
+      await this.passwordRecoveryRepository.confirmRecoveryPassword(recoveryData.userId, tx);
       return new SuccessResult(null);
     });
   }

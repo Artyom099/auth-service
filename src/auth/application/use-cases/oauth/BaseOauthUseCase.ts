@@ -1,25 +1,22 @@
-import { ICommandHandler } from '@nestjs/cqrs';
 import { Injectable } from '@nestjs/common';
-import { TransactionType } from '../../../../libs/db/TransactionType';
-import { OauthServicesTypesEnum } from '../../../enums/oauth.services.types.enum';
-import {
-  ErrorResult,
-  InternalErrorCode,
-} from '../../../../libs/error-handling/result';
+import { ICommandHandler } from '@nestjs/cqrs';
 import { PrismaService } from 'prisma/prisma.service';
-import { I18nAdapter } from '../../../../libs/i18n/i18n.adapter';
-import { UserRepository } from '../../../repositories/user/UserRepository';
+
 import { randomUUID } from 'crypto';
-import { TokenService } from '../../services/token.service';
+
+import { I18nAdapter } from '../../../../libs';
+import { TransactionType } from '../../../../libs/db';
+import { ErrorResult, InternalErrorCode } from '../../../../libs/error-handling/result';
+import { OauthServicesTypesEnum } from '../../../enums/oauth.services.types.enum';
+import { UserRepository } from '../../../repositories';
+import { TokenService } from '../../services';
 
 export class BaseOauthCommand {
   constructor(public readonly code: string) {}
 }
 
 @Injectable()
-export abstract class BaseOauthUseCase<T extends BaseOauthCommand>
-  implements ICommandHandler<T>
-{
+export abstract class BaseOauthUseCase<T extends BaseOauthCommand> implements ICommandHandler<T> {
   OAUTH_SERVICE_TYPE: OauthServicesTypesEnum;
 
   constructor(
@@ -33,19 +30,14 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand>
     return this.prisma.$transaction(async (tx) => {
       const providerData = await this.getUser(command.code);
 
-      const userData = await this.usersRepository.getByProvider(
-        this.OAUTH_SERVICE_TYPE,
-        providerData.id,
-        tx,
-      );
+      const userData = await this.usersRepository.getByProvider(this.OAUTH_SERVICE_TYPE, providerData.id, tx);
       if (userData) return userData.id;
 
-      const userWithSameEmailAsFromProvider =
-        await this.usersRepository.getUser(
-          { email: providerData.email },
-          { [this.OAUTH_SERVICE_TYPE]: true },
-          tx,
-        );
+      const userWithSameEmailAsFromProvider = await this.usersRepository.getUser(
+        { email: providerData.email },
+        { [this.OAUTH_SERVICE_TYPE]: true },
+        tx,
+      );
 
       if (userWithSameEmailAsFromProvider) {
         if (userWithSameEmailAsFromProvider[this.OAUTH_SERVICE_TYPE]) {
@@ -57,11 +49,7 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand>
           });
         }
 
-        await this.connectProviderToUser(
-          userWithSameEmailAsFromProvider.id,
-          providerData,
-          tx,
-        );
+        await this.connectProviderToUser(userWithSameEmailAsFromProvider.id, providerData, tx);
 
         return userWithSameEmailAsFromProvider.id;
       }
@@ -104,11 +92,7 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand>
     return login;
   }
 
-  async connectProviderToUser(
-    userId: number,
-    data: ProviderDataType,
-    tx: TransactionType,
-  ) {
+  async connectProviderToUser(userId: number, data: ProviderDataType, tx: TransactionType) {
     const mappedData: ConnectProviderType = {
       id: data.id,
       photoUrl: data.photoUrl,
@@ -116,11 +100,7 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand>
       email: data.email,
     };
 
-    return await this.usersRepository.update(
-      userId,
-      { [this.OAUTH_SERVICE_TYPE]: { create: mappedData } },
-      tx,
-    );
+    return await this.usersRepository.update(userId, { [this.OAUTH_SERVICE_TYPE]: { create: mappedData } }, tx);
   }
 }
 

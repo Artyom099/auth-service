@@ -13,27 +13,23 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { CookieOptions, Response } from 'express';
 import { CommandBus } from '@nestjs/cqrs';
-import { RegistrationInputModel } from './models/input/registration.input.model';
+import { ApiTags } from '@nestjs/swagger';
+import { CookieOptions, Response } from 'express';
+
+import { LogInDTO } from './models/dto/log.in.dto';
+import { PairTokensType } from './models/dto/pair.tokens.type';
+import { CodeInputModel } from './models/input/code.input.model';
 import { EmailInputModel } from './models/input/email.input.model';
 import { LogInInputModel } from './models/input/log.in.input.model';
-import { UserViewModel } from './models/view/user.view.model';
+import { OauthInputModel } from './models/input/oauth.input.model';
+import { RegistrationInputModel } from './models/input/registration.input.model';
 import { UpdatePasswordInputModel } from './models/input/update.password.input.model';
-import {
-  ConfirmEmailCommand,
-  ConfirmPasswordRecoveryCommand,
-  LogInCommand,
-  LogOutCommand,
-  PasswordRecoveryCommand,
-  RefreshSessionCommand,
-  RegistrationCommand,
-  ResendEmailConfirmationCommand,
-  UpdatePasswordCommand,
-} from '../application';
-import { LogInDTO } from './models/dto/log.in.dto';
+import { UserViewModel } from './models/view/user.view.model';
+
+import { AppConfig } from '../../config';
 import { CurrentUserId, RefreshToken } from '../../libs';
-import { CodeInputModel } from './models/input/code.input.model';
+import { ResultType, SuccessResult } from '../../libs/error-handling/result';
 import {
   ConfirmPasswordRecoveryApi,
   ConfirmRegistrationApi,
@@ -47,19 +43,21 @@ import {
   ResendConfirmationCodeApi,
   UpdatePasswordApi,
 } from '../../libs/swagger/decorators';
-import { AuthGuard } from '../guard/auth.guard';
-import { ResultType, SuccessResult } from '../../libs/error-handling/result';
-import { ApiTags } from '@nestjs/swagger';
-import { UserQueryRepository } from '../repositories';
-import { AppConfig } from '../../config';
-import { PairTokensType } from './models/dto/pair.tokens.type';
-import { OauthInputModel } from './models/input/oauth.input.model';
-import { OauthServicesTypesEnum } from '../enums/oauth.services.types.enum';
 import {
-  BaseOauthCommand,
-  GithubOauthCommand,
-  GoogleOauthCommand,
+  ConfirmEmailCommand,
+  ConfirmPasswordRecoveryCommand,
+  LogInCommand,
+  LogOutCommand,
+  PasswordRecoveryCommand,
+  RefreshSessionCommand,
+  RegistrationCommand,
+  ResendEmailConfirmationCommand,
+  UpdatePasswordCommand,
 } from '../application';
+import { BaseOauthCommand, GithubOauthCommand, GoogleOauthCommand } from '../application';
+import { OauthServicesTypesEnum } from '../enums/oauth.services.types.enum';
+import { AuthGuard } from '../guard/auth.guard';
+import { UserQueryRepository } from '../repositories';
 
 const OauthCommandByType: {
   [key in OauthServicesTypesEnum]: typeof BaseOauthCommand;
@@ -104,9 +102,7 @@ export class AuthController {
   @Post('resend-confirmation-code')
   @HttpCode(HttpStatus.NO_CONTENT)
   async resendConfirmationCode(@Body() body: EmailInputModel): Promise<void> {
-    return this.commandBus.execute(
-      new ResendEmailConfirmationCommand(body.email),
-    );
+    return this.commandBus.execute(new ResendEmailConfirmationCommand(body.email));
   }
 
   @PasswordRecoveryApi()
@@ -119,9 +115,7 @@ export class AuthController {
   @ConfirmPasswordRecoveryApi()
   @Post('confirm-password-recovery')
   async confirmPasswordRecovery(@Body() body: CodeInputModel): Promise<void> {
-    return this.commandBus.execute(
-      new ConfirmPasswordRecoveryCommand(body.code),
-    );
+    return this.commandBus.execute(new ConfirmPasswordRecoveryCommand(body.code));
   }
 
   @UpdatePasswordApi()
@@ -147,9 +141,7 @@ export class AuthController {
       ip,
     };
 
-    let logInResult = await this.commandBus.execute<unknown, ResultType<any>>(
-      new LogInCommand(dto),
-    );
+    let logInResult = await this.commandBus.execute<unknown, ResultType<any>>(new LogInCommand(dto));
 
     if (logInResult.hasError) return logInResult;
 
@@ -168,9 +160,7 @@ export class AuthController {
     @RefreshToken() token: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ResultType<PairTokensType>> {
-    let refreshResult = await this.commandBus.execute<unknown, ResultType<any>>(
-      new RefreshSessionCommand(token),
-    );
+    let refreshResult = await this.commandBus.execute<unknown, ResultType<any>>(new RefreshSessionCommand(token));
 
     if (refreshResult.hasError) return refreshResult;
 
@@ -194,10 +184,7 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async logout(
-    @CurrentUserId() userId: number,
-    @RefreshToken() token: string,
-  ): Promise<void> {
+  async logout(@CurrentUserId() userId: number, @RefreshToken() token: string): Promise<void> {
     return this.commandBus.execute(new LogOutCommand(userId, token));
   }
 
@@ -213,16 +200,11 @@ export class AuthController {
     if (!OauthCommand) throw new BadRequestException();
 
     try {
-      const { accessToken, refreshToken } = await this.commandBus.execute<
-        BaseOauthCommand,
-        PairTokensType
-      >(new OauthCommand(body.code));
-
-      res.cookie(
-        this.REFRESH_TOKEN_COOKIE_KEY,
-        refreshToken,
-        this.cookieOptions,
+      const { accessToken, refreshToken } = await this.commandBus.execute<BaseOauthCommand, PairTokensType>(
+        new OauthCommand(body.code),
       );
+
+      res.cookie(this.REFRESH_TOKEN_COOKIE_KEY, refreshToken, this.cookieOptions);
       res.cookie(this.ACCESS_TOKEN_COOKIE_KEY, accessToken, this.cookieOptions);
 
       return { accessToken };

@@ -1,10 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
-import {
-  ApiBadRequestResponse,
-  ApiNoContentResponse,
-  ApiOperation,
-  ApiTooManyRequestsResponse,
-} from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiNoContentResponse, ApiOperation, ApiTooManyRequestsResponse } from '@nestjs/swagger';
+
 import { BAD_REQUEST_SCHEMA } from '../../error-handling/bad.request.schema';
 
 export function ConfirmRegistrationApi() {
@@ -18,8 +14,7 @@ export function ConfirmRegistrationApi() {
       description: 'Email have verified. Account have activated',
     }),
     ApiBadRequestResponse({
-      description:
-        'If the confirmation code is incorrect, expired or already applied',
+      description: 'If the confirmation code is incorrect, expired or already applied',
       schema: BAD_REQUEST_SCHEMA,
     }),
     ApiTooManyRequestsResponse({

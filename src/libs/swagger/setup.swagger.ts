@@ -1,5 +1,5 @@
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { INestApplication } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 // const operationIdFactory = (controllerKey: string, methodKey: string) =>
 //   `${methodKey}`;

@@ -1,10 +1,11 @@
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { PrismaService } from '../prisma/prisma.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
-import { EmailAdapter, I18nLocalModule } from './libs';
-import { AppConfigModule, AppConfig } from './config';
+import { ThrottlerModule } from '@nestjs/throttler';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { google } from 'googleapis';
+
 import {
   AuthController,
   AuthService,
@@ -31,11 +32,12 @@ import {
   UserQueryRepository,
   UserRepository,
 } from './auth';
-import { ThrottlerModule } from '@nestjs/throttler';
-import { HttpModule } from '@nestjs/axios';
-import { google } from 'googleapis';
+import { AppConfigModule, AppConfig } from './config';
+import { EmailAdapter, I18nLocalModule } from './libs';
 import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
 import { entities } from './libs/db/entity';
+
+import { PrismaService } from '../prisma/prisma.service';
 
 const services = [PrismaService, EmailService, AuthService, TokenService];
 
@@ -75,8 +77,7 @@ const infrastructureModules = [AppConfigModule, I18nLocalModule];
     CqrsModule,
     JwtModule.registerAsync({
       useFactory: (appConfig: AppConfig) => {
-        const { SECRET, PUBLIC_KEY, PRIVATE_KEY, PASSPHRASE, ENCRYPTION_TYPE } =
-          appConfig.settings.jwt;
+        const { SECRET, PUBLIC_KEY, PRIVATE_KEY, PASSPHRASE, ENCRYPTION_TYPE } = appConfig.settings.jwt;
 
         const encryptionTypes = {
           DEFAULT: { secret: SECRET },
@@ -113,8 +114,7 @@ const infrastructureModules = [AppConfigModule, I18nLocalModule];
     {
       provide: 'GOOGLE-AUTH',
       useFactory: (appConfig: AppConfig) => {
-        const { CLIENT_ID, CLIENT_SECRET, CLIENT_REDIRECT_URI } =
-          appConfig.settings.oauth.GOOGLE;
+        const { CLIENT_ID, CLIENT_SECRET, CLIENT_REDIRECT_URI } = appConfig.settings.oauth.GOOGLE;
 
         return new google.auth.OAuth2({
           clientId: CLIENT_ID,

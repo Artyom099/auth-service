@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { TransactionType } from '../../../libs/db/TransactionType';
 import { Prisma, UserEmailConfirmation } from '@prisma/client';
-import { UpdateCodeDTO } from '../../api/models/dto/update.code.dto';
+
 import { PrismaService } from '../../../../prisma/prisma.service';
+import { TransactionType } from '../../../libs/db';
+import { UpdateCodeDTO } from '../../api/models/dto/update.code.dto';
 
 @Injectable()
 export class EmailConfirmationRepository {
@@ -17,10 +18,7 @@ export class EmailConfirmationRepository {
     });
   }
 
-  async create(
-    data: Prisma.UserEmailConfirmationCreateArgs['data'],
-    tx?: TransactionType,
-  ) {
+  async create(data: Prisma.UserEmailConfirmationCreateArgs['data'], tx?: TransactionType) {
     const context = tx || this.prisma;
 
     return context.userEmailConfirmation.create({
@@ -29,10 +27,7 @@ export class EmailConfirmationRepository {
     });
   }
 
-  async getConfirmationDataByCode(
-    code: string,
-    tx?: TransactionType,
-  ): Promise<UserEmailConfirmation> {
+  async getConfirmationDataByCode(code: string, tx?: TransactionType): Promise<UserEmailConfirmation> {
     const context = tx || this.prisma;
 
     return context.userEmailConfirmation.findFirst({
@@ -40,10 +35,7 @@ export class EmailConfirmationRepository {
     });
   }
 
-  async getConfirmationDataByEmail(
-    email: string,
-    tx?: TransactionType,
-  ): Promise<UserEmailConfirmation> {
+  async getConfirmationDataByEmail(email: string, tx?: TransactionType): Promise<UserEmailConfirmation> {
     const context = tx || this.prisma;
 
     return context.userEmailConfirmation.findFirst({
@@ -51,10 +43,7 @@ export class EmailConfirmationRepository {
     });
   }
 
-  async updateConfirmationData(
-    data: UpdateCodeDTO,
-    tx?: TransactionType,
-  ): Promise<string> {
+  async updateConfirmationData(data: UpdateCodeDTO, tx?: TransactionType): Promise<string> {
     const { userId, expirationDate, code } = data;
     const context = tx || this.prisma;
 

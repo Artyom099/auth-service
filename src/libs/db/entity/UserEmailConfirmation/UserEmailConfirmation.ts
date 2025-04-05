@@ -1,4 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+
 import { User } from '../User';
 
 @Entity('user_email_confirmation')
@@ -39,5 +40,6 @@ export class UserEmailConfirmation {
   @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
+
   userId: string;
 }

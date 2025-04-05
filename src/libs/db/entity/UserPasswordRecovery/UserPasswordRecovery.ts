@@ -1,4 +1,5 @@
 import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+
 import { User } from '../User';
 
 @Entity('user_password_recovery')
@@ -30,5 +31,6 @@ export class UserPasswordRecovery {
   @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
+
   userId: string;
 }

@@ -1,12 +1,8 @@
-import { EmailAdapter } from '../../../libs/email/EmailAdapter';
 import { Inject, Injectable } from '@nestjs/common';
-import { AppConfig } from '../../../config/AppConfig';
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-  SuccessResult,
-} from '../../../libs/error-handling/result';
+
+import { AppConfig } from '../../../config';
+import { EmailAdapter } from '../../../libs';
+import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../libs/error-handling/result';
 
 @Injectable()
 export class EmailService {
@@ -15,12 +11,8 @@ export class EmailService {
     @Inject(AppConfig.name) private appConfig: AppConfig,
   ) {}
 
-  async sendEmailConfirmationMessage(
-    email: string,
-    confirmationCode: string,
-  ): Promise<ResultType<null>> {
-    const domain =
-      this.appConfig.settings.frontend.FRONTEND_EMAIL_CONFIRMATION_URL;
+  async sendEmailConfirmationMessage(email: string, confirmationCode: string): Promise<ResultType<null>> {
+    const domain = this.appConfig.settings.frontend.FRONTEND_EMAIL_CONFIRMATION_URL;
 
     const message = `
       <h1>Thanks for your registration</h1>
@@ -31,11 +23,7 @@ export class EmailService {
 
     const subject = 'Registration confirmation';
 
-    const isSending = await this.emailAdapter.sendEmail(
-      email,
-      subject,
-      message,
-    );
+    const isSending = await this.emailAdapter.sendEmail(email, subject, message);
 
     if (!isSending)
       return new ErrorResult({
@@ -46,10 +34,7 @@ export class EmailService {
     return new SuccessResult(null);
   }
 
-  async sendPasswordRecoveryMessage(
-    email: string,
-    recoveryCode: string,
-  ): Promise<ResultType<null>> {
+  async sendPasswordRecoveryMessage(email: string, recoveryCode: string): Promise<ResultType<null>> {
     const domain = this.appConfig.settings.frontend.FRONTEND_PASSWORD_RESET_URL;
 
     const message = `
@@ -61,11 +46,7 @@ export class EmailService {
 
     const subject = 'Password recovery';
 
-    const isSending = await this.emailAdapter.sendEmail(
-      email,
-      subject,
-      message,
-    );
+    const isSending = await this.emailAdapter.sendEmail(email, subject, message);
 
     if (!isSending)
       return new ErrorResult({

@@ -1,19 +1,17 @@
-import {
-  BaseOauthCommand,
-  BaseOauthUseCase,
-  ProviderDataType,
-} from './BaseOauthUseCase';
-import { CommandHandler } from '@nestjs/cqrs';
-import { OauthServicesTypesEnum } from '../../../enums/oauth.services.types.enum';
 import { HttpService } from '@nestjs/axios';
-import { AppConfig } from '../../../../config/AppConfig';
+import { Inject } from '@nestjs/common';
+import { CommandHandler } from '@nestjs/cqrs';
 import { lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { UserRepository } from '../../../repositories/user/UserRepository';
+
+import { BaseOauthCommand, BaseOauthUseCase, ProviderDataType } from './BaseOauthUseCase';
+
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { I18nAdapter } from '../../../../libs/i18n/i18n.adapter';
-import { Inject } from '@nestjs/common';
-import { TokenService } from '../../services/token.service';
+import { AppConfig } from '../../../../config';
+import { I18nAdapter } from '../../../../libs';
+import { OauthServicesTypesEnum } from '../../../enums/oauth.services.types.enum';
+import { UserRepository } from '../../../repositories';
+import { TokenService } from '../../services';
 
 export class GithubOauthCommand extends BaseOauthCommand {}
 
@@ -45,9 +43,7 @@ export class GithubOauthUseCase extends BaseOauthUseCase<GithubOauthCommand> {
     return this.mapToProviderData(githubData);
   }
 
-  async mapToProviderData(
-    githubUser: GithubUserDto,
-  ): Promise<ProviderDataType> {
+  async mapToProviderData(githubUser: GithubUserDto): Promise<ProviderDataType> {
     return {
       id: githubUser.id,
       login: githubUser.login,
@@ -64,15 +60,11 @@ export class GithubOauthUseCase extends BaseOauthUseCase<GithubOauthCommand> {
       client_secret: CLIENT_SECRET,
     };
     return lastValueFrom(
-      this.httpService
-        .post<TokensDto>(this.GET_TOKENS_URL, params, this.defaultConfig)
-        .pipe(map((res) => res.data)),
+      this.httpService.post<TokensDto>(this.GET_TOKENS_URL, params, this.defaultConfig).pipe(map((res) => res.data)),
     );
   }
 
-  protected async getUserByAccessToken(
-    accessToken: string,
-  ): Promise<GithubUserDto> {
+  protected async getUserByAccessToken(accessToken: string): Promise<GithubUserDto> {
     const [user, emails] = await Promise.all([
       lastValueFrom(
         this.httpService

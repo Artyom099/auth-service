@@ -1,21 +1,15 @@
 import { applyDecorators } from '@nestjs/common';
-import {
-  ApiBadRequestResponse,
-  ApiNoContentResponse,
-  ApiOperation,
-  ApiTooManyRequestsResponse,
-} from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiNoContentResponse, ApiOperation, ApiTooManyRequestsResponse } from '@nestjs/swagger';
+
 import { BAD_REQUEST_SCHEMA } from '../../error-handling/bad.request.schema';
 
 export function RegistrationApi() {
   return applyDecorators(
     ApiOperation({
-      summary:
-        'Registration in the system. Email with confirmation code will be send to passed email address',
+      summary: 'Registration in the system. Email with confirmation code will be send to passed email address',
     }),
     ApiNoContentResponse({
-      description:
-        'Input data is accepted. Email with confirmation code will be send to passed email address',
+      description: 'Input data is accepted. Email with confirmation code will be send to passed email address',
     }),
     ApiBadRequestResponse({
       description:

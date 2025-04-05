@@ -1,8 +1,11 @@
 import { Global, Module } from '@nestjs/common';
-import { AppConfig } from '../../config/AppConfig';
-import * as path from 'path';
 import { AcceptLanguageResolver, I18nModule } from 'nestjs-i18n';
+
+import * as path from 'path';
+
 import { I18nAdapter } from './i18n.adapter';
+
+import { AppConfig } from '../../config';
 
 @Global()
 @Module({

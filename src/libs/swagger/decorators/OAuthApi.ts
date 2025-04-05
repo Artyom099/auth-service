@@ -6,8 +6,9 @@ import {
   ApiParam,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
-import { BAD_REQUEST_SCHEMA } from '../../error-handling/bad.request.schema';
+
 import { OauthServicesTypesEnum } from '../../../auth/enums/oauth.services.types.enum';
+import { BAD_REQUEST_SCHEMA } from '../../error-handling/bad.request.schema';
 
 export function OAuthApi() {
   return applyDecorators(

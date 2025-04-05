@@ -1,10 +1,6 @@
 import { applyDecorators } from '@nestjs/common';
-import {
-  ApiBadRequestResponse,
-  ApiNoContentResponse,
-  ApiOperation,
-  ApiTooManyRequestsResponse,
-} from '@nestjs/swagger';
+import { ApiBadRequestResponse, ApiNoContentResponse, ApiOperation, ApiTooManyRequestsResponse } from '@nestjs/swagger';
+
 import { BAD_REQUEST_SCHEMA } from '../../error-handling/bad.request.schema';
 
 export function UpdatePasswordApi() {

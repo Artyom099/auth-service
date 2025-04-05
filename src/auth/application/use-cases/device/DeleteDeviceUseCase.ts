@@ -1,12 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-  SuccessResult,
-} from '../../../../libs/error-handling/result';
+
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { DeviceRepository } from '../../../repositories/device/DeviceRepository';
+import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { DeviceRepository } from '../../../repositories';
 
 export class DeleteDeviceCommand {
   constructor(
@@ -16,9 +12,7 @@ export class DeleteDeviceCommand {
 }
 
 @CommandHandler(DeleteDeviceCommand)
-export class DeleteDeviceUseCase
-  implements ICommandHandler<DeleteDeviceCommand>
-{
+export class DeleteDeviceUseCase implements ICommandHandler<DeleteDeviceCommand> {
   constructor(
     private prisma: PrismaService,
     private deviceRepository: DeviceRepository,
@@ -35,10 +29,7 @@ export class DeleteDeviceUseCase
           extensions: [],
         });
 
-      const activeDevices = await this.deviceRepository.getUserDevices(
-        userId,
-        tx,
-      );
+      const activeDevices = await this.deviceRepository.getUserDevices(userId, tx);
 
       // если среди активных девайсов юзера нет девайса, который хотим удалить, кидаем ошибку
       if (!activeDevices.find((d) => d.id === device.id))

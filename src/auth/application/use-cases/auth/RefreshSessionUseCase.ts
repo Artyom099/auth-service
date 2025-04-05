@@ -1,32 +1,24 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { TokenService } from '../../services/token.service';
+
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { DeviceRepository } from '../../../repositories/device/DeviceRepository';
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-  SuccessResult,
-} from '../../../../libs/error-handling/result';
+import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { PairTokensType } from '../../../api/models/dto/pair.tokens.type';
+import { DeviceRepository } from '../../../repositories';
+import { TokenService } from '../../services';
 
 export class RefreshSessionCommand {
   constructor(public token: string) {}
 }
 
 @CommandHandler(RefreshSessionCommand)
-export class RefreshSessionUseCase
-  implements ICommandHandler<RefreshSessionCommand>
-{
+export class RefreshSessionUseCase implements ICommandHandler<RefreshSessionCommand> {
   constructor(
     private prisma: PrismaService,
     private tokenService: TokenService,
     private deviceRepository: DeviceRepository,
   ) {}
 
-  async execute(
-    command: RefreshSessionCommand,
-  ): Promise<ResultType<PairTokensType>> {
+  async execute(command: RefreshSessionCommand): Promise<ResultType<PairTokensType>> {
     const { token } = command;
 
     return this.prisma.$transaction(async (tx) => {

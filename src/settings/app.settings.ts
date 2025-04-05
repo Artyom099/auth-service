@@ -1,24 +1,11 @@
-import {
-  ArgumentsHost,
-  DynamicModule,
-  INestApplication,
-  ValidationError,
-  ValidationPipe,
-} from '@nestjs/common';
-import * as cookieParser from 'cookie-parser';
+import { ArgumentsHost, DynamicModule, INestApplication, ValidationError, ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
+import * as cookieParser from 'cookie-parser';
+import { I18nValidationException, I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
+
 import { setupSwagger } from '../libs';
-import {
-  I18nValidationException,
-  I18nValidationExceptionFilter,
-  I18nValidationPipe,
-} from 'nestjs-i18n';
 import { ResponseInterceptor } from '../libs/error-handling/response.interceptor';
-import {
-  ErrorExtensionType,
-  ErrorResult,
-  InternalErrorCode,
-} from '../libs/error-handling/result';
+import { ErrorExtensionType, ErrorResult, InternalErrorCode } from '../libs/error-handling/result';
 
 export const appSettings = <T>(app: INestApplication, module: T) => {
   useContainer(app.select(module as DynamicModule), { fallbackOnErrors: true });
@@ -31,14 +18,12 @@ export const appSettings = <T>(app: INestApplication, module: T) => {
       forbidUnknownValues: false,
 
       exceptionFactory: (errors) => {
-        const extensions: ErrorExtensionType[] = errors.map(
-          (err: ValidationError) => {
-            return {
-              field: err.property,
-              message: Object.values(err.constraints).toString(),
-            };
-          },
-        );
+        const extensions: ErrorExtensionType[] = errors.map((err: ValidationError) => {
+          return {
+            field: err.property,
+            message: Object.values(err.constraints).toString(),
+          };
+        });
 
         const error = { code: InternalErrorCode.BadRequest, extensions };
         return new ErrorResult(error);
@@ -48,20 +33,15 @@ export const appSettings = <T>(app: INestApplication, module: T) => {
 
   app.useGlobalFilters(
     new I18nValidationExceptionFilter({
-      responseBodyFormatter(
-        host: ArgumentsHost,
-        exception: I18nValidationException,
-      ): Record<string, any> {
+      responseBodyFormatter(host: ArgumentsHost, exception: I18nValidationException): Record<string, any> {
         console.log({ errors: exception.errors });
 
-        const extensions: ErrorExtensionType[] = exception.errors.map(
-          (err: ValidationError) => {
-            return {
-              field: err.property,
-              message: Object.values(err.constraints).toString(),
-            };
-          },
-        );
+        const extensions: ErrorExtensionType[] = exception.errors.map((err: ValidationError) => {
+          return {
+            field: err.property,
+            message: Object.values(err.constraints).toString(),
+          };
+        });
 
         const error = { code: InternalErrorCode.BadRequest, extensions };
         return new ErrorResult(error);

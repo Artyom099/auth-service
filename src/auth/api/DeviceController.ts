@@ -1,25 +1,14 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Param,
-  UseGuards,
-} from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
-import { CurrentUserId } from '../../libs';
-import { DeviceQueryRepository } from '../repositories';
-import { RefreshToken } from '../../libs';
+import { Controller, Delete, Get, HttpCode, HttpStatus, Param, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
+import { ApiTags } from '@nestjs/swagger';
+
+import { CurrentUserId } from '../../libs';
+import { RefreshToken } from '../../libs';
+import { DeleteDeviceApi, DeleteOtherDevicesApi, GetDevicesApi } from '../../libs/swagger/decorators';
 import { DeleteOtherDevicesCommand } from '../application';
 import { DeleteDeviceCommand } from '../application';
 import { AuthGuard } from '../guard/auth.guard';
-import {
-  DeleteDeviceApi,
-  DeleteOtherDevicesApi,
-  GetDevicesApi,
-} from '../../libs/swagger/decorators';
+import { DeviceQueryRepository } from '../repositories';
 
 @ApiTags('Device')
 @Controller('device')
@@ -40,13 +29,8 @@ export class DeviceController {
   @DeleteOtherDevicesApi()
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteOtherDevices(
-    @CurrentUserId() userId: number,
-    @RefreshToken() token: string,
-  ) {
-    return this.commandBus.execute(
-      new DeleteOtherDevicesCommand(userId, token),
-    );
+  async deleteOtherDevices(@CurrentUserId() userId: number, @RefreshToken() token: string) {
+    return this.commandBus.execute(new DeleteOtherDevicesCommand(userId, token));
   }
 
   @DeleteDeviceApi()

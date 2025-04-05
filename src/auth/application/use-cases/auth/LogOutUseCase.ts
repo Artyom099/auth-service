@@ -1,13 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { TokenService } from '../../services/token.service';
-import { DeviceRepository } from '../../../repositories/device/DeviceRepository';
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-  SuccessResult,
-} from '../../../../libs/error-handling/result';
+import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { DeviceRepository } from '../../../repositories';
+import { TokenService } from '../../services';
 
 export class LogOutCommand {
   constructor(
@@ -31,10 +27,7 @@ export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
       const payload = await this.tokenService.verifyRefreshToken(token);
       const tokenIssuedAt = payload.issuedAt;
 
-      const device = await this.deviceRepository.getDevice(
-        payload.deviceId,
-        tx,
-      );
+      const device = await this.deviceRepository.getDevice(payload.deviceId, tx);
 
       if (!device)
         return new ErrorResult({

@@ -1,12 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import {
-  IsEmail,
-  IsNotEmpty,
-  IsString,
-  IsStrongPassword,
-  Length,
-} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsStrongPassword, Length } from 'class-validator';
 import { i18nValidationMessage } from 'nestjs-i18n';
 
 export class RegistrationInputModel {
@@ -19,6 +13,7 @@ export class RegistrationInputModel {
   @Transform(({ value }) => value.trim().toLowerCase())
   @Length(6, 30)
   login: string;
+
   @ApiProperty({
     minimum: 6,
     maximum: 80,
@@ -31,11 +26,11 @@ export class RegistrationInputModel {
   @Transform(({ value }) => value.trim().toLowerCase())
   @IsString()
   email: string;
+
   @ApiProperty({
     minimum: 8,
     maximum: 20,
-    description:
-      'password should contain at least one capital letter, one number & one symbol',
+    description: 'password should contain at least one capital letter, one number & one symbol',
   })
   @IsStrongPassword(
     {

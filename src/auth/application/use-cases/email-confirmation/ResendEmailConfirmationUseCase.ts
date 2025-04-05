@@ -1,26 +1,22 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { add } from 'date-fns';
-import { UserRepository } from '../../../repositories/user/UserRepository';
+
 import { randomUUID } from 'crypto';
-import { UpdateCodeDTO } from '../../../api/models/dto/update.code.dto';
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-} from '../../../../libs/error-handling/result';
-import { EmailService } from '../../services/email.service';
+
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { EmailConfirmationRepository } from '../../../repositories/email-confirmation/EmailConfirmationRepository';
-import { I18nAdapter } from '../../../../libs/i18n/i18n.adapter';
+import { I18nAdapter } from '../../../../libs';
+import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
+import { UpdateCodeDTO } from '../../../api/models/dto/update.code.dto';
+import { EmailConfirmationRepository } from '../../../repositories';
+import { UserRepository } from '../../../repositories';
+import { EmailService } from '../../services';
 
 export class ResendEmailConfirmationCommand {
   constructor(public email: string) {}
 }
 
 @CommandHandler(ResendEmailConfirmationCommand)
-export class ResendEmailConfirmationUseCase
-  implements ICommandHandler<ResendEmailConfirmationCommand>
-{
+export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEmailConfirmationCommand> {
   constructor(
     private prisma: PrismaService,
     private i18nAdapter: I18nAdapter,
@@ -29,9 +25,7 @@ export class ResendEmailConfirmationUseCase
     private emailConfirmationRepository: EmailConfirmationRepository,
   ) {}
 
-  async execute(
-    command: ResendEmailConfirmationCommand,
-  ): Promise<ResultType<null>> {
+  async execute(command: ResendEmailConfirmationCommand): Promise<ResultType<null>> {
     const { email } = command;
 
     return this.prisma.$transaction(async (tx) => {
@@ -49,11 +43,7 @@ export class ResendEmailConfirmationUseCase
         });
       }
 
-      const confirmationData =
-        await this.emailConfirmationRepository.getConfirmationDataByEmail(
-          email,
-          tx,
-        );
+      const confirmationData = await this.emailConfirmationRepository.getConfirmationDataByEmail(email, tx);
 
       // если почта уже подтверждена, кидаем ошибку
       if (confirmationData.isConfirmed) {
@@ -72,13 +62,9 @@ export class ResendEmailConfirmationUseCase
         code: randomUUID(),
       };
 
-      const newCode =
-        await this.emailConfirmationRepository.updateConfirmationData(data, tx);
+      const newCode = await this.emailConfirmationRepository.updateConfirmationData(data, tx);
 
-      return this.emailService.sendEmailConfirmationMessage(
-        user.email,
-        newCode,
-      );
+      return this.emailService.sendEmailConfirmationMessage(user.email, newCode);
     });
   }
 }

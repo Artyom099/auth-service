@@ -1,25 +1,19 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { hash } from 'bcryptjs';
 import { isAfter } from 'date-fns';
-import { UpdatePasswordInputModel } from '../../../api/models/input/update.password.input.model';
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-  SuccessResult,
-} from '../../../../libs/error-handling/result';
+
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { PasswordRecoveryRepository } from '../../../repositories/password-recovery/PasswordRecoveryRepository';
-import { I18nAdapter } from '../../../../libs/i18n/i18n.adapter';
+import { I18nAdapter } from '../../../../libs';
+import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { UpdatePasswordInputModel } from '../../../api/models/input/update.password.input.model';
+import { PasswordRecoveryRepository } from '../../../repositories';
 
 export class UpdatePasswordCommand {
   constructor(public body: UpdatePasswordInputModel) {}
 }
 
 @CommandHandler(UpdatePasswordCommand)
-export class UpdatePasswordUseCase
-  implements ICommandHandler<UpdatePasswordCommand>
-{
+export class UpdatePasswordUseCase implements ICommandHandler<UpdatePasswordCommand> {
   private readonly SALT_ROUNDS: 10;
 
   constructor(
@@ -32,8 +26,7 @@ export class UpdatePasswordUseCase
     const { newPassword, recoveryCode } = command.body;
 
     return this.prisma.$transaction(async (tx) => {
-      const recoveryData =
-        await this.passwordRecoveryRepository.getRecoveryData(recoveryCode, tx);
+      const recoveryData = await this.passwordRecoveryRepository.getRecoveryData(recoveryCode, tx);
 
       // если обновление пароля еще НЕ подтверждено с почты, кидаем ошибку
       if (!recoveryData.isConfirmed) {
@@ -60,11 +53,7 @@ export class UpdatePasswordUseCase
       const passwordHash = await hash(newPassword, this.SALT_ROUNDS);
 
       // обновляем пароль
-      await this.passwordRecoveryRepository.updatePassword(
-        recoveryData.userId,
-        passwordHash,
-        tx,
-      );
+      await this.passwordRecoveryRepository.updatePassword(recoveryData.userId, passwordHash, tx);
 
       return new SuccessResult(null);
     });

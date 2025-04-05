@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../../../../prisma/prisma.service';
-import { TransactionType } from '../../../libs/db/TransactionType';
 import { Device } from '@prisma/client';
+
+import { PrismaService } from '../../../../prisma/prisma.service';
+import { TransactionType } from '../../../libs/db';
 
 @Injectable()
 export class DeviceQueryRepository {

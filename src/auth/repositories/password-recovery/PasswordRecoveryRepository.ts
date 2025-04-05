@@ -1,15 +1,13 @@
-import { TransactionType } from '../../../libs/db/TransactionType';
 import { UserPasswordRecovery } from '@prisma/client';
-import { UpdateCodeDTO } from '../../api/models/dto/update.code.dto';
+
 import { PrismaService } from '../../../../prisma/prisma.service';
+import { TransactionType } from '../../../libs/db';
+import { UpdateCodeDTO } from '../../api/models/dto/update.code.dto';
 
 export class PasswordRecoveryRepository {
   constructor(private prisma: PrismaService) {}
 
-  async getRecoveryData(
-    code: string,
-    tx?: TransactionType,
-  ): Promise<UserPasswordRecovery> {
+  async getRecoveryData(code: string, tx?: TransactionType): Promise<UserPasswordRecovery> {
     const context = tx || this.prisma;
 
     return context.userPasswordRecovery.findFirst({
@@ -17,10 +15,7 @@ export class PasswordRecoveryRepository {
     });
   }
 
-  async confirmRecoveryPassword(
-    userId: number,
-    tx?: TransactionType,
-  ): Promise<void> {
+  async confirmRecoveryPassword(userId: number, tx?: TransactionType): Promise<void> {
     const context = tx || this.prisma;
 
     await context.userPasswordRecovery.update({
@@ -29,10 +24,7 @@ export class PasswordRecoveryRepository {
     });
   }
 
-  async upsertRecoveryData(
-    data: UpdateCodeDTO,
-    tx?: TransactionType,
-  ): Promise<UserPasswordRecovery> {
+  async upsertRecoveryData(data: UpdateCodeDTO, tx?: TransactionType): Promise<UserPasswordRecovery> {
     const { userId, expirationDate, code } = data;
     const context = tx || this.prisma;
 
@@ -43,11 +35,7 @@ export class PasswordRecoveryRepository {
     });
   }
 
-  async updatePassword(
-    id: number,
-    passwordHash: string,
-    tx?: TransactionType,
-  ): Promise<void> {
+  async updatePassword(id: number, passwordHash: string, tx?: TransactionType): Promise<void> {
     const context = tx || this.prisma;
 
     await context.user.update({ where: { id }, data: { passwordHash } });

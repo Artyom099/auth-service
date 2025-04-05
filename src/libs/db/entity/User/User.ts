@@ -1,11 +1,5 @@
-import {
-  Column,
-  Entity,
-  JoinColumn,
-  OneToMany,
-  OneToOne,
-  PrimaryGeneratedColumn,
-} from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+
 import { Device } from '../Device';
 import { UserEmailConfirmation } from '../UserEmailConfirmation';
 import { UserPasswordRecovery } from '../UserPasswordRecovery';

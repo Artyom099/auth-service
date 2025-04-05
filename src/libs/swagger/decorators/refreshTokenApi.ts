@@ -1,3 +1,4 @@
+import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
   ApiHeader,
@@ -5,15 +6,14 @@ import {
   ApiOperation,
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
-import { applyDecorators } from '@nestjs/common';
+
 import { BAD_REQUEST_SCHEMA } from '../../error-handling/bad.request.schema';
 
 export function RefreshTokenApi() {
   return applyDecorators(
     ApiOperation({
       summary: 'Generate new pair of access and refresh tokens',
-      description:
-        'in cookie client must send correct refreshToken that will be revoked after refreshing',
+      description: 'in cookie client must send correct refreshToken that will be revoked after refreshing',
     }),
     ApiHeader({
       name: 'Cookie',

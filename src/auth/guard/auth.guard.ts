@@ -1,15 +1,8 @@
+import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
-import { TokenService } from '../application/services/token.service';
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
-import {
-  ErrorResult,
-  InternalErrorCode,
-} from '../../libs/error-handling/result';
+
+import { ErrorResult, InternalErrorCode } from '../../libs/error-handling/result';
+import { TokenService } from '../application';
 
 // AuthGuard использующий Bearer токен для авторизации,
 // написан с использованием интерфеса CanActivate для прозрачности процесса аутентификации

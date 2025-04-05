@@ -1,13 +1,12 @@
-import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform } from 'class-transformer';
 import { IsString, IsStrongPassword, Length } from 'class-validator';
 
 export class UpdatePasswordInputModel {
   @ApiProperty({
     minimum: 8,
     maximum: 20,
-    description:
-      'password should contain at least one capital letter, one number & one symbol',
+    description: 'password should contain at least one capital letter, one number & one symbol',
   })
   @IsStrongPassword({
     minLength: 8,
@@ -19,6 +18,7 @@ export class UpdatePasswordInputModel {
   @Transform(({ value }) => value.trim())
   @Length(8, 20)
   newPassword: string;
+
   @ApiProperty()
   @IsString()
   @Transform(({ value }) => value.trim())
