@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AppModule } from '../src/app.module';
+import { AppModule } from '../src/AppModule';
 import { INestApplication } from '@nestjs/common';
 
 describe('AuthController (e2e)', () => {

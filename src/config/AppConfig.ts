@@ -152,13 +152,13 @@ export class AppConfig {
     public readonly env: EnvironmentSettings,
     public readonly settings: SettingsType,
   ) {
-    console.log(env);
-    console.log(settings);
+    console.log({ env });
+    console.log({ settings });
   }
 }
 
 const envSettings = new EnvironmentSettings(
-  (process.env.ENV || 'DEVELOPMENT') as EnvironmentsTypes,
+  (process.env.ENV_TYPE || 'DEVELOPMENT') as EnvironmentsTypes,
 );
 
 const originSettings = new OriginSettings(process.env);

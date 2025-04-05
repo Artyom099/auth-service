@@ -38,3 +38,8 @@ In progress...
 ## License
 
 This project is distributed under the [MIT license]()
+
+### Создание миграции
+```
+typeorm migration:create ./src/libs/db/migration/MIGRATION_NAME
+```
