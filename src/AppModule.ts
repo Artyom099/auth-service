@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { PrismaService } from '../prisma/prisma.service';
 import { CqrsModule } from '@nestjs/cqrs';
 import { JwtModule } from '@nestjs/jwt';
@@ -33,6 +34,8 @@ import {
 import { ThrottlerModule } from '@nestjs/throttler';
 import { HttpModule } from '@nestjs/axios';
 import { google } from 'googleapis';
+import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
+import { entities } from './libs/db/entity';
 
 const services = [PrismaService, EmailService, AuthService, TokenService];
 
@@ -97,6 +100,8 @@ const infrastructureModules = [AppConfigModule, I18nLocalModule];
     }),
     ThrottlerModule.forRoot([{ ttl: 1000, limit: 10 }]),
     HttpModule.register({ timeout: 10_000 }),
+    TypeOrmModule.forRoot(DataSourceConfig),
+    TypeOrmModule.forFeature(entities, AuthServicePgDataSource),
     ...infrastructureModules,
   ],
   controllers: [AuthController, DeviceController],
