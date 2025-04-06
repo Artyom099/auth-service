@@ -53,8 +53,11 @@ import {
   RegistrationCommand,
   ResendEmailConfirmationCommand,
   UpdatePasswordCommand,
+  BaseOauthCommand,
+  GithubOauthCommand,
+  GoogleOauthCommand
 } from '../application';
-import { BaseOauthCommand, GithubOauthCommand, GoogleOauthCommand } from '../application';
+
 import { OauthServicesTypesEnum } from '../enums/oauth.services.types.enum';
 import { AuthGuard } from '../guard/auth.guard';
 import { UserQueryRepository } from '../repositories';
@@ -88,7 +91,9 @@ export class AuthController {
   @RegistrationApi()
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async registration(@Body() body: RegistrationInputModel): Promise<void> {
+  async registration(
+    @Body() body: RegistrationInputModel,
+  ): Promise<void> {
     return this.commandBus.execute(new RegistrationCommand(body));
   }
 

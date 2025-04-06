@@ -2,21 +2,20 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { isAfter } from 'date-fns';
 
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { I18nAdapter } from '../../../../libs';
+
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { PasswordRecoveryRepository } from '../../../repositories';
 
 export class ConfirmPasswordRecoveryCommand {
-  constructor(public code: string) {}
+  constructor(public code: string) { }
 }
 
 @CommandHandler(ConfirmPasswordRecoveryCommand)
 export class ConfirmPasswordRecoveryUseCase implements ICommandHandler<ConfirmPasswordRecoveryCommand> {
   constructor(
     private prisma: PrismaService,
-    private i18nAdapter: I18nAdapter,
     private passwordRecoveryRepository: PasswordRecoveryRepository,
-  ) {}
+  ) { }
 
   async execute(command: ConfirmPasswordRecoveryCommand): Promise<ResultType<null>> {
     const { code } = command;
@@ -26,7 +25,7 @@ export class ConfirmPasswordRecoveryUseCase implements ICommandHandler<ConfirmPa
 
       // если обновление пароля уже подтверждено, кидаем ошибку
       if (recoveryData.isConfirmed) {
-        const message = await this.i18nAdapter.getMessage('recoveryConfirm');
+        const message = 'Password recovery already confirmed';
         const field = 'code';
 
         return new ErrorResult({
@@ -37,7 +36,7 @@ export class ConfirmPasswordRecoveryUseCase implements ICommandHandler<ConfirmPa
 
       // если текущая дата после expirationDate, то код истек
       if (isAfter(new Date(), recoveryData.expirationDate)) {
-        const message = await this.i18nAdapter.getMessage('codeExpired');
+        const message = 'Recovery code has expired';
         const field = 'code';
 
         return new ErrorResult({

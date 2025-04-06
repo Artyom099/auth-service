@@ -1,5 +1,5 @@
 export type UpdateCodeDTO = {
-  userId: number;
+  userId: string;
   expirationDate: Date;
-  code: string;
+  confirmationCode: string;
 };

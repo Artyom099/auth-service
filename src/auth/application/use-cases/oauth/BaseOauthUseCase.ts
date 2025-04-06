@@ -4,7 +4,7 @@ import { PrismaService } from 'prisma/prisma.service';
 
 import { randomUUID } from 'crypto';
 
-import { I18nAdapter } from '../../../../libs';
+
 import { TransactionType } from '../../../../libs/db';
 import { ErrorResult, InternalErrorCode } from '../../../../libs/error-handling/result';
 import { OauthServicesTypesEnum } from '../../../enums/oauth.services.types.enum';
@@ -12,7 +12,7 @@ import { UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
 export class BaseOauthCommand {
-  constructor(public readonly code: string) {}
+  constructor(public readonly code: string) { }
 }
 
 @Injectable()
@@ -21,10 +21,10 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand> implements IC
 
   constructor(
     protected prisma: PrismaService,
-    protected i18nAdapter: I18nAdapter,
+
     protected tokenService: TokenService,
     protected usersRepository: UserRepository,
-  ) {}
+  ) { }
 
   async execute(command: T) {
     return this.prisma.$transaction(async (tx) => {
@@ -41,7 +41,7 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand> implements IC
 
       if (userWithSameEmailAsFromProvider) {
         if (userWithSameEmailAsFromProvider[this.OAUTH_SERVICE_TYPE]) {
-          const message = await this.i18nAdapter.getMessage('emailExist');
+          const message = 'Email already exists';
 
           return new ErrorResult({
             code: InternalErrorCode.Unauthorized,

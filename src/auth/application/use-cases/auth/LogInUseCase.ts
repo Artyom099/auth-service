@@ -3,7 +3,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { randomUUID } from 'crypto';
 
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { I18nAdapter } from '../../../../libs';
+
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { CreateDeviceDTO } from '../../../api/models/dto/create.device.dto';
 import { LogInDTO } from '../../../api/models/dto/log.in.dto';
@@ -14,19 +14,18 @@ import { AuthService } from '../../services';
 import { TokenService } from '../../services';
 
 export class LogInCommand {
-  constructor(public dto: LogInDTO) {}
+  constructor(public dto: LogInDTO) { }
 }
 
 @CommandHandler(LogInCommand)
 export class LogInUseCase implements ICommandHandler<LogInCommand> {
   constructor(
     private prisma: PrismaService,
-    private i18nAdapter: I18nAdapter,
     private authService: AuthService,
     private tokenService: TokenService,
     private userRepository: UserRepository,
     private deviceRepository: DeviceRepository,
-  ) {}
+  ) { }
 
   async execute(command: LogInCommand): Promise<ResultType<PairTokensType>> {
     const { email, password, deviceName, ip } = command.dto;
@@ -35,7 +34,7 @@ export class LogInUseCase implements ICommandHandler<LogInCommand> {
       const user = await this.userRepository.getUserByLoginOrEmail(email, tx);
 
       if (!user) {
-        const message = await this.i18nAdapter.getMessage('wrongLogin');
+        const message = 'Wrong login or email';
         const field = 'email';
 
         return new ErrorResult({
@@ -45,7 +44,7 @@ export class LogInUseCase implements ICommandHandler<LogInCommand> {
       }
 
       if (!user.isEmailConfirmed) {
-        const message = await this.i18nAdapter.getMessage('emailNotConfirm');
+        const message = 'Email not confirmed';
         const field = 'email';
 
         return new ErrorResult({

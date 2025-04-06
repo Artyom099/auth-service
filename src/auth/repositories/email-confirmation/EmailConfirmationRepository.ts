@@ -1,60 +1,43 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, UserEmailConfirmation } from '@prisma/client';
+import { EntityManager } from 'typeorm';
 
-import { PrismaService } from '../../../../prisma/prisma.service';
-import { TransactionType } from '../../../libs/db';
 import { UpdateCodeDTO } from '../../api/models/dto/update.code.dto';
+import { UserEmailConfirmation } from '../../../libs/db/entity';
+
 
 @Injectable()
 export class EmailConfirmationRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor() { }
 
-  async confirmEmail(userId: number, tx?: TransactionType): Promise<void> {
-    const context = tx || this.prisma;
-
-    await context.userEmailConfirmation.update({
-      where: { userId },
-      data: { isConfirmed: true },
-    });
+  async confirmEmail(em: EntityManager, userId: string): Promise<void> {
+    await em.update(
+      UserEmailConfirmation,
+      { userId },
+      { isConfirmed: true },
+    );
   }
 
-  async create(data: Prisma.UserEmailConfirmationCreateArgs['data'], tx?: TransactionType) {
-    const context = tx || this.prisma;
-
-    return context.userEmailConfirmation.create({
-      data,
-      select: { confirmationCode: true },
-    });
+  async create(em: EntityManager, dto: { expirationDate: Date, email: string, userId: string }) {
+    return em.save(em.create(UserEmailConfirmation, dto))
   }
 
-  async getConfirmationDataByCode(code: string, tx?: TransactionType): Promise<UserEmailConfirmation> {
-    const context = tx || this.prisma;
-
-    return context.userEmailConfirmation.findFirst({
-      where: { confirmationCode: code },
-    });
+  async getConfirmationDataByCode(em: EntityManager, code: string): Promise<UserEmailConfirmation> {
+    return em.findOneBy(UserEmailConfirmation, { confirmationCode: code });
   }
 
-  async getConfirmationDataByEmail(email: string, tx?: TransactionType): Promise<UserEmailConfirmation> {
-    const context = tx || this.prisma;
-
-    return context.userEmailConfirmation.findFirst({
-      where: { user: { email } },
-    });
+  async getConfirmationDataByEmail(em: EntityManager, email: string): Promise<UserEmailConfirmation> {
+    return em.findOneBy(UserEmailConfirmation, { email });
   }
 
-  async updateConfirmationData(data: UpdateCodeDTO, tx?: TransactionType): Promise<string> {
-    const { userId, expirationDate, code } = data;
-    const context = tx || this.prisma;
+  async updateConfirmationData(em: EntityManager, dto: UpdateCodeDTO): Promise<string> {
+    const { userId, expirationDate, confirmationCode } = dto;
 
-    const confirmationData = await context.userEmailConfirmation.update({
-      where: { userId },
-      data: {
-        expirationDate,
-        confirmationCode: code,
-      },
-    });
+    const updateResult = await em.update(UserEmailConfirmation,
+      { userId },
+      { expirationDate, confirmationCode },
+    );
+    console.log({ updateResult })
 
-    return confirmationData.confirmationCode;
+    return confirmationCode;
   }
 }

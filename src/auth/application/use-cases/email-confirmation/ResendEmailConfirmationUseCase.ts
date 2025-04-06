@@ -1,40 +1,38 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { add } from 'date-fns';
+import { EntityManager } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
-import { PrismaService } from '../../../../../prisma/prisma.service';
-import { I18nAdapter } from '../../../../libs';
 import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
 import { UpdateCodeDTO } from '../../../api/models/dto/update.code.dto';
 import { EmailConfirmationRepository } from '../../../repositories';
-import { UserRepository } from '../../../repositories';
+import { UserTypeOrmRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
 export class ResendEmailConfirmationCommand {
-  constructor(public email: string) {}
+  constructor(public email: string) { }
 }
 
 @CommandHandler(ResendEmailConfirmationCommand)
 export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEmailConfirmationCommand> {
   constructor(
-    private prisma: PrismaService,
-    private i18nAdapter: I18nAdapter,
+    private manager: EntityManager,
     private emailService: EmailService,
-    private userRepository: UserRepository,
+    private userRepository: UserTypeOrmRepository,
     private emailConfirmationRepository: EmailConfirmationRepository,
-  ) {}
+  ) { }
 
   async execute(command: ResendEmailConfirmationCommand): Promise<ResultType<null>> {
     const { email } = command;
 
-    return this.prisma.$transaction(async (tx) => {
+    return this.manager.transaction(async (em) => {
       // смотрим, есть ли пользователь с такой почтой
-      const user = await this.userRepository.getUserByLoginOrEmail(email, tx);
+      const user = await this.userRepository.getUserByLoginOrEmail(em, email);
 
       // если пользователя нет, кидаем ошибку
       if (!user) {
-        const message = await this.i18nAdapter.getMessage('emailNotExist');
+        const message = 'Email does not exist';
         const field = 'email';
 
         return new ErrorResult({
@@ -43,11 +41,11 @@ export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEma
         });
       }
 
-      const confirmationData = await this.emailConfirmationRepository.getConfirmationDataByEmail(email, tx);
+      const confirmationData = await this.emailConfirmationRepository.getConfirmationDataByEmail(em, email);
 
       // если почта уже подтверждена, кидаем ошибку
       if (confirmationData.isConfirmed) {
-        const message = await this.i18nAdapter.getMessage('emailConfirm');
+        const message = 'Email already confirmed';
         const field = 'email';
 
         return new ErrorResult({
@@ -56,13 +54,13 @@ export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEma
         });
       }
 
-      const data: UpdateCodeDTO = {
+      const dto: UpdateCodeDTO = {
         userId: user.id,
         expirationDate: add(new Date(), { hours: 3 }),
-        code: randomUUID(),
+        confirmationCode: randomUUID(),
       };
 
-      const newCode = await this.emailConfirmationRepository.updateConfirmationData(data, tx);
+      const newCode = await this.emailConfirmationRepository.updateConfirmationData(em, dto);
 
       return this.emailService.sendEmailConfirmationMessage(user.email, newCode);
     });

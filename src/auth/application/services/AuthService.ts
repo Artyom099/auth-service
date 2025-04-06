@@ -1,9 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { compare } from 'bcryptjs';
 
-import { TokenService } from './token.service';
+import { TokenService } from './TokenService';
 
-import { I18nAdapter } from '../../../libs';
 import { TransactionType } from '../../../libs/db';
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../libs/error-handling/result';
 import { DeviceRepository } from '../../repositories';
@@ -12,11 +11,10 @@ import { UserRepository } from '../../repositories';
 @Injectable()
 export class AuthService {
   constructor(
-    private i18nAdapter: I18nAdapter,
     private tokenService: TokenService,
     private userRepository: UserRepository,
     private deviceRepository: DeviceRepository,
-  ) {}
+  ) { }
 
   async validateUser(
     email: string,
@@ -37,7 +35,7 @@ export class AuthService {
     const isUserValid = await compare(password, passwordHash);
 
     if (!isUserValid) {
-      const message = await this.i18nAdapter.getMessage('wrongPassword');
+      const message = 'Wrong password';
       const field = 'password';
 
       return new ErrorResult({

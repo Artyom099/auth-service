@@ -3,13 +3,13 @@ import { hash } from 'bcryptjs';
 import { isAfter } from 'date-fns';
 
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { I18nAdapter } from '../../../../libs';
+
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { UpdatePasswordInputModel } from '../../../api/models/input/update.password.input.model';
 import { PasswordRecoveryRepository } from '../../../repositories';
 
 export class UpdatePasswordCommand {
-  constructor(public body: UpdatePasswordInputModel) {}
+  constructor(public body: UpdatePasswordInputModel) { }
 }
 
 @CommandHandler(UpdatePasswordCommand)
@@ -18,9 +18,9 @@ export class UpdatePasswordUseCase implements ICommandHandler<UpdatePasswordComm
 
   constructor(
     private prisma: PrismaService,
-    private i18nAdapter: I18nAdapter,
+
     private passwordRecoveryRepository: PasswordRecoveryRepository,
-  ) {}
+  ) { }
 
   async execute(command: UpdatePasswordCommand): Promise<ResultType<null>> {
     const { newPassword, recoveryCode } = command.body;
@@ -30,7 +30,7 @@ export class UpdatePasswordUseCase implements ICommandHandler<UpdatePasswordComm
 
       // если обновление пароля еще НЕ подтверждено с почты, кидаем ошибку
       if (!recoveryData.isConfirmed) {
-        const message = await this.i18nAdapter.getMessage('recoveryNotConfirm');
+        const message = 'Password recovery not confirmed';
         const field = 'code';
 
         return new ErrorResult({
@@ -41,7 +41,7 @@ export class UpdatePasswordUseCase implements ICommandHandler<UpdatePasswordComm
 
       // если текущая дата после expirationDate, то код истек
       if (isAfter(new Date(), recoveryData.expirationDate)) {
-        const message = await this.i18nAdapter.getMessage('codeExpired');
+        const message = 'Recovery code has expired';
         const field = 'code';
 
         return new ErrorResult({

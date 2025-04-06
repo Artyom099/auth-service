@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ v22.x, v23.x  ]
+        node-version: [ v20.x, v22.x  ]
     steps:
       - name: check out repository code
         uses: actions/checkout@v4

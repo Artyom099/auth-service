@@ -11,7 +11,7 @@ export class TokenService {
   constructor(
     private jwtService: JwtService,
     @Inject(AppConfig.name) private appConfig: AppConfig,
-  ) {}
+  ) { }
 
   async signTokens(payload: RefreshTokenPayloadType): Promise<PairTokensType> {
     const accessToken = await this.jwtService.signAsync(

@@ -8,12 +8,12 @@ import { BaseOauthCommand, BaseOauthUseCase, ProviderDataType } from './BaseOaut
 
 import { PrismaService } from '../../../../../prisma/prisma.service';
 import { AppConfig } from '../../../../config';
-import { I18nAdapter } from '../../../../libs';
+
 import { OauthServicesTypesEnum } from '../../../enums/oauth.services.types.enum';
 import { UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
-export class GithubOauthCommand extends BaseOauthCommand {}
+export class GithubOauthCommand extends BaseOauthCommand { }
 
 @CommandHandler(GithubOauthCommand)
 export class GithubOauthUseCase extends BaseOauthUseCase<GithubOauthCommand> {
@@ -27,13 +27,12 @@ export class GithubOauthUseCase extends BaseOauthUseCase<GithubOauthCommand> {
 
   constructor(
     protected prisma: PrismaService,
-    protected i18nAdapter: I18nAdapter,
     protected httpService: HttpService,
     protected tokenService: TokenService,
     protected usersRepository: UserRepository,
     @Inject(AppConfig.name) protected appConfig: AppConfig,
   ) {
-    super(prisma, i18nAdapter, tokenService, usersRepository);
+    super(prisma, tokenService, usersRepository);
   }
 
   async getUser(code: string) {

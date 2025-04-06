@@ -4,7 +4,6 @@ import { add } from 'date-fns';
 import { randomUUID } from 'crypto';
 
 import { PrismaService } from '../../../../../prisma/prisma.service';
-import { I18nAdapter } from '../../../../libs';
 import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
 import { UpdateCodeDTO } from '../../../api/models/dto/update.code.dto';
 import { PasswordRecoveryRepository } from '../../../repositories';
@@ -12,18 +11,18 @@ import { UserRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
 export class PasswordRecoveryCommand {
-  constructor(public email: string) {}
+  constructor(public email: string) { }
 }
 
 @CommandHandler(PasswordRecoveryCommand)
 export class PasswordRecoveryUseCase implements ICommandHandler<PasswordRecoveryCommand> {
   constructor(
     private prisma: PrismaService,
-    private i18nAdapter: I18nAdapter,
+
     private emailService: EmailService,
     private userRepository: UserRepository,
     private passwordRecoveryRepository: PasswordRecoveryRepository,
-  ) {}
+  ) { }
 
   async execute(command: PasswordRecoveryCommand): Promise<ResultType<null>> {
     const { email } = command;
@@ -33,7 +32,7 @@ export class PasswordRecoveryUseCase implements ICommandHandler<PasswordRecovery
 
       // если нет пользователя с таким email, кидаем ошибку
       if (!user) {
-        const message = await this.i18nAdapter.getMessage('emailNotRegister');
+        const message = 'Email is not registered';
         const field = 'email';
 
         return new ErrorResult({
