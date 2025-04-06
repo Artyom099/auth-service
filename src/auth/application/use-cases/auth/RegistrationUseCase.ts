@@ -9,7 +9,7 @@ import { UserTypeOrmRepository, EmailConfirmationRepository } from '../../../rep
 import { EmailService } from '../../services';
 
 export class RegistrationCommand {
-  constructor(public body: RegistrationInputModel) { }
+  constructor(public body: RegistrationInputModel) {}
 }
 
 @CommandHandler(RegistrationCommand)
@@ -21,7 +21,7 @@ export class RegistrationUseCase implements ICommandHandler<RegistrationCommand>
     private emailService: EmailService,
     private userRepository: UserTypeOrmRepository,
     private emailConfirmationRepository: EmailConfirmationRepository,
-  ) { }
+  ) {}
 
   async execute(command: RegistrationCommand): Promise<ResultType<null>> {
     const { login, email, password } = command.body;
@@ -60,10 +60,7 @@ export class RegistrationUseCase implements ICommandHandler<RegistrationCommand>
 
       const userId = await this.userRepository.create(em, dto);
 
-      const emailConfirmation = await this.emailConfirmationRepository.create(
-        em,
-        { expirationDate, email, userId },
-      );
+      const emailConfirmation = await this.emailConfirmationRepository.create(em, { expirationDate, email, userId });
 
       try {
         const sendEmailResult = await this.emailService.sendEmailConfirmationMessage(

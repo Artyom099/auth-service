@@ -17,26 +17,26 @@ export class DeviceController {
   constructor(
     private commandBus: CommandBus,
     private deviceQueryRepository: DeviceQueryRepository,
-  ) { }
+  ) {}
 
   @GetDevicesApi()
   @Get()
   @HttpCode(HttpStatus.OK)
-  async getDevices(@CurrentUserId() userId: number) {
+  async getDevices(@CurrentUserId() userId: string) {
     return this.deviceQueryRepository.getDevices(userId);
   }
 
   @DeleteOtherDevicesApi()
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteOtherDevices(@CurrentUserId() userId: number, @RefreshToken() token: string) {
+  async deleteOtherDevices(@CurrentUserId() userId: string, @RefreshToken() token: string) {
     return this.commandBus.execute(new DeleteOtherDevicesCommand(userId, token));
   }
 
   @DeleteDeviceApi()
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteDevice(@Param('id') id: string, @CurrentUserId() userId: number) {
+  async deleteDevice(@Param('id') id: string, @CurrentUserId() userId: string) {
     return this.commandBus.execute(new DeleteDeviceCommand(id, userId));
   }
 }

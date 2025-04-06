@@ -7,7 +7,7 @@ import { TokenService } from '../../services';
 
 export class DeleteOtherDevicesCommand {
   constructor(
-    public userId: number,
+    public userId: string,
     public token: string,
   ) {}
 }

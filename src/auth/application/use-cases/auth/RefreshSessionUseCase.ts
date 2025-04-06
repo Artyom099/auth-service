@@ -1,4 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { EntityManager } from 'typeorm';
 
 import { PrismaService } from '../../../../../prisma/prisma.service';
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
@@ -14,6 +15,7 @@ export class RefreshSessionCommand {
 export class RefreshSessionUseCase implements ICommandHandler<RefreshSessionCommand> {
   constructor(
     private prisma: PrismaService,
+    private manager: EntityManager,
     private tokenService: TokenService,
     private deviceRepository: DeviceRepository,
   ) {}

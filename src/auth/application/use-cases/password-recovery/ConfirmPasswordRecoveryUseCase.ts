@@ -2,12 +2,11 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { isAfter } from 'date-fns';
 
 import { PrismaService } from '../../../../../prisma/prisma.service';
-
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { PasswordRecoveryRepository } from '../../../repositories';
 
 export class ConfirmPasswordRecoveryCommand {
-  constructor(public code: string) { }
+  constructor(public code: string) {}
 }
 
 @CommandHandler(ConfirmPasswordRecoveryCommand)
@@ -15,7 +14,7 @@ export class ConfirmPasswordRecoveryUseCase implements ICommandHandler<ConfirmPa
   constructor(
     private prisma: PrismaService,
     private passwordRecoveryRepository: PasswordRecoveryRepository,
-  ) { }
+  ) {}
 
   async execute(command: ConfirmPasswordRecoveryCommand): Promise<ResultType<null>> {
     const { code } = command;

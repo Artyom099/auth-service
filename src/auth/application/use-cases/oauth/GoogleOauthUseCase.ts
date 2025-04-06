@@ -6,12 +6,11 @@ import { BaseOauthCommand, BaseOauthUseCase, ProviderDataType } from './BaseOaut
 
 import { PrismaService } from '../../../../../prisma/prisma.service';
 import { AppConfig } from '../../../../config';
-
 import { OauthServicesTypesEnum } from '../../../enums/OauthServicesTypesEnum';
 import { UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
-export class GoogleOauthCommand extends BaseOauthCommand { }
+export class GoogleOauthCommand extends BaseOauthCommand {}
 
 @CommandHandler(GoogleOauthCommand)
 export class GoogleOauthUseCase extends BaseOauthUseCase<GoogleOauthCommand> {

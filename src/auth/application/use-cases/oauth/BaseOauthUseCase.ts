@@ -4,7 +4,6 @@ import { PrismaService } from 'prisma/prisma.service';
 
 import { randomUUID } from 'crypto';
 
-
 import { TransactionType } from '../../../../libs/db';
 import { ErrorResult, InternalErrorCode } from '../../../../libs/error-handling/result';
 import { OauthServicesTypesEnum } from '../../../enums/OauthServicesTypesEnum';
@@ -12,7 +11,7 @@ import { UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
 export class BaseOauthCommand {
-  constructor(public readonly code: string) { }
+  constructor(public readonly code: string) {}
 }
 
 @Injectable()
@@ -24,7 +23,7 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand> implements IC
 
     protected tokenService: TokenService,
     protected usersRepository: UserRepository,
-  ) { }
+  ) {}
 
   async execute(command: T) {
     return this.prisma.$transaction(async (tx) => {

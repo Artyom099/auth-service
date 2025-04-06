@@ -3,13 +3,12 @@ import { hash } from 'bcryptjs';
 import { isAfter } from 'date-fns';
 
 import { PrismaService } from '../../../../../prisma/prisma.service';
-
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { UpdatePasswordInputModel } from '../../../api/models/input/update.password.input.model';
 import { PasswordRecoveryRepository } from '../../../repositories';
 
 export class UpdatePasswordCommand {
-  constructor(public body: UpdatePasswordInputModel) { }
+  constructor(public body: UpdatePasswordInputModel) {}
 }
 
 @CommandHandler(UpdatePasswordCommand)
@@ -20,7 +19,7 @@ export class UpdatePasswordUseCase implements ICommandHandler<UpdatePasswordComm
     private prisma: PrismaService,
 
     private passwordRecoveryRepository: PasswordRecoveryRepository,
-  ) { }
+  ) {}
 
   async execute(command: UpdatePasswordCommand): Promise<ResultType<null>> {
     const { newPassword, recoveryCode } = command.body;

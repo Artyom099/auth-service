@@ -8,7 +8,7 @@ import { TransactionType } from '../../../libs/db';
 export class DeviceQueryRepository {
   constructor(private prisma: PrismaService) {}
 
-  async getDevices(userId: number, tx?: TransactionType): Promise<Device[]> {
+  async getDevices(userId: string, tx?: TransactionType): Promise<Device[]> {
     const context = tx || this.prisma;
 
     return context.device.findMany({ where: { userId } });

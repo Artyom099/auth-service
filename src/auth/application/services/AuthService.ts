@@ -14,7 +14,7 @@ export class AuthService {
     private tokenService: TokenService,
     private userRepository: UserRepository,
     private deviceRepository: DeviceRepository,
-  ) { }
+  ) {}
 
   async validateUser(
     email: string,
@@ -47,7 +47,7 @@ export class AuthService {
     return new SuccessResult(null);
   }
 
-  async validateRefreshToken(userId: number, token: string, tx?: TransactionType): Promise<ResultType<any>> {
+  async validateRefreshToken(userId: string, token: string, tx?: TransactionType): Promise<ResultType<any>> {
     const payload = await this.tokenService.verifyRefreshToken(token);
     const tokenIssuedAt = payload.issuedAt;
 

@@ -7,7 +7,7 @@ import { OauthServicesTypesEnum } from '../../enums/OauthServicesTypesEnum';
 
 @Injectable()
 export class UserRepository {
-  constructor(private prisma: PrismaService) { }
+  constructor(private prisma: PrismaService) {}
 
   async getByProvider(provider: OauthServicesTypesEnum, id: number | string, tx?: TransactionType): Promise<User> {
     const context = tx || this.prisma;

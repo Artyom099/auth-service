@@ -33,7 +33,7 @@ import {
   UserRepository,
 } from './auth';
 import { AppConfigModule, AppConfig } from './config';
-import { EmailAdapter, I18nLocalModule } from './libs';
+import { EmailAdapter } from './libs';
 import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
 import { entities } from './libs/db/entity';
 
@@ -70,7 +70,7 @@ const repositories = [
   PasswordRecoveryRepository,
 ];
 
-const infrastructureModules = [AppConfigModule, I18nLocalModule];
+const infrastructureModules = [AppConfigModule];
 
 @Module({
   imports: [

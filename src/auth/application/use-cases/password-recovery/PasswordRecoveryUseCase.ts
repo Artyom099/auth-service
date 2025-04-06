@@ -11,7 +11,7 @@ import { UserRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
 export class PasswordRecoveryCommand {
-  constructor(public email: string) { }
+  constructor(public email: string) {}
 }
 
 @CommandHandler(PasswordRecoveryCommand)
@@ -22,7 +22,7 @@ export class PasswordRecoveryUseCase implements ICommandHandler<PasswordRecovery
     private emailService: EmailService,
     private userRepository: UserRepository,
     private passwordRecoveryRepository: PasswordRecoveryRepository,
-  ) { }
+  ) {}
 
   async execute(command: PasswordRecoveryCommand): Promise<ResultType<null>> {
     const { email } = command;

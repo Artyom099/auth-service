@@ -1,24 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 
-import { UpdateCodeDTO } from '../../api/models/dto/update.code.dto';
 import { UserEmailConfirmation } from '../../../libs/db/entity';
-
+import { UpdateCodeDTO } from '../../api/models/dto/update.code.dto';
 
 @Injectable()
 export class EmailConfirmationRepository {
-  constructor() { }
+  constructor() {}
 
   async confirmEmail(em: EntityManager, userId: string): Promise<void> {
-    await em.update(
-      UserEmailConfirmation,
-      { userId },
-      { isConfirmed: true },
-    );
+    await em.update(UserEmailConfirmation, { userId }, { isConfirmed: true });
   }
 
-  async create(em: EntityManager, dto: { expirationDate: Date, email: string, userId: string }) {
-    return em.save(em.create(UserEmailConfirmation, dto))
+  async create(em: EntityManager, dto: { expirationDate: Date; email: string; userId: string }) {
+    return em.save(em.create(UserEmailConfirmation, dto));
   }
 
   async getConfirmationDataByCode(em: EntityManager, code: string): Promise<UserEmailConfirmation> {
@@ -32,11 +27,8 @@ export class EmailConfirmationRepository {
   async updateConfirmationData(em: EntityManager, dto: UpdateCodeDTO): Promise<string> {
     const { userId, expirationDate, confirmationCode } = dto;
 
-    const updateResult = await em.update(UserEmailConfirmation,
-      { userId },
-      { expirationDate, confirmationCode },
-    );
-    console.log({ updateResult })
+    const updateResult = await em.update(UserEmailConfirmation, { userId }, { expirationDate, confirmationCode });
+    console.log({ updateResult });
 
     return confirmationCode;
   }

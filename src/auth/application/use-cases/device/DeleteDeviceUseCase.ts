@@ -7,7 +7,7 @@ import { DeviceRepository } from '../../../repositories';
 export class DeleteDeviceCommand {
   constructor(
     public id: string,
-    public userId: number,
+    public userId: string,
   ) {}
 }
 

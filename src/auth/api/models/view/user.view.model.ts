@@ -8,5 +8,5 @@ export class UserViewModel {
   email: string;
 
   @ApiProperty()
-  userId: number;
+  userId: string;
 }

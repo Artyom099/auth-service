@@ -55,9 +55,8 @@ import {
   UpdatePasswordCommand,
   BaseOauthCommand,
   GithubOauthCommand,
-  GoogleOauthCommand
+  GoogleOauthCommand,
 } from '../application';
-
 import { OauthServicesTypesEnum } from '../enums/OauthServicesTypesEnum';
 import { AuthGuard } from '../guard/AuthGuard';
 import { UserQueryRepository } from '../repositories';
@@ -91,9 +90,7 @@ export class AuthController {
   @RegistrationApi()
   @Post('registration')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async registration(
-    @Body() body: RegistrationInputModel,
-  ): Promise<void> {
+  async registration(@Body() body: RegistrationInputModel): Promise<void> {
     return this.commandBus.execute(new RegistrationCommand(body));
   }
 
@@ -181,7 +178,7 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('me')
   @HttpCode(HttpStatus.OK)
-  async me(@CurrentUserId() userId: number): Promise<UserViewModel> {
+  async me(@CurrentUserId() userId: string): Promise<UserViewModel> {
     return this.userQueryRepository.getUser(userId);
   }
 
@@ -189,7 +186,7 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Post('logout')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async logout(@CurrentUserId() userId: number, @RefreshToken() token: string): Promise<void> {
+  async logout(@CurrentUserId() userId: string, @RefreshToken() token: string): Promise<void> {
     return this.commandBus.execute(new LogOutCommand(userId, token));
   }
 

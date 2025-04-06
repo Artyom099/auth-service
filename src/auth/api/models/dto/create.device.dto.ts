@@ -1,6 +1,6 @@
 export type CreateDeviceDTO = {
   id: string;
-  userId: number;
+  userId: string;
   ip: string;
   deviceName: string;
   issuedAt: Date;

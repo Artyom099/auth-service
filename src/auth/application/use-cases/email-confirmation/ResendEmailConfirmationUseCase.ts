@@ -11,7 +11,7 @@ import { UserTypeOrmRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
 export class ResendEmailConfirmationCommand {
-  constructor(public email: string) { }
+  constructor(public email: string) {}
 }
 
 @CommandHandler(ResendEmailConfirmationCommand)
@@ -21,7 +21,7 @@ export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEma
     private emailService: EmailService,
     private userRepository: UserTypeOrmRepository,
     private emailConfirmationRepository: EmailConfirmationRepository,
-  ) { }
+  ) {}
 
   async execute(command: ResendEmailConfirmationCommand): Promise<ResultType<null>> {
     const { email } = command;

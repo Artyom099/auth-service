@@ -6,7 +6,7 @@ import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../..
 import { EmailConfirmationRepository } from '../../../repositories';
 
 export class ConfirmEmailCommand {
-  constructor(public code: string) { }
+  constructor(public code: string) {}
 }
 
 @CommandHandler(ConfirmEmailCommand)
@@ -14,7 +14,7 @@ export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailCommand>
   constructor(
     private manager: EntityManager,
     private emailConfirmationRepository: EmailConfirmationRepository,
-  ) { }
+  ) {}
 
   async execute(command: ConfirmEmailCommand): Promise<ResultType<null>> {
     const { code } = command;

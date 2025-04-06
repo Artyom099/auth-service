@@ -1,4 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { EntityManager } from 'typeorm';
 
 import { PrismaService } from '../../../../../prisma/prisma.service';
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
@@ -16,6 +17,7 @@ export class LogOutCommand {
 export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
   constructor(
     private prisma: PrismaService,
+    private manager: EntityManager,
     private tokenService: TokenService,
     private deviceRepository: DeviceRepository,
   ) {}

@@ -1,5 +1,5 @@
 export type RefreshTokenPayloadType = {
-  userId: number;
+  userId: string;
   deviceId: string;
   issuedAt: string;
 };
