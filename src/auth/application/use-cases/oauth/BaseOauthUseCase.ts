@@ -7,7 +7,7 @@ import { randomUUID } from 'crypto';
 
 import { TransactionType } from '../../../../libs/db';
 import { ErrorResult, InternalErrorCode } from '../../../../libs/error-handling/result';
-import { OauthServicesTypesEnum } from '../../../enums/oauth.services.types.enum';
+import { OauthServicesTypesEnum } from '../../../enums/OauthServicesTypesEnum';
 import { UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 

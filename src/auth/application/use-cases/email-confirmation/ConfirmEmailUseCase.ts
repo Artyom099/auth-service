@@ -4,7 +4,6 @@ import { EntityManager } from 'typeorm';
 
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { EmailConfirmationRepository } from '../../../repositories';
-import { UserTypeOrmRepository } from '../../../repositories';
 
 export class ConfirmEmailCommand {
   constructor(public code: string) { }
@@ -14,7 +13,6 @@ export class ConfirmEmailCommand {
 export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailCommand> {
   constructor(
     private manager: EntityManager,
-    private userRepository: UserTypeOrmRepository,
     private emailConfirmationRepository: EmailConfirmationRepository,
   ) { }
 

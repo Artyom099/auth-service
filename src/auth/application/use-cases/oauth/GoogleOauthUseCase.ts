@@ -7,7 +7,7 @@ import { BaseOauthCommand, BaseOauthUseCase, ProviderDataType } from './BaseOaut
 import { PrismaService } from '../../../../../prisma/prisma.service';
 import { AppConfig } from '../../../../config';
 
-import { OauthServicesTypesEnum } from '../../../enums/oauth.services.types.enum';
+import { OauthServicesTypesEnum } from '../../../enums/OauthServicesTypesEnum';
 import { UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 

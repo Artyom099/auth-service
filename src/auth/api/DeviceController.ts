@@ -7,7 +7,7 @@ import { RefreshToken } from '../../libs';
 import { DeleteDeviceApi, DeleteOtherDevicesApi, GetDevicesApi } from '../../libs/swagger/decorators';
 import { DeleteOtherDevicesCommand } from '../application';
 import { DeleteDeviceCommand } from '../application';
-import { AuthGuard } from '../guard/auth.guard';
+import { AuthGuard } from '../guard/AuthGuard';
 import { DeviceQueryRepository } from '../repositories';
 
 @ApiTags('Device')
@@ -17,7 +17,7 @@ export class DeviceController {
   constructor(
     private commandBus: CommandBus,
     private deviceQueryRepository: DeviceQueryRepository,
-  ) {}
+  ) { }
 
   @GetDevicesApi()
   @Get()

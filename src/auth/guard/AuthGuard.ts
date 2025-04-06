@@ -4,12 +4,14 @@ import { Request } from 'express';
 import { ErrorResult, InternalErrorCode } from '../../libs/error-handling/result';
 import { TokenService } from '../application';
 
-// AuthGuard использующий Bearer токен для авторизации,
-// написан с использованием интерфеса CanActivate для прозрачности процесса аутентификации
+/**
+ * AuthGuard использующий Bearer токен для авторизации
+ * написан с использованием интерфеса CanActivate для прозрачности процесса аутентификации
+ */
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-  constructor(private tokenService: TokenService) {}
+  constructor(private tokenService: TokenService) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();

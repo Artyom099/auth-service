@@ -3,11 +3,11 @@ import { Prisma, User } from '@prisma/client';
 
 import { PrismaService } from '../../../../prisma/prisma.service';
 import { TransactionType } from '../../../libs/db';
-import { OauthServicesTypesEnum } from '../../enums/oauth.services.types.enum';
+import { OauthServicesTypesEnum } from '../../enums/OauthServicesTypesEnum';
 
 @Injectable()
 export class UserRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async getByProvider(provider: OauthServicesTypesEnum, id: number | string, tx?: TransactionType): Promise<User> {
     const context = tx || this.prisma;

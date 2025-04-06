@@ -3,7 +3,7 @@ import { EntityManager } from 'typeorm';
 
 import { User } from '../../../libs/db/entity/User';
 import { UserEmailConfirmation } from '../../../libs/db/entity/UserEmailConfirmation';
-import { OauthServicesTypesEnum } from '../../enums/oauth.services.types.enum';
+import { OauthServicesTypesEnum } from '../../enums/OauthServicesTypesEnum';
 
 
 @Injectable()

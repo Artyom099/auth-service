@@ -7,7 +7,7 @@ import {
   ApiTooManyRequestsResponse,
 } from '@nestjs/swagger';
 
-import { OauthServicesTypesEnum } from '../../../auth/enums/oauth.services.types.enum';
+import { OauthServicesTypesEnum } from '../../../auth/enums/OauthServicesTypesEnum';
 import { BAD_REQUEST_SCHEMA } from '../../error-handling/bad.request.schema';
 
 export function OAuthApi() {

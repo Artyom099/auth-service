@@ -58,8 +58,8 @@ import {
   GoogleOauthCommand
 } from '../application';
 
-import { OauthServicesTypesEnum } from '../enums/oauth.services.types.enum';
-import { AuthGuard } from '../guard/auth.guard';
+import { OauthServicesTypesEnum } from '../enums/OauthServicesTypesEnum';
+import { AuthGuard } from '../guard/AuthGuard';
 import { UserQueryRepository } from '../repositories';
 
 const OauthCommandByType: {
