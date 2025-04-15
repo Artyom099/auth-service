@@ -4,8 +4,12 @@ import { EntityManager } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
-import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
-import { UpdateCodeDTO } from '../../../api/models/dto/update.code.dto';
+import {
+  ErrorResult,
+  InternalErrorCode,
+  ResultType,
+} from '../../../../libs/error-handling/result';
+import { UpdateCodeDto } from '../../../api/models/dto/UpdateCodeDto';
 import { EmailConfirmationRepository } from '../../../repositories';
 import { UserTypeOrmRepository } from '../../../repositories';
 import { EmailService } from '../../services';
@@ -15,7 +19,9 @@ export class ResendEmailConfirmationCommand {
 }
 
 @CommandHandler(ResendEmailConfirmationCommand)
-export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEmailConfirmationCommand> {
+export class ResendEmailConfirmationUseCase
+  implements ICommandHandler<ResendEmailConfirmationCommand>
+{
   constructor(
     private manager: EntityManager,
     private emailService: EmailService,
@@ -23,7 +29,9 @@ export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEma
     private emailConfirmationRepository: EmailConfirmationRepository,
   ) {}
 
-  async execute(command: ResendEmailConfirmationCommand): Promise<ResultType<null>> {
+  async execute(
+    command: ResendEmailConfirmationCommand,
+  ): Promise<ResultType<null>> {
     const { email } = command;
 
     return this.manager.transaction(async (em) => {
@@ -41,7 +49,11 @@ export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEma
         });
       }
 
-      const confirmationData = await this.emailConfirmationRepository.getConfirmationDataByEmail(em, email);
+      const confirmationData =
+        await this.emailConfirmationRepository.getConfirmationDataByEmail(
+          em,
+          email,
+        );
 
       // если почта уже подтверждена, кидаем ошибку
       if (confirmationData.isConfirmed) {
@@ -54,15 +66,19 @@ export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEma
         });
       }
 
-      const dto: UpdateCodeDTO = {
+      const dto: UpdateCodeDto = {
         userId: user.id,
-        expirationDate: add(new Date(), { hours: 3 }),
+        expirationDate: add(new Date(), { hours: 3 }).toISOString(),
         confirmationCode: randomUUID(),
       };
 
-      const newCode = await this.emailConfirmationRepository.updateConfirmationData(em, dto);
+      const newCode =
+        await this.emailConfirmationRepository.updateConfirmationData(em, dto);
 
-      return this.emailService.sendEmailConfirmationMessage(user.email, newCode);
+      return this.emailService.sendEmailConfirmationMessage(
+        user.email,
+        newCode,
+      );
     });
   }
 }

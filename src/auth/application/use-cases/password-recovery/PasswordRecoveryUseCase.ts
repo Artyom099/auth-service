@@ -1,13 +1,12 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { add } from 'date-fns';
+import { UpdateRecoveryCodeDto } from 'src/auth/api/models/dto/UpdateRecoveryCodeDto';
+import { EntityManager } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
-import { PrismaService } from '../../../../../prisma/prisma.service';
 import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
-import { UpdateCodeDTO } from '../../../api/models/dto/update.code.dto';
-import { PasswordRecoveryRepository } from '../../../repositories';
-import { UserRepository } from '../../../repositories';
+import { PasswordRecoveryRepository, UserTypeOrmRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
 export class PasswordRecoveryCommand {
@@ -17,18 +16,17 @@ export class PasswordRecoveryCommand {
 @CommandHandler(PasswordRecoveryCommand)
 export class PasswordRecoveryUseCase implements ICommandHandler<PasswordRecoveryCommand> {
   constructor(
-    private prisma: PrismaService,
-
+    private manager: EntityManager,
     private emailService: EmailService,
-    private userRepository: UserRepository,
+    private userRepository: UserTypeOrmRepository,
     private passwordRecoveryRepository: PasswordRecoveryRepository,
   ) {}
 
   async execute(command: PasswordRecoveryCommand): Promise<ResultType<null>> {
     const { email } = command;
 
-    return this.prisma.$transaction(async (tx) => {
-      const user = await this.userRepository.getUserByLoginOrEmail(email, tx);
+    return this.manager.transaction(async (em) => {
+      const user = await this.userRepository.getUserByLoginOrEmail(em, email);
 
       // если нет пользователя с таким email, кидаем ошибку
       if (!user) {
@@ -41,15 +39,15 @@ export class PasswordRecoveryUseCase implements ICommandHandler<PasswordRecovery
         });
       }
 
-      const data: UpdateCodeDTO = {
+      const dto: UpdateRecoveryCodeDto = {
         userId: user.id,
-        expirationDate: add(new Date(), { hours: 2 }),
-        code: randomUUID(),
+        expirationDate: add(new Date(), { hours: 2 }).toISOString(),
+        recoveryCode: randomUUID(),
       };
 
-      const recoveryData = await this.passwordRecoveryRepository.upsertRecoveryData(data, tx);
+      const passwordRecovery = await this.passwordRecoveryRepository.upsertPasswordRecovery(em, dto);
 
-      return this.emailService.sendPasswordRecoveryMessage(email, recoveryData.recoveryCode);
+      return this.emailService.sendPasswordRecoveryMessage(email, passwordRecovery.recoveryCode);
     });
   }
 }

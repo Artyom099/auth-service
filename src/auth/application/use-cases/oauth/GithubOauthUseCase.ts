@@ -52,11 +52,13 @@ export class GithubOauthUseCase extends BaseOauthUseCase<GithubOauthCommand> {
 
   protected async getTokens(code: string) {
     const { CLIENT_ID, CLIENT_SECRET } = this.appConfig.settings.oauth.GITHUB;
+
     const params = {
       code,
       client_id: CLIENT_ID,
       client_secret: CLIENT_SECRET,
     };
+
     return lastValueFrom(
       this.httpService.post<TokensDto>(this.GET_TOKENS_URL, params, this.defaultConfig).pipe(map((res) => res.data)),
     );

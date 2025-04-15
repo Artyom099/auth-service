@@ -1,7 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EntityManager } from 'typeorm';
 
-import { PrismaService } from '../../../../../prisma/prisma.service';
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { PairTokensType } from '../../../api/models/dto/pair.tokens.type';
 import { DeviceRepository } from '../../../repositories';
@@ -14,7 +13,6 @@ export class RefreshSessionCommand {
 @CommandHandler(RefreshSessionCommand)
 export class RefreshSessionUseCase implements ICommandHandler<RefreshSessionCommand> {
   constructor(
-    private prisma: PrismaService,
     private manager: EntityManager,
     private tokenService: TokenService,
     private deviceRepository: DeviceRepository,
@@ -23,25 +21,27 @@ export class RefreshSessionUseCase implements ICommandHandler<RefreshSessionComm
   async execute(command: RefreshSessionCommand): Promise<ResultType<PairTokensType>> {
     const { token } = command;
 
-    return this.prisma.$transaction(async (tx) => {
+    return this.manager.transaction(async (em) => {
       const payload = await this.tokenService.verifyRefreshToken(token);
       const { userId, deviceId, issuedAt } = payload;
 
-      const device = await this.deviceRepository.getDevice(deviceId, tx);
+      const device = await this.deviceRepository.getDevice(em, deviceId);
 
-      if (!device)
+      if (!device) {
         return new ErrorResult({
           code: InternalErrorCode.Unauthorized,
           extensions: [],
         });
+      }
 
       const deviceIssuedAt = device.issuedAt.toISOString();
 
-      if (userId !== device.userId || issuedAt !== deviceIssuedAt)
+      if (userId !== device.userId || issuedAt !== deviceIssuedAt) {
         return new ErrorResult({
           code: InternalErrorCode.Unauthorized,
           extensions: [],
         });
+      }
 
       const newIssuedAt = new Date();
 
@@ -51,7 +51,7 @@ export class RefreshSessionUseCase implements ICommandHandler<RefreshSessionComm
         issuedAt: newIssuedAt.toISOString(),
       });
 
-      await this.deviceRepository.updateIssuedAt(device.id, newIssuedAt, tx);
+      await this.deviceRepository.updateIssuedAt(em, device.id, newIssuedAt);
 
       return new SuccessResult({ accessToken, refreshToken });
     });

@@ -1,31 +1,33 @@
 import { Injectable } from '@nestjs/common';
 import { compare } from 'bcryptjs';
+import { EntityManager } from 'typeorm';
 
 import { TokenService } from './TokenService';
 
-import { TransactionType } from '../../../libs/db';
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../libs/error-handling/result';
-import { DeviceRepository } from '../../repositories';
-import { UserRepository } from '../../repositories';
+import { DeviceRepository, UserTypeOrmRepository } from '../../repositories';
 
 @Injectable()
 export class AuthService {
   constructor(
     private tokenService: TokenService,
-    private userRepository: UserRepository,
+    private userRepository: UserTypeOrmRepository,
     private deviceRepository: DeviceRepository,
   ) {}
 
+  /**
+   * Метод проверяет валидность пользователя
+   */
   async validateUser(
+    em: EntityManager,
     email: string,
     password: string,
     originalPasswordHash?: string,
-    tx?: TransactionType,
   ): Promise<ResultType<null>> {
     let passwordHash: string;
 
     if (!originalPasswordHash) {
-      const user = await this.userRepository.getUserByLoginOrEmail(email, tx);
+      const user = await this.userRepository.getUserByLoginOrEmail(em, email);
 
       passwordHash = user.passwordHash;
     } else {
@@ -47,26 +49,29 @@ export class AuthService {
     return new SuccessResult(null);
   }
 
-  async validateRefreshToken(userId: string, token: string, tx?: TransactionType): Promise<ResultType<any>> {
-    const payload = await this.tokenService.verifyRefreshToken(token);
-    const tokenIssuedAt = payload.issuedAt;
-
-    const device = await this.deviceRepository.getDevice(payload.deviceId, tx);
-
-    if (!device)
-      return new ErrorResult({
-        code: InternalErrorCode.Unauthorized,
-        extensions: [],
-      });
-
-    const deviceIssuedAt = device.issuedAt.toISOString();
-
-    if (userId !== device.userId || tokenIssuedAt !== deviceIssuedAt)
-      return new ErrorResult({
-        code: InternalErrorCode.Unauthorized,
-        extensions: [],
-      });
-
-    return new SuccessResult(payload);
-  }
+  /**
+   * Метод проверяет валидность токена
+   */
+  // async validateRefreshToken(userId: string, token: string): Promise<ResultType<any>> {
+  //   const payload = await this.tokenService.verifyRefreshToken(token);
+  //   const tokenIssuedAt = payload.issuedAt;
+  //
+  //   const device = await this.deviceRepository.getDevice(payload.deviceId);
+  //
+  //   if (!device)
+  //     return new ErrorResult({
+  //       code: InternalErrorCode.Unauthorized,
+  //       extensions: [],
+  //     });
+  //
+  //   const deviceIssuedAt = device.issuedAt.toISOString();
+  //
+  //   if (userId !== device.userId || tokenIssuedAt !== deviceIssuedAt)
+  //     return new ErrorResult({
+  //       code: InternalErrorCode.Unauthorized,
+  //       extensions: [],
+  //     });
+  //
+  //   return new SuccessResult(payload);
+  // }
 }

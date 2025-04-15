@@ -1,3 +1,4 @@
+// todo - уйти от Result и перейти на ексепшены
 export class Result {
   public hasError: boolean;
 }

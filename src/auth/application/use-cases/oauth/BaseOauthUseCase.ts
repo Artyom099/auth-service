@@ -20,7 +20,6 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand> implements IC
 
   constructor(
     protected prisma: PrismaService,
-
     protected tokenService: TokenService,
     protected usersRepository: UserRepository,
   ) {}
@@ -64,7 +63,7 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand> implements IC
       await this.connectProviderToUser(user.id, providerData, tx);
 
       const { accessToken, refreshToken } = await this.tokenService.signTokens({
-        userId: user.id,
+        userId: user.id.toString(),
         deviceId: randomUUID(),
         issuedAt: new Date().toISOString(),
       });

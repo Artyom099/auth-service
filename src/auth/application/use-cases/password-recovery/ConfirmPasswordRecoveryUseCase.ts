@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { isAfter } from 'date-fns';
+import { EntityManager } from 'typeorm';
 
-import { PrismaService } from '../../../../../prisma/prisma.service';
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { PasswordRecoveryRepository } from '../../../repositories';
 
@@ -12,15 +12,15 @@ export class ConfirmPasswordRecoveryCommand {
 @CommandHandler(ConfirmPasswordRecoveryCommand)
 export class ConfirmPasswordRecoveryUseCase implements ICommandHandler<ConfirmPasswordRecoveryCommand> {
   constructor(
-    private prisma: PrismaService,
+    private manager: EntityManager,
     private passwordRecoveryRepository: PasswordRecoveryRepository,
   ) {}
 
   async execute(command: ConfirmPasswordRecoveryCommand): Promise<ResultType<null>> {
     const { code } = command;
 
-    return this.prisma.$transaction(async (tx) => {
-      const recoveryData = await this.passwordRecoveryRepository.getRecoveryData(code, tx);
+    return this.manager.transaction(async (em) => {
+      const recoveryData = await this.passwordRecoveryRepository.getRecoveryData(em, code);
 
       // если обновление пароля уже подтверждено, кидаем ошибку
       if (recoveryData.isConfirmed) {
@@ -44,7 +44,8 @@ export class ConfirmPasswordRecoveryUseCase implements ICommandHandler<ConfirmPa
         });
       }
 
-      await this.passwordRecoveryRepository.confirmRecoveryPassword(recoveryData.userId, tx);
+      await this.passwordRecoveryRepository.confirmRecoveryPassword(em, recoveryData.userId);
+
       return new SuccessResult(null);
     });
   }

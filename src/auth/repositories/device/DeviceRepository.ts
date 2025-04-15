@@ -1,53 +1,40 @@
 import { Injectable } from '@nestjs/common';
-import { Device } from '@prisma/client';
+import { Device } from 'src/libs/db/entity';
+import { EntityManager, Not } from 'typeorm';
 
 import { PrismaService } from '../../../../prisma/prisma.service';
-import { TransactionType } from '../../../libs/db';
 import { CreateDeviceDTO } from '../../api/models/dto/create.device.dto';
 
 @Injectable()
 export class DeviceRepository {
   constructor(private prisma: PrismaService) {}
 
-  async createDevice(data: CreateDeviceDTO, tx: TransactionType): Promise<{ deviceId: string }> {
-    const context = tx || this.prisma;
-
-    const device = await context.device.create({ data: { ...data } });
+  async createDevice(em: EntityManager, data: CreateDeviceDTO): Promise<{ deviceId: string }> {
+    const device = await em.save(em.create(Device, data));
 
     return { deviceId: device.id };
   }
 
-  async getDevice(id: string, tx: TransactionType): Promise<Device> {
-    const context = tx || this.prisma;
-
-    return context.device.findUnique({ where: { id } });
+  async getDevice(em: EntityManager, id: string): Promise<Device> {
+    return em.findOneBy(Device, { id });
   }
 
-  async getUserDevices(userId: number, tx: TransactionType): Promise<Device[]> {
-    const context = tx || this.prisma;
-
-    return context.device.findMany({ where: { userId } });
+  async getUserDevices(em: EntityManager, userId: string): Promise<Device[]> {
+    return em.findBy(Device, { userId });
   }
 
-  async updateIssuedAt(id: string, issuedAt: Date, tx: TransactionType): Promise<void> {
-    const context = tx || this.prisma;
-
-    await context.device.update({ where: { id }, data: { issuedAt } });
+  async updateIssuedAt(em: EntityManager, id: string, issuedAt: Date): Promise<void> {
+    await em.update(Device, { id }, { issuedAt });
   }
 
-  async deleteDevice(id: string, tx: TransactionType): Promise<void> {
-    const context = tx || this.prisma;
-
-    await context.device.delete({ where: { id } });
+  async deleteDevice(em: EntityManager, id: string): Promise<void> {
+    await em.delete(Device, { id });
   }
 
-  async deleteOtherDevices(id: string, userId: number, tx: TransactionType): Promise<void> {
-    const context = tx || this.prisma;
-
-    await context.device.deleteMany({
-      where: {
-        AND: { userId, NOT: { id } },
-      },
+  async deleteOtherDevices(em: EntityManager, id: string, userId: string): Promise<void> {
+    await em.delete(Device, {
+      userId,
+      id: Not(id),
     });
   }
 }

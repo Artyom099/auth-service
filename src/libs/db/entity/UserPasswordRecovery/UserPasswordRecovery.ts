@@ -26,7 +26,7 @@ export class UserPasswordRecovery {
     nullable: false,
     default: false,
   })
-  isConfirmed: string;
+  isConfirmed: boolean;
 
   @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })

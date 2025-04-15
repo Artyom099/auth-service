@@ -1,43 +1,33 @@
-import { UserPasswordRecovery } from '@prisma/client';
-
-import { PrismaService } from '../../../../prisma/prisma.service';
-import { TransactionType } from '../../../libs/db';
-import { UpdateCodeDTO } from '../../api/models/dto/update.code.dto';
+import { UpdateRecoveryCodeDto } from 'src/auth/api/models/dto/UpdateRecoveryCodeDto';
+import { User, UserPasswordRecovery } from 'src/libs/db/entity';
+import { EntityManager } from 'typeorm';
 
 export class PasswordRecoveryRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor() {}
 
-  async getRecoveryData(code: string, tx?: TransactionType): Promise<UserPasswordRecovery> {
-    const context = tx || this.prisma;
-
-    return context.userPasswordRecovery.findFirst({
-      where: { recoveryCode: code },
-    });
+  async getRecoveryData(em: EntityManager, code: string): Promise<UserPasswordRecovery> {
+    return em.findOneBy(UserPasswordRecovery, { recoveryCode: code });
   }
 
-  async confirmRecoveryPassword(userId: number, tx?: TransactionType): Promise<void> {
-    const context = tx || this.prisma;
-
-    await context.userPasswordRecovery.update({
-      where: { userId },
-      data: { isConfirmed: true },
-    });
+  async confirmRecoveryPassword(em: EntityManager, userId: string): Promise<void> {
+    await em.update(UserPasswordRecovery, { userId }, { isConfirmed: true });
   }
 
-  async upsertRecoveryData(data: UpdateCodeDTO, tx?: TransactionType): Promise<UserPasswordRecovery> {
-    const { userId, expirationDate, code } = data;
-    const context = tx || this.prisma;
+  async upsertPasswordRecovery(em: EntityManager, dto: UpdateRecoveryCodeDto): Promise<{ recoveryCode: string }> {
+    const { userId, expirationDate, recoveryCode } = dto;
 
-    return context.userPasswordRecovery.upsert({
-      where: { userId },
-      update: { expirationDate, recoveryCode: code, isConfirmed: false },
-      create: { expirationDate, userId },
-    });
+    const passwordRecovery = await em.findOneBy(UserPasswordRecovery, { userId });
+
+    if (passwordRecovery) {
+      await em.update(UserPasswordRecovery, { userId }, { expirationDate, recoveryCode, isConfirmed: false });
+    } else {
+      await em.save(em.create(UserPasswordRecovery, dto));
+    }
+
+    return { recoveryCode };
   }
 
-  async updatePassword(id: number, passwordHash: string, tx?: TransactionType): Promise<void> {
-    const context = tx || this.prisma;
-
-    await context.user.update({ where: { id }, data: { passwordHash } });
+  async updatePassword(em: EntityManager, id: string, passwordHash: string): Promise<void> {
+    await em.update(User, { id }, { passwordHash });
   }
 }

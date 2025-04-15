@@ -1,14 +1,13 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EntityManager } from 'typeorm';
 
-import { PrismaService } from '../../../../../prisma/prisma.service';
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { DeviceRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
 export class LogOutCommand {
   constructor(
-    public userId: number,
+    public userId: string,
     public token: string,
   ) {}
 }
@@ -16,7 +15,6 @@ export class LogOutCommand {
 @CommandHandler(LogOutCommand)
 export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
   constructor(
-    private prisma: PrismaService,
     private manager: EntityManager,
     private tokenService: TokenService,
     private deviceRepository: DeviceRepository,
@@ -25,11 +23,11 @@ export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
   async execute(command: LogOutCommand): Promise<ResultType<null>> {
     const { userId, token } = command;
 
-    return this.prisma.$transaction(async (tx) => {
+    return this.manager.transaction(async (em) => {
       const payload = await this.tokenService.verifyRefreshToken(token);
       const tokenIssuedAt = payload.issuedAt;
 
-      const device = await this.deviceRepository.getDevice(payload.deviceId, tx);
+      const device = await this.deviceRepository.getDevice(em, payload.deviceId);
 
       if (!device)
         return new ErrorResult({
@@ -45,7 +43,7 @@ export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
           extensions: [],
         });
 
-      await this.deviceRepository.deleteDevice(device.id, tx);
+      await this.deviceRepository.deleteDevice(em, device.id);
 
       return new SuccessResult(null);
     });

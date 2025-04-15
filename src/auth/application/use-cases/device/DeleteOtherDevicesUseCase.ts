@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { EntityManager } from 'typeorm';
 
-import { PrismaService } from '../../../../../prisma/prisma.service';
 import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { DeviceRepository } from '../../../repositories';
 import { TokenService } from '../../services';
@@ -15,7 +15,7 @@ export class DeleteOtherDevicesCommand {
 @CommandHandler(DeleteOtherDevicesCommand)
 export class DeleteOtherDevicesUseCase implements ICommandHandler<DeleteOtherDevicesCommand> {
   constructor(
-    private prisma: PrismaService,
+    private manager: EntityManager,
     private tokenService: TokenService,
     private deviceRepository: DeviceRepository,
   ) {}
@@ -23,10 +23,10 @@ export class DeleteOtherDevicesUseCase implements ICommandHandler<DeleteOtherDev
   async execute(command: DeleteOtherDevicesCommand): Promise<ResultType<null>> {
     const { userId, token } = command;
 
-    return this.prisma.$transaction(async (tx) => {
+    return this.manager.transaction(async (em) => {
       const payload = await this.tokenService.verifyRefreshToken(token);
 
-      await this.deviceRepository.deleteOtherDevices(payload.deviceId, userId, tx);
+      await this.deviceRepository.deleteOtherDevices(em, payload.deviceId, userId);
 
       return new SuccessResult(null);
     });

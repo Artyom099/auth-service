@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { Device } from '@prisma/client';
+import { EntityManager } from 'typeorm';
 
-import { PrismaService } from '../../../../prisma/prisma.service';
-import { TransactionType } from '../../../libs/db';
+import { Device } from '../../../libs/db/entity';
 
 @Injectable()
 export class DeviceQueryRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private manager: EntityManager) {}
 
-  async getDevices(userId: string, tx?: TransactionType): Promise<Device[]> {
-    const context = tx || this.prisma;
-
-    return context.device.findMany({ where: { userId } });
+  async getDevices(userId: string): Promise<Device[]> {
+    return this.manager.findBy(Device, { userId });
   }
 }

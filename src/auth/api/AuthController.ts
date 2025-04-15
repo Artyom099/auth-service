@@ -17,7 +17,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 import { CookieOptions, Response } from 'express';
 
-import { LogInDTO } from './models/dto/log.in.dto';
+import { LogInDto } from './models/dto/LogInDto';
 import { PairTokensType } from './models/dto/pair.tokens.type';
 import { CodeInputModel } from './models/input/code.input.model';
 import { EmailInputModel } from './models/input/email.input.model';
@@ -54,19 +54,11 @@ import {
   ResendEmailConfirmationCommand,
   UpdatePasswordCommand,
   BaseOauthCommand,
-  GithubOauthCommand,
-  GoogleOauthCommand,
 } from '../application';
+import { OauthCommandByType } from '../application/use-cases/oauth/utils/OauthCommandByType';
 import { OauthServicesTypesEnum } from '../enums/OauthServicesTypesEnum';
 import { AuthGuard } from '../guard/AuthGuard';
 import { UserQueryRepository } from '../repositories';
-
-const OauthCommandByType: {
-  [key in OauthServicesTypesEnum]: typeof BaseOauthCommand;
-} = {
-  [OauthServicesTypesEnum.GITHUB]: GithubOauthCommand,
-  [OauthServicesTypesEnum.GOOGLE]: GoogleOauthCommand,
-};
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -136,7 +128,7 @@ export class AuthController {
     @Ip() ip: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ResultType<PairTokensType>> {
-    const dto: LogInDTO = {
+    const dto: LogInDto = {
       email: body.email,
       password: body.password,
       deviceName,

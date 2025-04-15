@@ -4,8 +4,8 @@ export class UserViewModel {
   @ApiProperty()
   login: string;
 
-  @ApiProperty()
-  email: string;
+  // @ApiProperty()
+  // email: string;
 
   @ApiProperty()
   userId: string;

@@ -37,18 +37,19 @@ export class UserTypeOrmRepository {
   async getUserByLoginOrEmail(
     em: EntityManager,
     loginOrEmail: string,
-  ): Promise<{ id: string; email: string; isConfirmed: boolean }> {
+  ): Promise<{ id: string; email: string; isConfirmed: boolean; passwordHash: string }> {
     const qb = em
       .createQueryBuilder(User, 'u')
       .select('u.id', 'id')
-      .addSelect('eci.email', 'email')
-      .addSelect('eci.isConfirmed', 'isConfirmed')
-      .innerJoin(UserEmailConfirmation, 'eci', 'eci.userId = u.id')
+      .addSelect('uec.email', 'email')
+      .addSelect('uec.isConfirmed', 'isConfirmed')
+      .addSelect('u.passwordHash', 'passwordHash')
+      .innerJoin(UserEmailConfirmation, 'uec', 'uec.userId = u.id')
       .where('u.login = :loginOrEmail')
-      .orWhere('eci.email = :loginOrEmail')
+      .orWhere('uec.email = :loginOrEmail')
       .setParameters({ loginOrEmail });
 
-    return qb.getRawOne<{ id: string; email: string; isConfirmed: boolean }>();
+    return qb.getRawOne<{ id: string; email: string; isConfirmed: boolean; passwordHash: string }>();
   }
 
   async create(em: EntityManager, dto: Partial<User>): Promise<string> {

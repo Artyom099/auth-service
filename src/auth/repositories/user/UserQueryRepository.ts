@@ -1,22 +1,22 @@
 import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { User } from 'src/libs/db/entity';
+import { EntityManager } from 'typeorm';
 
-import { PrismaService } from '../../../../prisma/prisma.service';
 import { UserViewModel } from '../../api/models/view/user.view.model';
 
 @Injectable()
 export class UserQueryRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor(private manager: EntityManager) {}
 
-  async getUser(id: number): Promise<UserViewModel> {
-    const user = await this.prisma.user.findUnique({ where: { id } });
+  async getUser(id: string): Promise<UserViewModel> {
+    const user = await this.manager.findOneBy(User, { id });
 
     return this.mapToView(user);
   }
 
   mapToView(user: User): UserViewModel {
     return {
-      email: user.email,
+      // email: user.email,
       login: user.login,
       userId: user.id,
     };

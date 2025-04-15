@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 
 import { UserEmailConfirmation } from '../../../libs/db/entity';
-import { UpdateCodeDTO } from '../../api/models/dto/update.code.dto';
+import { UpdateCodeDto } from '../../api/models/dto/UpdateCodeDto';
 
 @Injectable()
 export class EmailConfirmationRepository {
@@ -24,7 +24,7 @@ export class EmailConfirmationRepository {
     return em.findOneBy(UserEmailConfirmation, { email });
   }
 
-  async updateConfirmationData(em: EntityManager, dto: UpdateCodeDTO): Promise<string> {
+  async updateConfirmationData(em: EntityManager, dto: UpdateCodeDto): Promise<string> {
     const { userId, expirationDate, confirmationCode } = dto;
 
     const updateResult = await em.update(UserEmailConfirmation, { userId }, { expirationDate, confirmationCode });

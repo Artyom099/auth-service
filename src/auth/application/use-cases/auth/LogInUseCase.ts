@@ -3,23 +3,21 @@ import { EntityManager } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
-import { PrismaService } from '../../../../../prisma/prisma.service';
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { CreateDeviceDTO } from '../../../api/models/dto/create.device.dto';
-import { LogInDTO } from '../../../api/models/dto/log.in.dto';
+import { LogInDto } from '../../../api/models/dto/LogInDto';
 import { PairTokensType } from '../../../api/models/dto/pair.tokens.type';
 import { DeviceRepository, UserTypeOrmRepository } from '../../../repositories';
 import { AuthService } from '../../services';
 import { TokenService } from '../../services';
 
 export class LogInCommand {
-  constructor(public dto: LogInDTO) {}
+  constructor(public dto: LogInDto) {}
 }
 
 @CommandHandler(LogInCommand)
 export class LogInUseCase implements ICommandHandler<LogInCommand> {
   constructor(
-    private prisma: PrismaService,
     private manager: EntityManager,
     private authService: AuthService,
     private tokenService: TokenService,
@@ -53,7 +51,7 @@ export class LogInUseCase implements ICommandHandler<LogInCommand> {
         });
       }
 
-      const validationResult = await this.authService.validateUser(email, password, user.passwordHash, tx);
+      const validationResult = await this.authService.validateUser(em, email, password, user.passwordHash);
 
       if (validationResult.hasError) {
         return validationResult;
@@ -76,7 +74,7 @@ export class LogInUseCase implements ICommandHandler<LogInCommand> {
         deviceName,
         issuedAt,
       };
-      await this.deviceRepository.createDevice(dto, tx);
+      await this.deviceRepository.createDevice(em, dto);
 
       return new SuccessResult({ accessToken, refreshToken });
     });
