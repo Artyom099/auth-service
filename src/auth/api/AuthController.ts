@@ -137,7 +137,9 @@ export class AuthController {
 
     let logInResult = await this.commandBus.execute<unknown, ResultType<any>>(new LogInCommand(dto));
 
-    if (logInResult.hasError) return logInResult;
+    if (logInResult.hasError) {
+      return logInResult;
+    }
 
     logInResult = logInResult as SuccessResult<any>;
     const { accessToken, refreshToken } = logInResult.payload;
@@ -156,7 +158,9 @@ export class AuthController {
   ): Promise<ResultType<PairTokensType>> {
     let refreshResult = await this.commandBus.execute<unknown, ResultType<any>>(new RefreshSessionCommand(token));
 
-    if (refreshResult.hasError) return refreshResult;
+    if (refreshResult.hasError) {
+      return refreshResult;
+    }
 
     refreshResult = refreshResult as SuccessResult<any>;
     const { accessToken, refreshToken } = refreshResult.payload;

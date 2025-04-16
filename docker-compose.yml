@@ -11,8 +11,8 @@ services:
     # env_file:
     # - .env
     environment:
-    # - POSTGRES_DB=postgres
-    # - POSTGRES_USER=postgres
+      # - POSTGRES_DB=postgres
+      # - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=vgy78uhb
     # название контейнера
     container_name: postgres
@@ -61,5 +61,5 @@ networks:
   super-network:
     driver: bridge
 
-# для запуска используем docker-compose up
-# для остановки используем docker-compose down
+# для запуска используем docker compose up
+# для остановки используем docker compose down
