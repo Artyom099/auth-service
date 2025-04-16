@@ -14,7 +14,7 @@ export const DataSourceConfig: DataSourceOptions & TypeOrmModuleOptions = {
   username: PG_USER,
   password: PG_PASSWORD,
   database: PG_DB,
-  synchronize: false, // Указывает, должна ли схема бд автоматически создаваться при каждом запуске приложения
+  synchronize: true, // Указывает, должна ли схема бд автоматически создаваться при каждом запуске приложения
   logging: false,
   entities,
   migrations,

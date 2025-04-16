@@ -31,6 +31,7 @@ import {
   UpdatePasswordUseCase,
   UserQueryRepository,
   UserRepository,
+  UserTypeOrmRepository,
 } from './auth';
 import { AppConfigModule, AppConfig } from './config';
 import { EmailAdapter } from './libs';
@@ -63,6 +64,7 @@ const useCases = [
 
 const repositories = [
   UserRepository,
+  UserTypeOrmRepository,
   UserQueryRepository,
   DeviceRepository,
   DeviceQueryRepository,

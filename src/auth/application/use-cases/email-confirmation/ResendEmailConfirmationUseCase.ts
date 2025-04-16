@@ -4,11 +4,7 @@ import { EntityManager } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
-import {
-  ErrorResult,
-  InternalErrorCode,
-  ResultType,
-} from '../../../../libs/error-handling/result';
+import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
 import { UpdateCodeDto } from '../../../api/models/dto/UpdateCodeDto';
 import { EmailConfirmationRepository } from '../../../repositories';
 import { UserTypeOrmRepository } from '../../../repositories';
@@ -19,9 +15,7 @@ export class ResendEmailConfirmationCommand {
 }
 
 @CommandHandler(ResendEmailConfirmationCommand)
-export class ResendEmailConfirmationUseCase
-  implements ICommandHandler<ResendEmailConfirmationCommand>
-{
+export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEmailConfirmationCommand> {
   constructor(
     private manager: EntityManager,
     private emailService: EmailService,
@@ -29,9 +23,7 @@ export class ResendEmailConfirmationUseCase
     private emailConfirmationRepository: EmailConfirmationRepository,
   ) {}
 
-  async execute(
-    command: ResendEmailConfirmationCommand,
-  ): Promise<ResultType<null>> {
+  async execute(command: ResendEmailConfirmationCommand): Promise<ResultType<null>> {
     const { email } = command;
 
     return this.manager.transaction(async (em) => {
@@ -49,11 +41,7 @@ export class ResendEmailConfirmationUseCase
         });
       }
 
-      const confirmationData =
-        await this.emailConfirmationRepository.getConfirmationDataByEmail(
-          em,
-          email,
-        );
+      const confirmationData = await this.emailConfirmationRepository.getConfirmationDataByEmail(em, email);
 
       // если почта уже подтверждена, кидаем ошибку
       if (confirmationData.isConfirmed) {
@@ -72,13 +60,9 @@ export class ResendEmailConfirmationUseCase
         confirmationCode: randomUUID(),
       };
 
-      const newCode =
-        await this.emailConfirmationRepository.updateConfirmationData(em, dto);
+      const newCode = await this.emailConfirmationRepository.updateConfirmationData(em, dto);
 
-      return this.emailService.sendEmailConfirmationMessage(
-        user.email,
-        newCode,
-      );
+      return this.emailService.sendEmailConfirmationMessage(user.email, newCode);
     });
   }
 }

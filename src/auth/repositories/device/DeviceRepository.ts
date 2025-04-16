@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { Device } from 'src/libs/db/entity';
 import { EntityManager, Not } from 'typeorm';
 
-import { PrismaService } from '../../../../prisma/prisma.service';
+import { Device } from '../../../libs/db/entity';
 import { CreateDeviceDTO } from '../../api/models/dto/create.device.dto';
 
 @Injectable()
 export class DeviceRepository {
-  constructor(private prisma: PrismaService) {}
+  constructor() {}
 
   async createDevice(em: EntityManager, data: CreateDeviceDTO): Promise<{ deviceId: string }> {
     const device = await em.save(em.create(Device, data));

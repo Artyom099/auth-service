@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 
 import { User } from '../User';
 
@@ -32,5 +32,10 @@ export class UserPasswordRecovery {
   @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
   user: User;
 
+  @PrimaryColumn({
+    name: 'user_id',
+    type: 'uuid',
+    nullable: false,
+  })
   userId: string;
 }

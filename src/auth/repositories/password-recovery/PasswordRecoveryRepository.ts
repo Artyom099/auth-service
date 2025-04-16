@@ -1,6 +1,7 @@
-import { UpdateRecoveryCodeDto } from 'src/auth/api/models/dto/UpdateRecoveryCodeDto';
-import { User, UserPasswordRecovery } from 'src/libs/db/entity';
 import { EntityManager } from 'typeorm';
+
+import { User, UserPasswordRecovery } from '../../../libs/db/entity';
+import { UpdateRecoveryCodeDto } from '../../api/models/dto/UpdateRecoveryCodeDto';
 
 export class PasswordRecoveryRepository {
   constructor() {}

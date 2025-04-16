@@ -1,7 +1,7 @@
-import { ArgumentsHost, DynamicModule, INestApplication, ValidationError, ValidationPipe } from '@nestjs/common';
+import { DynamicModule, INestApplication, ValidationError, ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import * as cookieParser from 'cookie-parser';
-import { I18nValidationException, I18nValidationExceptionFilter, I18nValidationPipe } from 'nestjs-i18n';
+import { I18nValidationPipe } from 'nestjs-i18n';
 
 import { setupSwagger } from '../libs';
 import { ResponseInterceptor } from '../libs/error-handling/response.interceptor';
@@ -19,24 +19,6 @@ export const appSettings = <T>(app: INestApplication, module: T) => {
 
       exceptionFactory: (errors) => {
         const extensions: ErrorExtensionType[] = errors.map((err: ValidationError) => {
-          return {
-            field: err.property,
-            message: Object.values(err.constraints).toString(),
-          };
-        });
-
-        const error = { code: InternalErrorCode.BadRequest, extensions };
-        return new ErrorResult(error);
-      },
-    }),
-  );
-
-  app.useGlobalFilters(
-    new I18nValidationExceptionFilter({
-      responseBodyFormatter(host: ArgumentsHost, exception: I18nValidationException): Record<string, any> {
-        console.log({ errors: exception.errors });
-
-        const extensions: ErrorExtensionType[] = exception.errors.map((err: ValidationError) => {
           return {
             field: err.property,
             message: Object.values(err.constraints).toString(),
