@@ -1,7 +1,6 @@
 version: '3.5'
 
 services:
-  # название сервиса
   postgres_db:
     # образ
     image: postgres
@@ -11,47 +10,69 @@ services:
     # env_file:
     # - .env
     environment:
-      # - POSTGRES_DB=postgres
-      # - POSTGRES_USER=postgres
+      - POSTGRES_DB=auth_service
+      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=vgy78uhb
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - PGSSLMODE=disable
     # название контейнера
     container_name: postgres
     # тема для постоянного хранения данных (при пересборке не удаляется)
     volumes:
-      - ./pgdata:/val/lib/postgresql/data
+      - ./pgdata:/var/lib/postgresql/data
     # порт для обращения к приложению : порт приложения внутри контейнера
     ports:
       - '5432:5432'
+    # проверка здоровья сервиса
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
     # сети, к которым подключен контейнер
     networks:
       - super-network
 
-  # название сервиса
   app:
     # указывает конфигурацию сборки для создания образа контейнера из исходного кода
     build:
       # путь к каталогу с Dockerfile или url репозитория git
       context: .
-      # название файла Dockerfile
       dockerfile: Dockerfile
-    # название контейнера
-    container_name: api
+    container_name: app
+    # политика перезапуска
+    restart: unless-stopped
     # env переменные
     # env_file:
     #   - .env
     environment:
-      - POSTGRES_HOST=postgres_db
-      - POSTGRES_PORT=5432
-      - POSTGRES_PASSWORD=vgy78uhb
+      - PG_HOST=postgres_db
+      - PG_PORT=5432
+      - PG_USER=postgres
+      - PG_PASSWORD=vgy78uhb
+      - PG_DB=auth_service
       - APP_PORT=3001
+      - POSTGRES_HOST_AUTH_METHOD=trust
+      - PGSSLMODE=disable
     # определяем порядок запуска - app запускается после postgres_db
     depends_on:
-      - postgres_db
+      postgres_db:
+        condition: service_healthy
     volumes:
       - ./src:/app/src
+      - ./test:/app/test
+      - ./package.json:/app/package.json
+      - ./tsconfig.json:/app/tsconfig.json
+      - ./node_modules:/app/node_modules
     # порт для обращения к приложению из сети (снаружи) : порт приложения внутри контейнера
     ports:
       - '3001:3001'
+    # проверка здоровья сервиса
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:3001/health" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     # сети, к которым подключен контейнер
     networks:
       - super-network

@@ -41,7 +41,7 @@ export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEma
         });
       }
 
-      const confirmationData = await this.emailConfirmationRepository.getConfirmationDataByEmail(em, email);
+      const confirmationData = await this.emailConfirmationRepository.getByEmail(em, email);
 
       // если почта уже подтверждена, кидаем ошибку
       if (confirmationData.isConfirmed) {

@@ -1,7 +1,9 @@
+import { InternalServerErrorException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { hash } from 'bcryptjs';
 import { add } from 'date-fns';
-import { EntityManager } from 'typeorm';
+import { User } from 'src/libs/db/entity';
+import { DeepPartial, EntityManager } from 'typeorm';
 
 import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
 import { RegistrationInputModel } from '../../../api/models/input/registration.input.model';
@@ -29,7 +31,6 @@ export class RegistrationUseCase implements ICommandHandler<RegistrationCommand>
     return this.manager.transaction(async (em) => {
       // проверка уникальности login & email
       const isEmailExist = await this.userRepository.isUserExistByLoginOrEmail(em, email);
-
       if (isEmailExist) {
         const message = 'Email already exists';
         const field = 'email';
@@ -52,7 +53,7 @@ export class RegistrationUseCase implements ICommandHandler<RegistrationCommand>
       }
 
       const passwordHash = await hash(password, this.SALT_ROUND);
-      const dto = {
+      const dto: DeepPartial<User> = {
         login,
         passwordHash,
       };
@@ -69,12 +70,14 @@ export class RegistrationUseCase implements ICommandHandler<RegistrationCommand>
         );
 
         if (sendEmailResult.hasError) {
+          await this.emailConfirmationRepository.delete(em, userId);
           await this.userRepository.delete(em, userId);
         }
 
         return sendEmailResult;
       } catch (e) {
         console.log({ RegistrationError: e });
+        throw new InternalServerErrorException({ RegistrationError: e });
       }
     });
   }

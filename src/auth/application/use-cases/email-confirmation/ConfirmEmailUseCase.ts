@@ -20,7 +20,7 @@ export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailCommand>
     const { code } = command;
 
     return this.manager.transaction(async (em) => {
-      const emailConfirmation = await this.emailConfirmationRepository.getConfirmationDataByCode(em, code);
+      const emailConfirmation = await this.emailConfirmationRepository.getByCode(em, code);
 
       // если почта уже подтверждена, кидаем ошибку
       if (emailConfirmation.isConfirmed) {

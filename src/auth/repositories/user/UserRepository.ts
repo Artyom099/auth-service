@@ -1,64 +1,64 @@
-import { Injectable } from '@nestjs/common';
-import { Prisma, User } from '@prisma/client';
+// import { Injectable } from '@nestjs/common';
+// import { Prisma, User } from '@prisma/client';
 
-import { PrismaService } from '../../../../prisma/prisma.service';
-import { TransactionType } from '../../../libs/db';
-import { OauthServicesTypesEnum } from '../../enums/OauthServicesTypesEnum';
+// import { PrismaService } from '../../../../prisma/prisma.service';
+// import { TransactionType } from '../../../libs/db';
+// import { OauthServicesTypesEnum } from '../../enums/OauthServicesTypesEnum';
 
-@Injectable()
-export class UserRepository {
-  constructor(private prisma: PrismaService) {}
+// @Injectable()
+// export class UserRepository {
+//   constructor(private prisma: PrismaService) {}
 
-  async getByProvider(provider: OauthServicesTypesEnum, id: number | string, tx?: TransactionType): Promise<User> {
-    const context = tx || this.prisma;
+//   async getByProvider(provider: OauthServicesTypesEnum, id: number | string, tx?: TransactionType): Promise<User> {
+//     const context = tx || this.prisma;
 
-    return context.user.findFirst({
-      where: { [provider]: { id } },
-      include: { [provider]: true },
-    });
-  }
+//     return context.user.findFirst({
+//       where: { [provider]: { id } },
+//       include: { [provider]: true },
+//     });
+//   }
 
-  async getUser<T extends Prisma.UserInclude>(
-    params: Prisma.UserWhereInput,
-    additionalFields?: T,
-    tx?: TransactionType,
-  ): Promise<Prisma.UserGetPayload<{ include: T }>> {
-    const context = tx || this.prisma;
+//   async getUser<T extends Prisma.UserInclude>(
+//     params: Prisma.UserWhereInput,
+//     additionalFields?: T,
+//     tx?: TransactionType,
+//   ): Promise<Prisma.UserGetPayload<{ include: T }>> {
+//     const context = tx || this.prisma;
 
-    return context.user.findFirst({ where: params, include: additionalFields });
-  }
+//     return context.user.findFirst({ where: params, include: additionalFields });
+//   }
 
-  async getUserByLoginOrEmail(loginOrEmail: string, tx?: TransactionType): Promise<User> {
-    const context = tx || this.prisma;
+//   async getUserByLoginOrEmail(loginOrEmail: string, tx?: TransactionType): Promise<User> {
+//     const context = tx || this.prisma;
 
-    return context.user.findFirst({
-      where: {
-        OR: [{ login: loginOrEmail }, { email: loginOrEmail }],
-      },
-    });
-  }
+//     return context.user.findFirst({
+//       where: {
+//         OR: [{ login: loginOrEmail }, { email: loginOrEmail }],
+//       },
+//     });
+//   }
 
-  async create(data: Prisma.UserCreateInput, tx?: TransactionType): Promise<{ id: number }> {
-    const context = tx || this.prisma;
+//   async create(data: Prisma.UserCreateInput, tx?: TransactionType): Promise<{ id: number }> {
+//     const context = tx || this.prisma;
 
-    return context.user.create({
-      data,
-      select: { id: true },
-    });
-  }
+//     return context.user.create({
+//       data,
+//       select: { id: true },
+//     });
+//   }
 
-  async deleteUser(id: number, tx?: TransactionType): Promise<void> {
-    const context = tx || this.prisma;
+//   async deleteUser(id: number, tx?: TransactionType): Promise<void> {
+//     const context = tx || this.prisma;
 
-    await context.user.delete({ where: { id } });
-  }
+//     await context.user.delete({ where: { id } });
+//   }
 
-  async update(id: number, user: Prisma.UserUpdateInput, tx?: TransactionType): Promise<void> {
-    const context = tx || this.prisma;
+//   async update(id: number, user: Prisma.UserUpdateInput, tx?: TransactionType): Promise<void> {
+//     const context = tx || this.prisma;
 
-    await context.user.update({
-      where: { id },
-      data: user,
-    });
-  }
-}
+//     await context.user.update({
+//       where: { id },
+//       data: user,
+//     });
+//   }
+// }

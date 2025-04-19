@@ -30,7 +30,6 @@ import {
   TokenService,
   UpdatePasswordUseCase,
   UserQueryRepository,
-  UserRepository,
   UserTypeOrmRepository,
 } from './auth';
 import { AppConfigModule, AppConfig } from './config';
@@ -38,9 +37,7 @@ import { EmailAdapter } from './libs';
 import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
 import { entities } from './libs/db/entity';
 
-import { PrismaService } from '../prisma/prisma.service';
-
-const services = [PrismaService, EmailService, AuthService, TokenService];
+const services = [EmailService, AuthService, TokenService];
 
 const useCases = [
   LogInUseCase,
@@ -63,7 +60,6 @@ const useCases = [
 ];
 
 const repositories = [
-  UserRepository,
   UserTypeOrmRepository,
   UserQueryRepository,
   DeviceRepository,
@@ -127,6 +123,6 @@ const infrastructureModules = [AppConfigModule];
       inject: [AppConfig.name],
     },
   ],
-  exports: [UserRepository],
+  exports: [UserTypeOrmRepository],
 })
 export class AppModule {}

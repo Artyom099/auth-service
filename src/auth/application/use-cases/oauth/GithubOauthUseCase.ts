@@ -3,13 +3,14 @@ import { Inject } from '@nestjs/common';
 import { CommandHandler } from '@nestjs/cqrs';
 import { lastValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { EntityManager } from 'typeorm';
 
-import { BaseOauthCommand, BaseOauthUseCase, ProviderDataType } from './BaseOauthUseCase';
+import { BaseOauthCommand, BaseOauthUseCase } from './BaseOauthUseCase';
+import { ProviderDataType } from './utils/types';
 
-import { PrismaService } from '../../../../../prisma/prisma.service';
 import { AppConfig } from '../../../../config';
 import { OauthServicesTypesEnum } from '../../../enums/OauthServicesTypesEnum';
-import { UserRepository } from '../../../repositories';
+import { UserTypeOrmRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
 export class GithubOauthCommand extends BaseOauthCommand {}
@@ -25,13 +26,13 @@ export class GithubOauthUseCase extends BaseOauthUseCase<GithubOauthCommand> {
   defaultConfig = { headers: { accept: 'application/json' } };
 
   constructor(
-    protected prisma: PrismaService,
+    protected manager: EntityManager,
     protected httpService: HttpService,
     protected tokenService: TokenService,
-    protected usersRepository: UserRepository,
+    protected usersRepository: UserTypeOrmRepository,
     @Inject(AppConfig.name) protected appConfig: AppConfig,
   ) {
-    super(prisma, tokenService, usersRepository);
+    super(manager, tokenService, usersRepository);
   }
 
   async getUser(code: string) {

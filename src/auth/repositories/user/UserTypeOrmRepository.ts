@@ -1,14 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { DeepPartial, EntityManager } from 'typeorm';
 
-import { User } from '../../../libs/db/entity/User';
-import { UserEmailConfirmation } from '../../../libs/db/entity/UserEmailConfirmation';
+import { User, UserEmailConfirmation } from '../../../libs/db/entity';
 import { OauthServicesTypesEnum } from '../../enums/OauthServicesTypesEnum';
 
 @Injectable()
 export class UserTypeOrmRepository {
-  constructor() {}
-
   async getByProvider(em: EntityManager, provider: OauthServicesTypesEnum, id: number | string): Promise<User> {
     return em.findOne(User, {
       where: { [provider]: { id } },
@@ -16,7 +13,11 @@ export class UserTypeOrmRepository {
     });
   }
 
-  async getUser(em: EntityManager, params: Partial<User>, additionalFields?: string[]): Promise<User> {
+  async getUser(
+    em: EntityManager,
+    params: any, // todo - Partial<User>,
+    additionalFields?: any, // todo - string[],
+  ): Promise<User> {
     return em.findOne(User, {
       where: params,
       relations: additionalFields,
@@ -52,7 +53,7 @@ export class UserTypeOrmRepository {
     return qb.getRawOne<{ id: string; email: string; isConfirmed: boolean; passwordHash: string }>();
   }
 
-  async create(em: EntityManager, dto: Partial<User>): Promise<string> {
+  async create(em: EntityManager, dto: DeepPartial<User>): Promise<string> {
     const user = await em.save<User>(em.create(User, dto));
 
     return user.id;
@@ -62,11 +63,11 @@ export class UserTypeOrmRepository {
     await em.delete(User, id);
   }
 
-  // async update(
-  //     em: EntityManager,
-  //     id: string,
-  //     dto: { email: string, isEmailConfirmed: boolean },
-  // ): Promise<void> {
-  //     await em.update(User, id, dto);
-  // }
+  async connectProviderToUser(
+    em: EntityManager,
+    id: string,
+    dto: any, // todo - fix type
+  ): Promise<void> {
+    await em.update(User, id, dto);
+  }
 }

@@ -1,13 +1,14 @@
 import { Inject } from '@nestjs/common';
 import { CommandHandler } from '@nestjs/cqrs';
 import { OAuth2Client, TokenInfo } from 'google-auth-library/build/src/auth/oauth2client';
+import { EntityManager } from 'typeorm';
 
-import { BaseOauthCommand, BaseOauthUseCase, ProviderDataType } from './BaseOauthUseCase';
+import { BaseOauthCommand, BaseOauthUseCase } from './BaseOauthUseCase';
+import { ProviderDataType } from './utils/types';
 
-import { PrismaService } from '../../../../../prisma/prisma.service';
 import { AppConfig } from '../../../../config';
 import { OauthServicesTypesEnum } from '../../../enums/OauthServicesTypesEnum';
-import { UserRepository } from '../../../repositories';
+import { UserTypeOrmRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
 export class GoogleOauthCommand extends BaseOauthCommand {}
@@ -17,13 +18,13 @@ export class GoogleOauthUseCase extends BaseOauthUseCase<GoogleOauthCommand> {
   OAUTH_SERVICE_TYPE = OauthServicesTypesEnum.GOOGLE;
 
   constructor(
-    protected prisma: PrismaService,
+    protected manager: EntityManager,
     protected tokenService: TokenService,
-    protected usersRepository: UserRepository,
+    protected usersRepository: UserTypeOrmRepository,
     @Inject(AppConfig.name) protected appConfig: AppConfig,
     @Inject('GOOGLE-AUTH') protected readonly googleApi: OAuth2Client,
   ) {
-    super(prisma, tokenService, usersRepository);
+    super(manager, tokenService, usersRepository);
   }
 
   async getUser(code: string) {

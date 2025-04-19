@@ -37,7 +37,6 @@ export type SettingsType = {
   oauth: OauthSettings;
   backend: BackData;
   frontend: FrontData;
-  i18n: I18nSettings;
 };
 
 export class OriginSettings {
@@ -103,16 +102,6 @@ export class FrontData {
   }
 }
 
-export class I18nSettings {
-  FALLBACK_LANGUAGE: string;
-  I18N_PATH: string;
-
-  constructor(envVariables: EnvironmentVariable) {
-    this.FALLBACK_LANGUAGE = envVariables.FALLBACK_LANGUAGE!;
-    this.I18N_PATH = envVariables.I18N_PATH!;
-  }
-}
-
 export type OauthParamsType = {
   CLIENT_ID: string;
   CLIENT_SECRET: string;
@@ -154,7 +143,6 @@ const emailSettings = new EmailSettings(process.env);
 const jwtSettings = new JwtSettings(process.env);
 const backData = new BackData(process.env);
 const frontData = new FrontData(process.env);
-const i18nSettings = new I18nSettings(process.env);
 const oauthSettings = new OauthSettings(process.env);
 
 export const appConfig = new AppConfig(envSettings, {
@@ -164,5 +152,4 @@ export const appConfig = new AppConfig(envSettings, {
   backend: backData,
   oauth: oauthSettings,
   frontend: frontData,
-  i18n: i18nSettings,
 });

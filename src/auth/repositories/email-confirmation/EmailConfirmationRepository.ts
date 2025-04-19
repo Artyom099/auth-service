@@ -6,8 +6,6 @@ import { UpdateCodeDto } from '../../api/models/dto/UpdateCodeDto';
 
 @Injectable()
 export class EmailConfirmationRepository {
-  constructor() {}
-
   async confirmEmail(em: EntityManager, userId: string): Promise<void> {
     await em.update(UserEmailConfirmation, { userId }, { isConfirmed: true });
   }
@@ -16,11 +14,11 @@ export class EmailConfirmationRepository {
     return em.save(em.create(UserEmailConfirmation, dto));
   }
 
-  async getConfirmationDataByCode(em: EntityManager, code: string): Promise<UserEmailConfirmation> {
+  async getByCode(em: EntityManager, code: string): Promise<UserEmailConfirmation> {
     return em.findOneBy(UserEmailConfirmation, { confirmationCode: code });
   }
 
-  async getConfirmationDataByEmail(em: EntityManager, email: string): Promise<UserEmailConfirmation> {
+  async getByEmail(em: EntityManager, email: string): Promise<UserEmailConfirmation> {
     return em.findOneBy(UserEmailConfirmation, { email });
   }
 
@@ -31,5 +29,9 @@ export class EmailConfirmationRepository {
     console.log({ updateResult });
 
     return confirmationCode;
+  }
+
+  async delete(em: EntityManager, userId: string): Promise<void> {
+    await em.delete(UserEmailConfirmation, { userId });
   }
 }

@@ -1,19 +1,50 @@
-# Check out https://hub.docker.com/_/node to select a new base image
-FROM node:20.11-alpine
+# Этап сборки
+FROM node:20.11-alpine AS builder
 
-# Set to a non-root built-in user `node`
-USER node
+# Создаем директорию приложения
+WORKDIR /app
 
-# Create app directory (with user `node`)
-RUN mkdir -p /home/node/dist/app
+# Копируем файлы package.json и yarn.lock
+COPY package*.json yarn.lock ./
 
-WORKDIR /home/node/dist/app
-COPY --chown=node package*.json ./
+# Устанавливаем все зависимости
 RUN yarn install
 
-ENV PORT=3270
-COPY --chown=node . .
+# Копируем исходный код
+COPY . .
+
+# Собираем приложение
 RUN yarn run build
 
+# Продакшен этап
+FROM node:20.11-slim
+
+# Создаем пользователя для приложения
+RUN groupadd -r appuser && useradd -r -g appuser appuser
+
+# Создаем директорию приложения и устанавливаем права
+WORKDIR /app
+RUN chown appuser:appuser /app
+
+# Переключаемся на непривилегированного пользователя
+USER appuser
+
+# Копируем файлы package.json и yarn.lock
+COPY --from=builder --chown=appuser:appuser /app/package*.json /app/yarn.lock ./
+
+# Устанавливаем только production зависимости
+RUN yarn install --production=true
+
+# Копируем собранное приложение
+COPY --from=builder --chown=appuser:appuser /app/dist ./dist
+
+# Устанавливаем переменные окружения
+ENV PORT=3001
+ENV NODE_ENV=production
+
+# Проверка работоспособности
+HEALTHCHECK --interval=30s --timeout=3s \
+    CMD curl -f http://localhost:${PORT}/health || exit 1
+
 EXPOSE ${PORT}
-CMD [ "yarn", "start" ]
+CMD [ "yarn", "start:prod" ]
