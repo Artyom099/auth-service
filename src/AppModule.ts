@@ -27,17 +27,25 @@ import {
   RefreshSessionUseCase,
   RegistrationUseCase,
   ResendEmailConfirmationUseCase,
+  StartController,
   TokenService,
   UpdatePasswordUseCase,
   UserQueryRepository,
   UserTypeOrmRepository,
+  // VkOauthService,
+  // VkOauthUseCase,
 } from './auth';
 import { AppConfigModule, AppConfig } from './config';
 import { EmailAdapter } from './libs';
 import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
 import { entities } from './libs/db/entity';
 
-const services = [EmailService, AuthService, TokenService];
+const services = [
+  EmailService, 
+  AuthService, 
+  TokenService,   
+  // VkOauthService,
+];
 
 const useCases = [
   LogInUseCase,
@@ -57,6 +65,8 @@ const useCases = [
 
   DeleteDeviceUseCase,
   DeleteOtherDevicesUseCase,
+
+  // VkOauthUseCase,
 ];
 
 const repositories = [
@@ -103,7 +113,7 @@ const infrastructureModules = [AppConfigModule];
     TypeOrmModule.forFeature(entities, AuthServicePgDataSource),
     ...infrastructureModules,
   ],
-  controllers: [AuthController, DeviceController],
+  controllers: [AuthController, DeviceController, StartController],
   providers: [
     ...services,
     ...useCases,
