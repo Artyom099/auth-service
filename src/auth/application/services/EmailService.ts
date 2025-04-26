@@ -37,7 +37,7 @@ export class EmailService {
 
     const message = `
       <h1>Password recovery</h1>
-      <p>To finish password recovery please follow the link below:\n
+      <p>Code for finish update: ${recoveryCode}. To finish password recovery please follow the link below:\n
       <a href="${domain}auth/confirm-password-recovery?code=${recoveryCode}">recovery password</a>\n
       </p>
     `;

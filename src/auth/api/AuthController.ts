@@ -88,6 +88,7 @@ export class AuthController {
 
   @ConfirmRegistrationApi()
   @Post('registration-confirmation')
+  @HttpCode(HttpStatus.OK)
   async confirmRegistration(@Body() body: CodeInputModel): Promise<void> {
     return this.commandBus.execute(new ConfirmEmailCommand(body.code));
   }
@@ -108,6 +109,7 @@ export class AuthController {
 
   @ConfirmPasswordRecoveryApi()
   @Post('confirm-password-recovery')
+  @HttpCode(HttpStatus.NO_CONTENT)
   async confirmPasswordRecovery(@Body() body: CodeInputModel): Promise<void> {
     return this.commandBus.execute(new ConfirmPasswordRecoveryCommand(body.code));
   }

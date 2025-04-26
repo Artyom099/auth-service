@@ -1,3 +1,4 @@
+import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { add } from 'date-fns';
 import { UpdateRecoveryCodeDto } from 'src/auth/api/models/dto/UpdateRecoveryCodeDto';
@@ -5,7 +6,7 @@ import { EntityManager } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
-import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
+import { ResultType } from '../../../../libs/error-handling/result';
 import { PasswordRecoveryRepository, UserTypeOrmRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
@@ -30,13 +31,7 @@ export class PasswordRecoveryUseCase implements ICommandHandler<PasswordRecovery
 
       // если нет пользователя с таким email, кидаем ошибку
       if (!user) {
-        const message = 'Email is not registered';
-        const field = 'email';
-
-        return new ErrorResult({
-          code: InternalErrorCode.BadRequest,
-          extensions: [{ field, message }],
-        });
+        throw new BadRequestException(`Email ${email} not found`);
       }
 
       const dto: UpdateRecoveryCodeDto = {
