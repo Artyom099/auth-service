@@ -15,10 +15,10 @@ export class UserPasswordRecovery {
 
   @Column({
     name: 'expiration_date',
-    type: 'date',
+    type: 'timestamp with time zone',
     nullable: false,
   })
-  expirationDate: string;
+  expirationDate: Date;
 
   @Column({
     name: 'is_confirmed',

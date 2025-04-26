@@ -10,13 +10,13 @@ export class EmailAdapter {
   async sendEmail(email: string, subject: string, message: string): Promise<boolean> {
     const { EMAIL_HOST, EMAIL_USER, EMAIL_PASSWORD } = this.appConfig.settings.email;
 
-    console.log({
-      host: EMAIL_HOST,
-      auth: {
-        user: EMAIL_USER,
-        pass: EMAIL_PASSWORD,
-      },
-    });
+    // console.log({
+    //   host: EMAIL_HOST,
+    //   auth: {
+    //     user: EMAIL_USER,
+    //     pass: EMAIL_PASSWORD,
+    //   },
+    // });
 
     const transport = nodemailer.createTransport(
       {

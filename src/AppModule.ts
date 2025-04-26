@@ -35,10 +35,10 @@ import {
   VkOauthService,
   VkOauthUseCase,
 } from './auth';
-import { AppConfigModule, AppConfig } from './config';
-import { EmailAdapter } from './libs';
+import { AppConfig, AppConfigModule } from './config';
 import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
 import { entities } from './libs/db/entity';
+import { EmailAdapter } from './libs/email';
 
 const controllers = [AuthController, DeviceController, StartController];
 

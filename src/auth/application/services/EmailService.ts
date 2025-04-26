@@ -1,8 +1,8 @@
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { AppConfig } from '../../../config';
-import { EmailAdapter } from '../../../libs';
-import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../libs/error-handling/result';
+import { EmailAdapter } from '../../../libs/email';
+import { ResultType, SuccessResult } from '../../../libs/error-handling/result';
 
 @Injectable()
 export class EmailService {
@@ -26,7 +26,7 @@ export class EmailService {
     const isSending = await this.emailAdapter.sendEmail(email, subject, message);
 
     if (!isSending) {
-      throw new InternalServerErrorException(isSending);
+      throw new InternalServerErrorException(`${subject} email is not sent`);
     }
 
     return new SuccessResult(null);
@@ -47,10 +47,7 @@ export class EmailService {
     const isSending = await this.emailAdapter.sendEmail(email, subject, message);
 
     if (!isSending) {
-      return new ErrorResult({
-        code: InternalErrorCode.Internal_Server,
-        extensions: [],
-      });
+      throw new InternalServerErrorException(`${subject} email is not sent`);
     }
 
     return new SuccessResult(null);

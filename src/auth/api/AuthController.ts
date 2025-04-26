@@ -28,7 +28,7 @@ import { UpdatePasswordRequestDto } from './models/input/UpdatePasswordRequestDt
 import { GetUserInfoResponseDto } from './models/view/GetUserInfoResponseDto';
 
 import { AppConfig } from '../../config';
-import { CurrentUserId, RefreshToken } from '../../libs';
+import { CurrentUserId, RefreshToken } from '../../libs/decorators';
 import { ResultType, SuccessResult } from '../../libs/error-handling/result';
 import {
   ConfirmPasswordRecoveryApi,
@@ -42,7 +42,7 @@ import {
   RegistrationApi,
   ResendConfirmationCodeApi,
   UpdatePasswordApi,
-} from '../../libs/swagger/decorators';
+} from '../../libs/swagger';
 import {
   BaseOauthCommand,
   ConfirmEmailCommand,
@@ -57,7 +57,7 @@ import {
 } from '../application';
 import { OauthCommandByType } from '../application/use-cases/oauth/utils/OauthCommandByType';
 import { OauthServicesTypesEnum } from '../enums/OauthServicesTypesEnum';
-import { AuthGuard } from '../guard/AuthGuard';
+import { AuthGuard } from '../guard';
 import { UserQueryRepository } from '../repositories';
 
 @ApiTags('Auth')

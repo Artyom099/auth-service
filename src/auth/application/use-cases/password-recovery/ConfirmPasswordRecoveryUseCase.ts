@@ -1,8 +1,9 @@
+import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { isAfter } from 'date-fns';
 import { EntityManager } from 'typeorm';
 
-import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { PasswordRecoveryRepository } from '../../../repositories';
 
 export class ConfirmPasswordRecoveryCommand {
@@ -24,24 +25,12 @@ export class ConfirmPasswordRecoveryUseCase implements ICommandHandler<ConfirmPa
 
       // если обновление пароля уже подтверждено, кидаем ошибку
       if (recoveryData.isConfirmed) {
-        const message = 'Password recovery already confirmed';
-        const field = 'code';
-
-        return new ErrorResult({
-          code: InternalErrorCode.BadRequest,
-          extensions: [{ field, message }],
-        });
+        throw new BadRequestException(`Password recovery with code ${code} already confirmed`);
       }
 
       // если текущая дата после expirationDate, то код истек
       if (isAfter(new Date(), recoveryData.expirationDate)) {
-        const message = 'Recovery code has expired';
-        const field = 'code';
-
-        return new ErrorResult({
-          code: InternalErrorCode.BadRequest,
-          extensions: [{ field, message }],
-        });
+        throw new BadRequestException(`Recovery code ${code} expired`);
       }
 
       await this.passwordRecoveryRepository.confirmRecoveryPassword(em, recoveryData.userId);

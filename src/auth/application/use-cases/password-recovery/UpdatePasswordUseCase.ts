@@ -1,9 +1,10 @@
+import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { hash } from 'bcryptjs';
 import { isAfter } from 'date-fns';
 import { EntityManager } from 'typeorm';
 
-import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { UpdatePasswordRequestDto } from '../../../api/models/input/UpdatePasswordRequestDto';
 import { PasswordRecoveryRepository } from '../../../repositories';
 
@@ -13,7 +14,7 @@ export class UpdatePasswordCommand {
 
 @CommandHandler(UpdatePasswordCommand)
 export class UpdatePasswordUseCase implements ICommandHandler<UpdatePasswordCommand> {
-  private readonly SALT_ROUNDS: 10;
+  private readonly SALT_ROUNDS = 10;
 
   constructor(
     private manager: EntityManager,
@@ -28,24 +29,12 @@ export class UpdatePasswordUseCase implements ICommandHandler<UpdatePasswordComm
 
       // если обновление пароля еще НЕ подтверждено с почты, кидаем ошибку
       if (!recoveryData.isConfirmed) {
-        const message = 'Password recovery not confirmed';
-        const field = 'code';
-
-        return new ErrorResult({
-          code: InternalErrorCode.BadRequest,
-          extensions: [{ field, message }],
-        });
+        throw new BadRequestException('Password recovery not confirmed');
       }
 
       // если текущая дата после expirationDate, то код истек
       if (isAfter(new Date(), recoveryData.expirationDate)) {
-        const message = 'Recovery code has expired';
-        const field = 'code';
-
-        return new ErrorResult({
-          code: InternalErrorCode.BadRequest,
-          extensions: [{ field, message }],
-        });
+        throw new BadRequestException('Recovery code has expired');
       }
 
       const passwordHash = await hash(newPassword, this.SALT_ROUNDS);

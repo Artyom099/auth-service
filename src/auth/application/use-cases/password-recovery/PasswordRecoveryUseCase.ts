@@ -4,9 +4,8 @@ import { add } from 'date-fns';
 import { UpdateRecoveryCodeDto } from 'src/auth/api/models/dto/UpdateRecoveryCodeDto';
 import { EntityManager } from 'typeorm';
 
-import { randomUUID } from 'crypto';
-
 import { ResultType } from '../../../../libs/error-handling/result';
+import { generateConfirmationCode } from '../../../../libs/utils';
 import { PasswordRecoveryRepository, UserTypeOrmRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
@@ -36,8 +35,8 @@ export class PasswordRecoveryUseCase implements ICommandHandler<PasswordRecovery
 
       const dto: UpdateRecoveryCodeDto = {
         userId: user.id,
-        expirationDate: add(new Date(), { hours: 2 }).toISOString(),
-        recoveryCode: randomUUID(),
+        expirationDate: add(new Date(), { hours: 2 }),
+        recoveryCode: generateConfirmationCode(),
       };
 
       const passwordRecovery = await this.passwordRecoveryRepository.upsertPasswordRecovery(em, dto);

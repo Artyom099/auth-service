@@ -4,8 +4,6 @@ import { User, UserPasswordRecovery } from '../../../libs/db/entity';
 import { UpdateRecoveryCodeDto } from '../../api/models/dto/UpdateRecoveryCodeDto';
 
 export class PasswordRecoveryRepository {
-  constructor() {}
-
   async getRecoveryData(em: EntityManager, code: string): Promise<UserPasswordRecovery> {
     return em.findOneBy(UserPasswordRecovery, { recoveryCode: code });
   }

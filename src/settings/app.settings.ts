@@ -2,9 +2,9 @@ import { DynamicModule, INestApplication, ValidationError, ValidationPipe } from
 import { useContainer } from 'class-validator';
 import * as cookieParser from 'cookie-parser';
 
-import { setupSwagger } from '../libs';
 import { ResponseInterceptor } from '../libs/error-handling/response.interceptor';
 import { ErrorExtensionType, ErrorResult, InternalErrorCode } from '../libs/error-handling/result';
+import { setupSwagger } from '../libs/swagger';
 
 export const appSettings = <T>(app: INestApplication, module: T) => {
   useContainer(app.select(module as DynamicModule), { fallbackOnErrors: true });

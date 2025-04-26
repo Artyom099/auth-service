@@ -2,12 +2,10 @@ import { Controller, Delete, Get, HttpCode, HttpStatus, Param, UseGuards } from 
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 
-import { CurrentUserId } from '../../libs';
-import { RefreshToken } from '../../libs';
-import { DeleteDeviceApi, DeleteOtherDevicesApi, GetDevicesApi } from '../../libs/swagger/decorators';
-import { DeleteOtherDevicesCommand } from '../application';
-import { DeleteDeviceCommand } from '../application';
-import { AuthGuard } from '../guard/AuthGuard';
+import { CurrentUserId, RefreshToken } from '../../libs/decorators';
+import { DeleteDeviceApi, DeleteOtherDevicesApi, GetDevicesApi } from '../../libs/swagger';
+import { DeleteDeviceCommand, DeleteOtherDevicesCommand } from '../application';
+import { AuthGuard } from '../guard';
 import { DeviceQueryRepository } from '../repositories';
 
 @ApiTags('Device')

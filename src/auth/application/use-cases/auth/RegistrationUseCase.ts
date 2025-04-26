@@ -6,7 +6,7 @@ import { User } from 'src/libs/db/entity';
 import { DeepPartial, EntityManager } from 'typeorm';
 
 import { ErrorResult } from '../../../../libs/error-handling/result';
-import { generateConfirmationCode } from '../../../../libs/utils/generateConfirmationCode';
+import { generateConfirmationCode } from '../../../../libs/utils';
 import { RegistrationRequestDto } from '../../../api/models/input/RegistrationRequestDto';
 import { EmailConfirmationRepository, UserTypeOrmRepository } from '../../../repositories';
 import { EmailService } from '../../services';
@@ -71,7 +71,7 @@ export class RegistrationUseCase implements ICommandHandler<RegistrationCommand>
         }
       } catch (e) {
         console.log({ RegistrationError: e });
-        throw new InternalServerErrorException({ RegistrationError: e });
+        throw new InternalServerErrorException(`Registration error: ${e}`);
       }
 
       return { userId: user.id };
