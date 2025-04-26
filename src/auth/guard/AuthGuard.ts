@@ -1,7 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Request } from 'express';
 
-import { ErrorResult, InternalErrorCode } from '../../libs/error-handling/result';
 import { TokenService } from '../application';
 
 /**
@@ -17,13 +16,9 @@ export class AuthGuard implements CanActivate {
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
 
-    if (!token)
-      throw new UnauthorizedException(
-        new ErrorResult({
-          code: InternalErrorCode.Unauthorized,
-          extensions: [],
-        }),
-      );
+    if (!token) {
+      throw new UnauthorizedException('Access token not found');
+    }
 
     try {
       const tokenPayload = await this.tokenService.verifyAccessToken(token);
@@ -31,12 +26,7 @@ export class AuthGuard implements CanActivate {
       request.userId = tokenPayload.userId;
     } catch (e) {
       console.log({ auth_guard_err: e });
-      throw new UnauthorizedException(
-        new ErrorResult({
-          code: InternalErrorCode.Unauthorized,
-          extensions: [],
-        }),
-      );
+      throw new UnauthorizedException(`Auth guard error: ${e}`);
     }
 
     return true;

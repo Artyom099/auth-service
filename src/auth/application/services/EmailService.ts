@@ -1,4 +1,4 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 
 import { AppConfig } from '../../../config';
 import { EmailAdapter } from '../../../libs';
@@ -16,7 +16,7 @@ export class EmailService {
 
     const message = `
       <h1>Thanks for your registration</h1>
-      <p>To finish registration please follow the link below:
+      <p>Your code: ${confirmationCode}. To finish registration please follow the link below:
       <a href="${domain}?code=${confirmationCode}">complete registration</a>
       </p>
     `;
@@ -25,11 +25,9 @@ export class EmailService {
 
     const isSending = await this.emailAdapter.sendEmail(email, subject, message);
 
-    if (!isSending)
-      return new ErrorResult({
-        code: InternalErrorCode.Internal_Server,
-        extensions: [],
-      });
+    if (!isSending) {
+      throw new InternalServerErrorException(isSending);
+    }
 
     return new SuccessResult(null);
   }
@@ -48,11 +46,12 @@ export class EmailService {
 
     const isSending = await this.emailAdapter.sendEmail(email, subject, message);
 
-    if (!isSending)
+    if (!isSending) {
       return new ErrorResult({
         code: InternalErrorCode.Internal_Server,
         extensions: [],
       });
+    }
 
     return new SuccessResult(null);
   }

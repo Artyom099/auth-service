@@ -1,17 +1,11 @@
-import { Injectable } from '@nestjs/common';
 import { EntityManager, Not } from 'typeorm';
 
 import { Device } from '../../../libs/db/entity';
 import { CreateDeviceDTO } from '../../api/models/dto/create.device.dto';
 
-@Injectable()
 export class DeviceRepository {
-  constructor() {}
-
-  async createDevice(em: EntityManager, data: CreateDeviceDTO): Promise<{ deviceId: string }> {
-    const device = await em.save(em.create(Device, data));
-
-    return { deviceId: device.id };
+  async createDevice(em: EntityManager, dto: CreateDeviceDTO): Promise<void> {
+    await em.save(em.create(Device, dto));
   }
 
   async getDevice(em: EntityManager, id: string): Promise<Device> {

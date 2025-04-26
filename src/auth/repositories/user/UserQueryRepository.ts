@@ -1,24 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 
-import { User } from '../../../libs/db/entity';
-import { UserViewModel } from '../../api/models/view/user.view.model';
+import { User, UserEmailConfirmation } from '../../../libs/db/entity';
+import { GetUserInfoResponseDto } from '../../api/models/view/GetUserInfoResponseDto';
 
 @Injectable()
 export class UserQueryRepository {
   constructor(private manager: EntityManager) {}
 
-  async getUser(id: string): Promise<UserViewModel> {
-    const user = await this.manager.findOneBy(User, { id });
+  async getUserInfo(id: string): Promise<GetUserInfoResponseDto> {
+    const qb = this.manager
+      .createQueryBuilder(User, 'u')
+      .select('u.id', 'id')
+      .addSelect('u.login', 'login')
+      .addSelect('uec.email', 'email')
+      .innerJoin(UserEmailConfirmation, 'uec', 'uec.userId = u.id')
+      .where({ id });
 
-    return this.mapToView(user);
-  }
-
-  mapToView(user: User): UserViewModel {
-    return {
-      // email: user.email,
-      login: user.login,
-      userId: user.id,
-    };
+    return qb.getRawOne<GetUserInfoResponseDto>();
   }
 }

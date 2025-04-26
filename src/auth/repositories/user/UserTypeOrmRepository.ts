@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DeepPartial, EntityManager } from 'typeorm';
 
-import { User, UserEmailConfirmation } from '../../../libs/db/entity';
+import { OauthVkUser, User, UserEmailConfirmation } from '../../../libs/db/entity';
 import { OauthServicesTypesEnum } from '../../enums/OauthServicesTypesEnum';
 
 @Injectable()
@@ -53,10 +53,8 @@ export class UserTypeOrmRepository {
     return qb.getRawOne<{ id: string; email: string; isConfirmed: boolean; passwordHash: string }>();
   }
 
-  async create(em: EntityManager, dto: DeepPartial<User>): Promise<string> {
-    const user = await em.save<User>(em.create(User, dto));
-
-    return user.id;
+  async create(em: EntityManager, dto: DeepPartial<User>): Promise<User> {
+    return em.save<User>(em.create(User, dto));
   }
 
   async delete(em: EntityManager, id: string): Promise<void> {
@@ -69,5 +67,29 @@ export class UserTypeOrmRepository {
     dto: any, // todo - fix type
   ): Promise<void> {
     await em.update(User, id, dto);
+  }
+
+  /**
+   * Получает пользователя по ID VK
+   */
+  async getUserByVkId(em: EntityManager, id: string): Promise<User> {
+    const qb = em
+      .createQueryBuilder(User, 'u')
+      .innerJoin(OauthVkUser, 'ovk', 'ovk.userId = u.id')
+      .where('ovk.vkId = :id', { id });
+
+    return qb.getOne();
+  }
+
+  /**
+   * Генерирует пользователя при регистрации через OAuth
+   */
+  async createVkUser(em: EntityManager, userId: string, vkId: number) {
+    await em.save(
+      em.create(OauthVkUser, {
+        userId,
+        vkId,
+      }),
+    );
   }
 }

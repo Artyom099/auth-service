@@ -1,7 +1,8 @@
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EntityManager } from 'typeorm';
 
-import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { DeviceRepository } from '../../../repositories';
 
 export class DeleteDeviceCommand {
@@ -24,20 +25,14 @@ export class DeleteDeviceUseCase implements ICommandHandler<DeleteDeviceCommand>
     return this.manager.transaction(async (em) => {
       const device = await this.deviceRepository.getDevice(em, id);
       if (!device) {
-        return new ErrorResult({
-          code: InternalErrorCode.NotFound,
-          extensions: [],
-        });
+        throw new BadRequestException(`Device with id ${id} not found`);
       }
 
-      const activeDevices = await this.deviceRepository.getUserDevices(em, userId);
+      const userDevices = await this.deviceRepository.getUserDevices(em, userId);
 
-      // если среди активных девайсов юзера нет девайса, который хотим удалить, кидаем ошибку
-      if (!activeDevices.find((d) => d.id === device.id)) {
-        return new ErrorResult({
-          code: InternalErrorCode.Forbidden,
-          extensions: [],
-        });
+      // если среди девайсов юзера нет девайса, который хотим удалить, кидаем ошибку
+      if (!userDevices.find((d) => d.id === device.id)) {
+        throw new ForbiddenException(`Device with id ${id} is not your device`);
       }
 
       await this.deviceRepository.deleteDevice(em, id);

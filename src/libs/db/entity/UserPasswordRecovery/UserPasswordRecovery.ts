@@ -29,7 +29,7 @@ export class UserPasswordRecovery {
   isConfirmed: boolean;
 
   @OneToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
 
   @PrimaryColumn({

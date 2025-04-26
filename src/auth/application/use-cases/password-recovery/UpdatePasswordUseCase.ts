@@ -4,11 +4,11 @@ import { isAfter } from 'date-fns';
 import { EntityManager } from 'typeorm';
 
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
-import { UpdatePasswordInputModel } from '../../../api/models/input/update.password.input.model';
+import { UpdatePasswordRequestDto } from '../../../api/models/input/UpdatePasswordRequestDto';
 import { PasswordRecoveryRepository } from '../../../repositories';
 
 export class UpdatePasswordCommand {
-  constructor(public body: UpdatePasswordInputModel) {}
+  constructor(public body: UpdatePasswordRequestDto) {}
 }
 
 @CommandHandler(UpdatePasswordCommand)

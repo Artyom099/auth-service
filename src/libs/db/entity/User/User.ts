@@ -1,6 +1,7 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Device } from '../Device';
+import { OauthVkUser } from '../OauthVkUser';
 import { UserEmailConfirmation } from '../UserEmailConfirmation';
 import { UserPasswordRecovery } from '../UserPasswordRecovery';
 
@@ -44,6 +45,9 @@ export class User {
 
   @OneToOne(() => UserPasswordRecovery)
   userPasswordRecovery?: UserPasswordRecovery;
+
+  @OneToOne(() => OauthVkUser)
+  oauthVkUser?: OauthVkUser;
 
   // photoUrl              String?
   // google                GoogleUser?

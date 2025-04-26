@@ -1,8 +1,9 @@
+import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { isAfter } from 'date-fns';
 import { EntityManager } from 'typeorm';
 
-import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { EmailConfirmationRepository } from '../../../repositories';
 
 export class ConfirmEmailCommand {
@@ -22,34 +23,21 @@ export class ConfirmEmailUseCase implements ICommandHandler<ConfirmEmailCommand>
     return this.manager.transaction(async (em) => {
       const emailConfirmation = await this.emailConfirmationRepository.getByCode(em, code);
 
+      if (!emailConfirmation) {
+        throw new BadRequestException(`Confirmation code ${code} not found`);
+      }
+
       // если почта уже подтверждена, кидаем ошибку
       if (emailConfirmation.isConfirmed) {
-        const message = 'Email already confirmed';
-        const field = 'email';
-
-        return new ErrorResult({
-          code: InternalErrorCode.BadRequest,
-          extensions: [{ field, message }],
-        });
+        throw new BadRequestException(`Email ${emailConfirmation.email} already confirmed`);
       }
 
       // если текущая дата после expirationDate, то код истек
       if (isAfter(new Date(), emailConfirmation.expirationDate)) {
-        const message = 'Confirmation code has expired';
-        const field = 'code';
-
-        return new ErrorResult({
-          code: InternalErrorCode.BadRequest,
-          extensions: [{ field, message }],
-        });
+        throw new BadRequestException('Confirmation code expired');
       }
 
       await this.emailConfirmationRepository.confirmEmail(em, emailConfirmation.userId);
-
-      // await this.userRepository.update(em, emailConfirmation.userId, {
-      //   email: emailConfirmation.email,
-      //   isEmailConfirmed: true,
-      // });
 
       return new SuccessResult(null);
     });

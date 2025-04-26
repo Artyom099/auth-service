@@ -21,6 +21,8 @@ export class EmailAdapter {
     const transport = nodemailer.createTransport(
       {
         host: EMAIL_HOST,
+        port: 465,
+        secure: true,
         auth: {
           user: EMAIL_USER,
           pass: EMAIL_PASSWORD,
@@ -43,7 +45,7 @@ export class EmailAdapter {
         (err) => {
           if (err) {
             console.error({ send_email_error: err });
-            reject(false);
+            reject(err);
           } else {
             resolve(true);
           }

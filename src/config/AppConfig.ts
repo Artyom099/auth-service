@@ -108,9 +108,19 @@ export type OauthParamsType = {
   CLIENT_REDIRECT_URI: string;
 };
 
+export type TOauthVkParams = {
+  CLIENT_ID: string;
+  CLIENT_SECRET: string;
+  CLIENT_REDIRECT_URI: string;
+  TOKEN_URL: string;
+  API_URL: string;
+  API_VERSION: string;
+};
+
 export class OauthSettings {
   GITHUB: OauthParamsType;
   GOOGLE: OauthParamsType;
+  VK: TOauthVkParams;
 
   constructor(envVariables: EnvironmentVariable) {
     this.GITHUB = {
@@ -122,6 +132,14 @@ export class OauthSettings {
       CLIENT_ID: envVariables.GOOGLE_CLIENT_ID!,
       CLIENT_SECRET: envVariables.GOOGLE_CLIENT_SECRET!,
       CLIENT_REDIRECT_URI: envVariables.GOOGLE_CLIENT_REDIRECT_URI!,
+    };
+    this.VK = {
+      CLIENT_ID: envVariables.VK_CLIENT_ID!,
+      CLIENT_SECRET: envVariables.VK_CLIENT_SECRET!,
+      CLIENT_REDIRECT_URI: envVariables.VK_REDIRECT_URI!,
+      TOKEN_URL: envVariables.VK_TOKEN_URL!,
+      API_URL: envVariables.VK_API_URL!,
+      API_VERSION: envVariables.VK_API_VERSION!,
     };
   }
 }

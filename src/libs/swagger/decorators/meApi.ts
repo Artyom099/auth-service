@@ -7,13 +7,13 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { UserViewModel } from '../../../auth/api/models/view/user.view.model';
+import { GetUserInfoResponseDto } from '../../../auth/api/models/view/GetUserInfoResponseDto';
 
 export function MeApi() {
   return applyDecorators(
     ApiBearerAuth(),
     ApiOperation({ summary: 'Get information about current user' }),
-    ApiOkResponse({ type: UserViewModel }),
+    ApiOkResponse({ type: GetUserInfoResponseDto }),
     ApiUnauthorizedResponse({ description: 'Unauthorized' }),
     ApiTooManyRequestsResponse({
       description: 'More than 5 attempts from one IP-address during 10 seconds',

@@ -60,11 +60,11 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand> implements IC
         login,
         isEmailConfirmed: true,
       };
-      const userId = await this.usersRepository.create(em, data);
-      await this.connectProviderToUser(em, userId, providerData);
+      const user = await this.usersRepository.create(em, data);
+      await this.connectProviderToUser(em, user.id, providerData);
 
       const { accessToken, refreshToken } = await this.tokenService.signTokens({
-        userId,
+        userId: user.id,
         deviceId: randomUUID(),
         issuedAt: new Date().toISOString(),
       });

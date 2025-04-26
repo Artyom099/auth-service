@@ -1,10 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { compare } from 'bcryptjs';
 import { EntityManager } from 'typeorm';
 
 import { TokenService } from './TokenService';
 
-import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../libs/error-handling/result';
+import { ResultType, SuccessResult } from '../../../libs/error-handling/result';
 import { DeviceRepository, UserTypeOrmRepository } from '../../repositories';
 
 @Injectable()
@@ -37,13 +37,7 @@ export class AuthService {
     const isUserValid = await compare(password, passwordHash);
 
     if (!isUserValid) {
-      const message = 'Wrong password';
-      const field = 'password';
-
-      return new ErrorResult({
-        code: InternalErrorCode.BadRequest,
-        extensions: [{ field, message }],
-      });
+      throw new BadRequestException('Wrong password');
     }
 
     return new SuccessResult(null);

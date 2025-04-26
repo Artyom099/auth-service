@@ -23,14 +23,19 @@ export class Device {
 
   @Column({
     name: 'issued_at',
-    type: 'varchar',
+    type: 'timestamp with time zone',
     nullable: false,
   })
   issuedAt: Date;
 
-  userId: string;
-
   @ManyToOne(() => User, (user) => user.devices, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
+
+  @Column({
+    name: 'user_id',
+    type: 'varchar',
+    nullable: false,
+  })
+  userId: string;
 }

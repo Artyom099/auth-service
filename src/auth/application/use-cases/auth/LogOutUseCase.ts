@@ -1,7 +1,8 @@
+import { UnauthorizedException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EntityManager } from 'typeorm';
 
-import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { DeviceRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
@@ -29,19 +30,15 @@ export class LogOutUseCase implements ICommandHandler<LogOutCommand> {
 
       const device = await this.deviceRepository.getDevice(em, payload.deviceId);
 
-      if (!device)
-        return new ErrorResult({
-          code: InternalErrorCode.Unauthorized,
-          extensions: [],
-        });
+      if (!device) {
+        throw new UnauthorizedException(`Current device ${payload.deviceId} not found`);
+      }
 
       const deviceIssuedAt = device.issuedAt.toISOString();
 
-      if (userId !== device.userId || tokenIssuedAt !== deviceIssuedAt)
-        return new ErrorResult({
-          code: InternalErrorCode.Unauthorized,
-          extensions: [],
-        });
+      if (userId !== device.userId || tokenIssuedAt !== deviceIssuedAt) {
+        throw new UnauthorizedException('UserId or issuedAt in token and device does not match');
+      }
 
       await this.deviceRepository.deleteDevice(em, device.id);
 

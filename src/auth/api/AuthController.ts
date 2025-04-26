@@ -23,9 +23,9 @@ import { CodeInputModel } from './models/input/code.input.model';
 import { EmailInputModel } from './models/input/email.input.model';
 import { LogInInputModel } from './models/input/log.in.input.model';
 import { OauthInputModel } from './models/input/oauth.input.model';
-import { RegistrationInputModel } from './models/input/registration.input.model';
-import { UpdatePasswordInputModel } from './models/input/update.password.input.model';
-import { UserViewModel } from './models/view/user.view.model';
+import { RegistrationRequestDto } from './models/input/RegistrationRequestDto';
+import { UpdatePasswordRequestDto } from './models/input/UpdatePasswordRequestDto';
+import { GetUserInfoResponseDto } from './models/view/GetUserInfoResponseDto';
 
 import { AppConfig } from '../../config';
 import { CurrentUserId, RefreshToken } from '../../libs';
@@ -44,6 +44,7 @@ import {
   UpdatePasswordApi,
 } from '../../libs/swagger/decorators';
 import {
+  BaseOauthCommand,
   ConfirmEmailCommand,
   ConfirmPasswordRecoveryCommand,
   LogInCommand,
@@ -53,7 +54,6 @@ import {
   RegistrationCommand,
   ResendEmailConfirmationCommand,
   UpdatePasswordCommand,
-  BaseOauthCommand,
 } from '../application';
 import { OauthCommandByType } from '../application/use-cases/oauth/utils/OauthCommandByType';
 import { OauthServicesTypesEnum } from '../enums/OauthServicesTypesEnum';
@@ -81,8 +81,8 @@ export class AuthController {
 
   @RegistrationApi()
   @Post('registration')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async registration(@Body() body: RegistrationInputModel): Promise<void> {
+  @HttpCode(HttpStatus.CREATED)
+  async registration(@Body() body: RegistrationRequestDto): Promise<{ userId: string }> {
     return this.commandBus.execute(new RegistrationCommand(body));
   }
 
@@ -115,7 +115,7 @@ export class AuthController {
   @UpdatePasswordApi()
   @Post('update-password')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async updatePassword(@Body() body: UpdatePasswordInputModel): Promise<void> {
+  async updatePassword(@Body() body: UpdatePasswordRequestDto): Promise<void> {
     return this.commandBus.execute(new UpdatePasswordCommand(body));
   }
 
@@ -174,8 +174,8 @@ export class AuthController {
   @UseGuards(AuthGuard)
   @Get('me')
   @HttpCode(HttpStatus.OK)
-  async me(@CurrentUserId() userId: string): Promise<UserViewModel> {
-    return this.userQueryRepository.getUser(userId);
+  async me(@CurrentUserId() userId: string): Promise<GetUserInfoResponseDto> {
+    return this.userQueryRepository.getUserInfo(userId);
   }
 
   @LogOutApi()

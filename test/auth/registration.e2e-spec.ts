@@ -5,14 +5,14 @@ import { EntityManager } from 'typeorm';
 
 import { AppModule } from '../../src/AppModule';
 import { UserTypeOrmRepository } from '../../src/auth';
-import { RegistrationInputModel } from '../../src/auth/api/models/input/registration.input.model';
+import { RegistrationRequestDto } from '../../src/auth/api/models/input/RegistrationRequestDto';
 import { User } from '../../src/libs/db/entity';
 
 describe('Auth Registration (e2e)', () => {
   let app: INestApplication;
   let entityManager: EntityManager;
   let userRepository: UserTypeOrmRepository;
-  let dto: RegistrationInputModel;
+  let dto: RegistrationRequestDto;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -105,10 +105,7 @@ describe('Auth Registration (e2e)', () => {
         password: 'StrongPass1!',
       };
 
-      await request(app.getHttpServer())
-        .post('/auth/registration')
-        .send(dto)
-        .expect(204);
+      await request(app.getHttpServer()).post('/auth/registration').send(dto).expect(204);
 
       // Проверяем, что пользователь создан в базе данных
       const createdUser = await userRepository.getUserByLoginOrEmail(entityManager, dto.login);

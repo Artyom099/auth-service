@@ -1,7 +1,6 @@
 import { DynamicModule, INestApplication, ValidationError, ValidationPipe } from '@nestjs/common';
 import { useContainer } from 'class-validator';
 import * as cookieParser from 'cookie-parser';
-import { I18nValidationPipe } from 'nestjs-i18n';
 
 import { setupSwagger } from '../libs';
 import { ResponseInterceptor } from '../libs/error-handling/response.interceptor';
@@ -11,8 +10,6 @@ export const appSettings = <T>(app: INestApplication, module: T) => {
   useContainer(app.select(module as DynamicModule), { fallbackOnErrors: true });
 
   app.useGlobalPipes(
-    new I18nValidationPipe(),
-
     new ValidationPipe({
       transform: true,
       forbidUnknownValues: false,
@@ -35,7 +32,7 @@ export const appSettings = <T>(app: INestApplication, module: T) => {
 
   app.enableCors({
     allowedHeaders: ['content-type', 'authorization'],
-    origin: ['http://localhost:3000', 'http://localhost:3003'],
+    origin: ['http://localhost:3000', 'http://localhost:3003', 'http://localhost:5173'],
     credentials: true,
   });
   app.use(cookieParser());

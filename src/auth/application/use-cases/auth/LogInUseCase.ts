@@ -1,15 +1,15 @@
+import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EntityManager } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
-import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { CreateDeviceDTO } from '../../../api/models/dto/create.device.dto';
 import { LogInDto } from '../../../api/models/dto/LogInDto';
 import { PairTokensType } from '../../../api/models/dto/pair.tokens.type';
 import { DeviceRepository, UserTypeOrmRepository } from '../../../repositories';
-import { AuthService } from '../../services';
-import { TokenService } from '../../services';
+import { AuthService, TokenService } from '../../services';
 
 export class LogInCommand {
   constructor(public dto: LogInDto) {}
@@ -32,23 +32,11 @@ export class LogInUseCase implements ICommandHandler<LogInCommand> {
       const user = await this.userRepository.getUserByLoginOrEmail(em, email);
 
       if (!user) {
-        const message = 'Wrong login or email';
-        const field = 'email';
-
-        return new ErrorResult({
-          code: InternalErrorCode.BadRequest,
-          extensions: [{ field, message }],
-        });
+        throw new BadRequestException(`User not found by email ${email}`);
       }
 
       if (!user.isConfirmed) {
-        const message = 'Email not confirmed';
-        const field = 'email';
-
-        return new ErrorResult({
-          code: InternalErrorCode.BadRequest,
-          extensions: [{ field, message }],
-        });
+        throw new BadRequestException(`Email ${email} not confirmed`);
       }
 
       const validationResult = await this.authService.validateUser(em, email, password, user.passwordHash);

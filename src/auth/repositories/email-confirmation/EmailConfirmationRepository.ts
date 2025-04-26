@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { EntityManager } from 'typeorm';
+import { DeepPartial, EntityManager } from 'typeorm';
 
 import { UserEmailConfirmation } from '../../../libs/db/entity';
 import { UpdateCodeDto } from '../../api/models/dto/UpdateCodeDto';
@@ -10,7 +10,7 @@ export class EmailConfirmationRepository {
     await em.update(UserEmailConfirmation, { userId }, { isConfirmed: true });
   }
 
-  async create(em: EntityManager, dto: { expirationDate: Date; email: string; userId: string }) {
+  async create(em: EntityManager, dto: DeepPartial<UserEmailConfirmation>) {
     return em.save(em.create(UserEmailConfirmation, dto));
   }
 

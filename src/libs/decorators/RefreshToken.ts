@@ -1,7 +1,15 @@
-import { ExecutionContext, createParamDecorator } from '@nestjs/common';
+import { createParamDecorator, ExecutionContext, BadRequestException } from '@nestjs/common';
+import { Request } from 'express';
 
-export const RefreshToken = createParamDecorator(async (data: unknown, context: ExecutionContext): Promise<string> => {
-  const request = await context.switchToHttp().getRequest();
+export const RefreshToken = createParamDecorator(
+  (data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest<Request>();
+    const refreshToken = request.cookies?.refreshToken;
 
-  return request.cookies && request.cookies.refreshToken ? request.cookies.refreshToken : null;
-});
+    if (!refreshToken) {
+      throw new BadRequestException('Refresh token not found in cookies');
+    }
+
+    return refreshToken;
+  },
+);

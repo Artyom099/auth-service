@@ -15,8 +15,8 @@ export class UserEmailConfirmation {
 
   @Column({
     name: 'expiration_date',
-    type: 'date',
-    nullable: false,
+    type: 'timestamp with time zone',
+    nullable: true,
   })
   expirationDate: Date;
 
@@ -38,7 +38,7 @@ export class UserEmailConfirmation {
   email: string;
 
   @OneToOne(() => User, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
 
   @PrimaryColumn({

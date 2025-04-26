@@ -1,17 +1,18 @@
-import { InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, InternalServerErrorException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { hash } from 'bcryptjs';
 import { add } from 'date-fns';
 import { User } from 'src/libs/db/entity';
 import { DeepPartial, EntityManager } from 'typeorm';
 
-import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
-import { RegistrationInputModel } from '../../../api/models/input/registration.input.model';
-import { UserTypeOrmRepository, EmailConfirmationRepository } from '../../../repositories';
+import { ErrorResult } from '../../../../libs/error-handling/result';
+import { generateConfirmationCode } from '../../../../libs/utils/generateConfirmationCode';
+import { RegistrationRequestDto } from '../../../api/models/input/RegistrationRequestDto';
+import { EmailConfirmationRepository, UserTypeOrmRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
 export class RegistrationCommand {
-  constructor(public body: RegistrationInputModel) {}
+  constructor(public body: RegistrationRequestDto) {}
 }
 
 @CommandHandler(RegistrationCommand)
@@ -25,31 +26,19 @@ export class RegistrationUseCase implements ICommandHandler<RegistrationCommand>
     private emailConfirmationRepository: EmailConfirmationRepository,
   ) {}
 
-  async execute(command: RegistrationCommand): Promise<ResultType<null>> {
+  async execute(command: RegistrationCommand): Promise<{ userId: string } | ErrorResult> {
     const { login, email, password } = command.body;
 
     return this.manager.transaction(async (em) => {
-      // проверка уникальности login & email
+      // проверка уникальности login и email
       const isEmailExist = await this.userRepository.isUserExistByLoginOrEmail(em, email);
       if (isEmailExist) {
-        const message = 'Email already exists';
-        const field = 'email';
-
-        return new ErrorResult({
-          code: InternalErrorCode.BadRequest,
-          extensions: [{ field, message }],
-        });
+        throw new BadRequestException(`Email ${email} already exists`);
       }
 
       const isLoginExist = await this.userRepository.isUserExistByLoginOrEmail(em, login);
       if (isLoginExist) {
-        const message = 'Login already exists';
-        const field = 'login';
-
-        return new ErrorResult({
-          code: InternalErrorCode.BadRequest,
-          extensions: [{ field, message }],
-        });
+        throw new BadRequestException(`Login ${login} already exists`);
       }
 
       const passwordHash = await hash(password, this.SALT_ROUND);
@@ -59,9 +48,16 @@ export class RegistrationUseCase implements ICommandHandler<RegistrationCommand>
       };
       const expirationDate = add(new Date(), { hours: 1 });
 
-      const userId = await this.userRepository.create(em, dto);
+      const user = await this.userRepository.create(em, dto);
 
-      const emailConfirmation = await this.emailConfirmationRepository.create(em, { expirationDate, email, userId });
+      const confirmationCode = generateConfirmationCode();
+
+      const emailConfirmation = await this.emailConfirmationRepository.create(em, {
+        confirmationCode,
+        expirationDate,
+        email,
+        userId: user.id,
+      });
 
       try {
         const sendEmailResult = await this.emailService.sendEmailConfirmationMessage(
@@ -70,15 +66,15 @@ export class RegistrationUseCase implements ICommandHandler<RegistrationCommand>
         );
 
         if (sendEmailResult.hasError) {
-          await this.emailConfirmationRepository.delete(em, userId);
-          await this.userRepository.delete(em, userId);
+          await this.emailConfirmationRepository.delete(em, user.id);
+          await this.userRepository.delete(em, user.id);
         }
-
-        return sendEmailResult;
       } catch (e) {
         console.log({ RegistrationError: e });
         throw new InternalServerErrorException({ RegistrationError: e });
       }
+
+      return { userId: user.id };
     });
   }
 }
