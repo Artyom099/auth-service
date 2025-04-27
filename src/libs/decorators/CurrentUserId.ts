@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { AccessTokenPayloadType } from '../../auth/api/models/dto/access.token.payload.type';
+import { TAccessTokenPayload } from '../../auth/api/models/dto/TAccessTokenPayload';
 
 /**
  * декоратор, который достает userId из request, если ендпоинт защищен AuthGuard
@@ -17,6 +17,6 @@ export const CurrentUserId = createParamDecorator((data: unknown, context: Execu
   if (type === 'Bearer') {
     const tokenPayload = new JwtService().decode(token);
 
-    return (tokenPayload as AccessTokenPayloadType).userId;
+    return (tokenPayload as TAccessTokenPayload).userId;
   }
 });

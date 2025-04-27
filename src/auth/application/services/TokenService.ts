@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { AppConfig } from '../../../config';
-import { AccessTokenPayloadType } from '../../api/models/dto/access.token.payload.type';
 import { PairTokensType } from '../../api/models/dto/pair.tokens.type';
-import { RefreshTokenPayloadType } from '../../api/models/dto/refresh.token.payload.type';
+import { TAccessTokenPayload } from '../../api/models/dto/TAccessTokenPayload';
+import { TRefreshTokenPayload } from '../../api/models/dto/TRefreshTokenPayload';
 
 @Injectable()
 export class TokenService {
@@ -13,7 +13,7 @@ export class TokenService {
     @Inject(AppConfig.name) private appConfig: AppConfig,
   ) {}
 
-  async signTokens(payload: RefreshTokenPayloadType): Promise<PairTokensType> {
+  async signTokens(payload: TRefreshTokenPayload): Promise<PairTokensType> {
     const accessToken = await this.jwtService.signAsync(
       { userId: payload.userId },
       { expiresIn: this.appConfig.settings.jwt.ACCESS_TOKEN_LIFETIME_SECONDS },
@@ -27,11 +27,11 @@ export class TokenService {
     return { accessToken, refreshToken };
   }
 
-  async verifyAccessToken(token: string): Promise<AccessTokenPayloadType> {
+  async verifyAccessToken(token: string): Promise<TAccessTokenPayload> {
     return this.jwtService.verifyAsync(token);
   }
 
-  async verifyRefreshToken(token: string): Promise<RefreshTokenPayloadType> {
+  async verifyRefreshToken(token: string): Promise<TRefreshTokenPayload> {
     const tokenInfo = await this.jwtService.verifyAsync(token);
 
     return tokenInfo.payload;

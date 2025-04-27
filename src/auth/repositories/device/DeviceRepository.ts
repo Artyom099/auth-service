@@ -1,4 +1,4 @@
-import { EntityManager, Not } from 'typeorm';
+import { EntityManager, Equal, Not } from 'typeorm';
 
 import { Device } from '../../../libs/db/entity';
 import { CreateDeviceDTO } from '../../api/models/dto/create.device.dto';
@@ -24,10 +24,13 @@ export class DeviceRepository {
     await em.delete(Device, { id });
   }
 
-  async deleteOtherDevices(em: EntityManager, id: string, userId: string): Promise<void> {
-    await em.delete(Device, {
+  async deleteOtherDevices(em: EntityManager, id: string, userId: string): Promise<{ deletedCount: number }> {
+    const deleteResult = await em.delete(Device, {
       userId,
-      id: Not(id),
+      id: Not(Equal(id)),
     });
+    console.log({ deleteResult });
+
+    return { deletedCount: deleteResult.affected };
   }
 }

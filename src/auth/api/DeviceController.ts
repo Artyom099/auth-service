@@ -26,7 +26,7 @@ export class DeviceController {
 
   @DeleteOtherDevicesApi()
   @Delete()
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.OK)
   async deleteOtherDevices(@CurrentUserId() userId: string, @RefreshToken() token: string) {
     return this.commandBus.execute(new DeleteOtherDevicesCommand(userId, token));
   }
