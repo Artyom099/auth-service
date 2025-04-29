@@ -46,7 +46,6 @@ export class LogInUseCase implements ICommandHandler<LogInCommand> {
       }
 
       const deviceId = randomUUID();
-      console.log({ deviceId });
       const issuedAt = new Date();
       const userId = user.id;
 
