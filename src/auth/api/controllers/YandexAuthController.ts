@@ -90,28 +90,20 @@ export class YandexAuthController {
       );
       console.log({ result });
 
-      if (!result.isSuccess) {
-        throw new UnauthorizedException('Authentication failed');
-      }
-
-      const { user, accessToken, refreshToken } = result.value;
+      const { user, accessToken, refreshToken } = result;
 
       // 6. Устанавливаем токены в cookie
-      res.cookie(this.REFRESH_TOKEN_COOKIE_KEY, refreshToken, this.cookieOptions);
       res.cookie(this.ACCESS_TOKEN_COOKIE_KEY, accessToken, this.cookieOptions);
+      res.cookie(this.REFRESH_TOKEN_COOKIE_KEY, refreshToken, this.cookieOptions);
 
       return {
         accessToken,
         refreshToken,
-        user: {
-          id: user.id,
-          email: user.email,
-          username: user.username,
-        },
+        userId: user.id,
       };
-    } catch (error) {
-      console.error('Yandex authentication error:', error.response?.data || error.message);
-      throw new UnauthorizedException('Authentication failed');
+    } catch (e) {
+      console.error('Yandex authentication error:', e.response?.data || e.message);
+      throw new UnauthorizedException(`Authentication failed ${e.response?.data || e.message}`);
     }
   }
 }

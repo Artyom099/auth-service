@@ -1,4 +1,4 @@
-import { Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 
 import { User } from '../User';
 
@@ -15,7 +15,7 @@ export class YandexUser {
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   user: User;
 
-  @PrimaryColumn({
+  @Column({
     name: 'user_id',
     type: 'uuid',
     nullable: false,

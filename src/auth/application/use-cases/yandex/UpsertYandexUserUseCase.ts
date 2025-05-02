@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import { randomBytes } from 'crypto';
 
 import { User, UserEmailConfirmation, YandexUser } from '../../../../libs/db/entity';
-import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { DeviceRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
@@ -34,8 +33,8 @@ export class UpsertYandexUserUseCase implements ICommandHandler<UpsertYandexUser
     private deviceRepository: DeviceRepository,
   ) {}
 
-  async execute(command: UpsertYandexUserCommand): Promise<ResultType<YandexAuthResult>> {
-    const { yandexId, email, username, provider, deviceName, ip } = command;
+  async execute(command: UpsertYandexUserCommand): Promise<YandexAuthResult> {
+    const { yandexId, email, username, deviceName, ip } = command;
 
     return this.manager.transaction(async (em) => {
       // Ищем пользователя по yandexId
@@ -101,18 +100,13 @@ export class UpsertYandexUserUseCase implements ICommandHandler<UpsertYandexUser
       const deviceDto = {
         id: deviceId,
         userId: user.id,
-        deviceName: deviceName || 'Unknown device',
+        deviceName,
         ip,
         issuedAt,
       };
-
       await this.deviceRepository.createDevice(em, deviceDto);
 
-      return new SuccessResult<YandexAuthResult>({
-        user,
-        accessToken,
-        refreshToken,
-      });
+      return { user, accessToken, refreshToken };
     });
   }
 }
