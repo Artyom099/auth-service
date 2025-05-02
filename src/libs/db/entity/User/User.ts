@@ -4,6 +4,7 @@ import { Device } from '../Device';
 import { OauthVkUser } from '../OauthVkUser';
 import { UserEmailConfirmation } from '../UserEmailConfirmation';
 import { UserPasswordRecovery } from '../UserPasswordRecovery';
+import { YandexUser } from '../YandexUser';
 
 @Entity('user')
 export class User {
@@ -49,8 +50,6 @@ export class User {
   @OneToOne(() => OauthVkUser)
   oauthVkUser?: OauthVkUser;
 
-  // photoUrl              String?
-  // google                GoogleUser?
-  // offerheap             OfferheapUser?
-  // github                GithubUser?
+  @OneToOne(() => YandexUser)
+  yandexUser?: YandexUser;
 }

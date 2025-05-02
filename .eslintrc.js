@@ -29,6 +29,10 @@ module.exports = {
         allowTemplateLiterals: true,
       },
     ],
+    // '@typescript-eslint/parameters-newline': ['error', {
+    //   'minParameters': 3,
+    //   'allowSingleLine': false
+    // }],
     '@typescript-eslint/lines-between-class-members':[
       'error',
       {

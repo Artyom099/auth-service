@@ -65,7 +65,7 @@ import { UserQueryRepository } from '../repositories';
 export class AuthController {
   private REFRESH_TOKEN_COOKIE_KEY = 'refreshToken';
   private ACCESS_TOKEN_COOKIE_KEY = 'accessToken';
-  private cookieOptions: CookieOptions;
+  private readonly cookieOptions: CookieOptions;
 
   constructor(
     private commandBus: CommandBus,

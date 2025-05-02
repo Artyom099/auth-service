@@ -121,6 +121,7 @@ export class OauthSettings {
   GITHUB: OauthParamsType;
   GOOGLE: OauthParamsType;
   VK: TOauthVkParams;
+  YANDEX: OauthParamsType;
 
   constructor(envVariables: EnvironmentVariable) {
     this.GITHUB = {
@@ -140,6 +141,11 @@ export class OauthSettings {
       TOKEN_URL: envVariables.VK_TOKEN_URL!,
       API_URL: envVariables.VK_API_URL!,
       API_VERSION: envVariables.VK_API_VERSION!,
+    };
+    this.YANDEX = {
+      CLIENT_ID: envVariables.YANDEX_CLIENT_ID!,
+      CLIENT_SECRET: envVariables.YANDEX_CLIENT_SECRET!,
+      CLIENT_REDIRECT_URI: envVariables.YANDEX_CLIENT_REDIRECT_URI!,
     };
   }
 }

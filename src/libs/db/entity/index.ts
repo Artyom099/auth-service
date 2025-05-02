@@ -4,3 +4,4 @@ export * from './User';
 export * from './UserEmailConfirmation';
 export * from './UserPasswordRecovery';
 export * from './OauthVkUser';
+export * from './YandexUser';

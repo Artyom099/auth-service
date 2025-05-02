@@ -32,7 +32,7 @@ export const appSettings = <T>(app: INestApplication, module: T) => {
 
   app.enableCors({
     allowedHeaders: ['content-type', 'authorization'],
-    origin: ['http://localhost:3000', 'http://localhost:3003', 'http://localhost:5173'],
+    origin: ['http://localhost:3000', 'http://localhost:3003', 'http://localhost:5173', 'https://oauth.yandex.ru'],
     credentials: true,
   });
   app.use(cookieParser());

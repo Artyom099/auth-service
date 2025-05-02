@@ -35,12 +35,14 @@ import {
   VkOauthService,
   VkOauthUseCase,
 } from './auth';
+import { YandexAuthController } from './auth/api/controllers/YandexAuthController';
+import { UpsertYandexUserUseCase } from './auth/application/use-cases/yandex/UpsertYandexUserUseCase';
 import { AppConfig, AppConfigModule } from './config';
 import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
 import { entities } from './libs/db/entity';
 import { EmailAdapter } from './libs/email';
 
-const controllers = [AuthController, DeviceController, StartController];
+const controllers = [AuthController, DeviceController, StartController, YandexAuthController];
 
 const services = [EmailService, AuthService, TokenService, VkOauthService];
 
@@ -52,6 +54,8 @@ const useCases = [
 
   GithubOauthUseCase,
   GoogleOauthUseCase,
+  VkOauthUseCase,
+  UpsertYandexUserUseCase,
 
   ConfirmEmailUseCase,
   ResendEmailConfirmationUseCase,
@@ -62,8 +66,6 @@ const useCases = [
 
   DeleteDeviceUseCase,
   DeleteOtherDevicesUseCase,
-
-  VkOauthUseCase,
 ];
 
 const repositories = [
@@ -127,6 +129,15 @@ const infrastructureModules = [AppConfigModule];
           redirectUri: CLIENT_REDIRECT_URI,
         });
       },
+      inject: [AppConfig.name],
+    },
+    {
+      provide: 'YANDEX-CONFIG',
+      useFactory: (appConfig: AppConfig) => ({
+        clientId: appConfig.settings.oauth.YANDEX.CLIENT_ID,
+        clientSecret: appConfig.settings.oauth.YANDEX.CLIENT_SECRET,
+        redirectUri: appConfig.settings.oauth.YANDEX.CLIENT_REDIRECT_URI,
+      }),
       inject: [AppConfig.name],
     },
   ],
