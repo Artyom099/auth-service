@@ -22,7 +22,7 @@ export class YandexAuthController {
     private readonly commandBus: CommandBus,
   ) {
     this.cookieOptions = {
-      httpOnly: true,
+      httpOnly: false,
       sameSite: !appConfig.env.isDevelopment() ? ('none' as const) : false,
       secure: !appConfig.env.isDevelopment(),
     };
@@ -102,6 +102,7 @@ export class YandexAuthController {
           ipAddress,
         ),
       );
+      console.log('Result:', result);
 
       const { user, accessToken, refreshToken } = result;
 
@@ -109,11 +110,7 @@ export class YandexAuthController {
       console.log(`[${new Date().toISOString()}] Setting cookies`);
       res.cookie(this.ACCESS_TOKEN_COOKIE_KEY, accessToken, this.cookieOptions);
       res.cookie(this.REFRESH_TOKEN_COOKIE_KEY, refreshToken, this.cookieOptions);
-      console.log('Cookie options:', {
-        ...this.cookieOptions,
-        sameSite: this.cookieOptions.sameSite,
-        secure: this.cookieOptions.secure,
-      });
+      res.redirect('http://localhost:5173/yandex-callback');
 
       const endTime = new Date();
       console.log(
