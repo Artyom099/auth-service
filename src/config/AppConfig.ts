@@ -145,7 +145,7 @@ export class OauthSettings {
     this.YANDEX = {
       CLIENT_ID: envVariables.YANDEX_CLIENT_ID!,
       CLIENT_SECRET: envVariables.YANDEX_CLIENT_SECRET!,
-      CLIENT_REDIRECT_URI: envVariables.YANDEX_CLIENT_REDIRECT_URI!,
+      CLIENT_REDIRECT_URI: envVariables.YANDEX_REDIRECT_URI!,
     };
   }
 }
@@ -156,7 +156,7 @@ export class AppConfig {
     public readonly settings: SettingsType,
   ) {
     console.log({ env });
-    console.log({ settings });
+    console.dir({ settings }, { depth: 10 });
   }
 }
 

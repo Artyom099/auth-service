@@ -34,7 +34,13 @@ export class YandexAuthController {
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Authentication failed' })
   @HttpCode(HttpStatus.OK)
   async handleCallback(@Query('code') code: string, @Req() req: Request, @Res() res: Response) {
+    const startTime = new Date();
+    console.log(`[${startTime.toISOString()}] Starting Yandex OAuth callback processing`);
+    console.log('Request headers:', req.headers);
+    console.log('Request query params:', req.query);
+
     if (!code) {
+      console.error('Authorization code not provided in request');
       throw new UnauthorizedException('Authorization code not provided');
     }
 
@@ -48,26 +54,37 @@ export class YandexAuthController {
         redirect_uri: this.appConfig.settings.oauth.YANDEX.CLIENT_REDIRECT_URI,
       };
 
-      console.log('Token request params:', params);
+      console.log(`[${new Date().toISOString()}] Token request params:`, params);
+      console.log('Redirect URI being used:', params.redirect_uri);
 
+      const tokenRequestStartTime = new Date();
       const tokenResponse = await axios.post('https://oauth.yandex.ru/token', querystring.stringify(params), {
         headers: {
           'Content-Type': 'application/x-www-form-urlencoded',
         },
       });
-
-      console.log('Token response:', tokenResponse.data);
+      console.log(
+        `[${new Date().toISOString()}] Token request completed in ${new Date().getTime() - tokenRequestStartTime.getTime()}ms`,
+      );
+      console.log('Token response status:', tokenResponse.status);
+      console.log('Token response headers:', tokenResponse.headers);
+      console.log('Token response data:', {
+        ...tokenResponse.data,
+        access_token: '***hidden***', // Скрываем токен в логах
+      });
 
       const { access_token } = tokenResponse.data;
 
       // 2. Получаем информацию о пользователе
+      console.log(`[${new Date().toISOString()}] Requesting user info from Yandex`);
       const userInfoResponse = await axios.get('https://login.yandex.ru/info', {
         headers: {
           Authorization: `OAuth ${access_token}`,
         },
       });
 
-      console.log('User info response:', userInfoResponse.data);
+      console.log('User info response status:', userInfoResponse.status);
+      console.log('User info response data:', userInfoResponse.data);
 
       const yandexUser = userInfoResponse.data;
 
@@ -78,6 +95,7 @@ export class YandexAuthController {
       const deviceName = req.headers['user-agent'] || 'Unknown';
 
       // 5. Создаем/находим пользователя и генерируем токены
+      console.log(`[${new Date().toISOString()}] Creating/updating user in database`);
       const result = await this.commandBus.execute(
         new UpsertYandexUserCommand(
           yandexUser.id.toString(),
@@ -88,13 +106,23 @@ export class YandexAuthController {
           ipAddress,
         ),
       );
-      console.log({ result });
 
       const { user, accessToken, refreshToken } = result;
 
       // 6. Устанавливаем токены в cookie
+      console.log(`[${new Date().toISOString()}] Setting cookies`);
       res.cookie(this.ACCESS_TOKEN_COOKIE_KEY, accessToken, this.cookieOptions);
       res.cookie(this.REFRESH_TOKEN_COOKIE_KEY, refreshToken, this.cookieOptions);
+      console.log('Cookie options:', {
+        ...this.cookieOptions,
+        sameSite: this.cookieOptions.sameSite,
+        secure: this.cookieOptions.secure,
+      });
+
+      const endTime = new Date();
+      console.log(
+        `[${endTime.toISOString()}] Yandex OAuth process completed in ${endTime.getTime() - startTime.getTime()}ms`,
+      );
 
       return {
         accessToken,
@@ -102,8 +130,18 @@ export class YandexAuthController {
         userId: user.id,
       };
     } catch (e) {
-      console.error('Yandex authentication error:', e.response?.data || e.message);
-      throw new UnauthorizedException(`Authentication failed ${e.response?.data || e.message}`);
+      console.error(`[${new Date().toISOString()}] Yandex authentication error:`, {
+        error: e.response?.data || e.message,
+        stack: e.stack,
+        config: e.config
+          ? {
+              url: e.config.url,
+              method: e.config.method,
+              headers: e.config.headers,
+            }
+          : undefined,
+      });
+      throw new UnauthorizedException(`Authentication failed: ${e.response?.data?.error_description || e.message}`);
     }
   }
 }
