@@ -55,7 +55,6 @@ export class YandexAuthController {
       };
 
       console.log(`[${new Date().toISOString()}] Token request params:`, params);
-      console.log('Redirect URI being used:', params.redirect_uri);
 
       const tokenRequestStartTime = new Date();
       const tokenResponse = await axios.post('https://oauth.yandex.ru/token', querystring.stringify(params), {
@@ -68,10 +67,7 @@ export class YandexAuthController {
       );
       console.log('Token response status:', tokenResponse.status);
       console.log('Token response headers:', tokenResponse.headers);
-      console.log('Token response data:', {
-        ...tokenResponse.data,
-        access_token: '***hidden***', // Скрываем токен в логах
-      });
+      console.log('Token response data:', tokenResponse.data);
 
       const { access_token } = tokenResponse.data;
 
