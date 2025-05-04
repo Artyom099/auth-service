@@ -76,6 +76,14 @@ export class UpsertYandexUserUseCase implements ICommandHandler<UpsertYandexUser
             }),
           );
 
+          await em.save(
+            em.create(UserEmailConfirmation, {
+              userId: user.id,
+              email,
+              isConfirmed: true,
+            }),
+          );
+
           // связываем его с Яндекс-аккаунтом
           await em.save(
             em.create(YandexUser, {
