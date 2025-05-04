@@ -32,19 +32,17 @@ import {
   UpdatePasswordUseCase,
   UserQueryRepository,
   UserRepository,
-  VkOauthService,
-  VkOauthUseCase,
 } from './auth';
-import { YandexAuthController } from './auth/api/controllers/YandexAuthController';
+import { YandexOauthController } from './auth/api/controllers/YandexOauthController';
 import { UpsertYandexUserUseCase } from './auth/application/use-cases/yandex/UpsertYandexUserUseCase';
 import { AppConfig, AppConfigModule } from './config';
 import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
 import { entities } from './libs/db/entity';
 import { EmailAdapter } from './libs/email';
 
-const controllers = [AuthController, DeviceController, StartController, YandexAuthController];
+const controllers = [AuthController, DeviceController, StartController, YandexOauthController];
 
-const services = [EmailService, AuthService, TokenService, VkOauthService];
+const services = [EmailService, AuthService, TokenService];
 
 const useCases = [
   LogInUseCase,
@@ -54,7 +52,6 @@ const useCases = [
 
   GithubOauthUseCase,
   GoogleOauthUseCase,
-  VkOauthUseCase,
   UpsertYandexUserUseCase,
 
   ConfirmEmailUseCase,

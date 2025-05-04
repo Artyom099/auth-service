@@ -11,7 +11,7 @@ import { UpsertYandexUserCommand } from '../../application/use-cases/yandex/Upse
 
 @ApiTags('Auth')
 @Controller('yandex')
-export class YandexAuthController {
+export class YandexOauthController {
   private REFRESH_TOKEN_COOKIE_KEY = 'refreshToken';
   private ACCESS_TOKEN_COOKIE_KEY = 'accessToken';
   private readonly cookieOptions: CookieOptions;
@@ -91,7 +91,6 @@ export class YandexAuthController {
       const { userId, accessToken, refreshToken } = result;
 
       // 6. Устанавливаем токены в cookie
-      console.log(`[${new Date().toISOString()}] Setting cookies`);
       res.cookie(this.ACCESS_TOKEN_COOKIE_KEY, accessToken, this.cookieOptions);
       res.cookie(this.REFRESH_TOKEN_COOKIE_KEY, refreshToken, this.cookieOptions);
       res.redirect('http://localhost:5173/yandex-callback');
