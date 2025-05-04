@@ -3,7 +3,7 @@ import { EntityManager } from 'typeorm';
 
 import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
 import { generateConfirmationCode } from '../../../../libs/utils';
-import { EmailConfirmationRepository, UserTypeOrmRepository } from '../../../repositories';
+import { EmailConfirmationRepository, UserRepository } from '../../../repositories';
 import { TokenService, VkOauthService } from '../../services';
 
 export class VkOauthCommand {
@@ -17,7 +17,7 @@ export class VkOauthCommand {
 export class VkOauthUseCase implements ICommandHandler<VkOauthCommand> {
   constructor(
     private readonly vkOauthService: VkOauthService,
-    private readonly userRepository: UserTypeOrmRepository,
+    private readonly userRepository: UserRepository,
     private readonly tokenService: TokenService,
     private readonly manager: EntityManager,
     private emailConfirmationRepository: EmailConfirmationRepository,

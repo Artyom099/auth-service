@@ -1,2 +1,2 @@
 export * from './UserQueryRepository';
-export * from './UserTypeOrmRepository';
+export * from './UserRepository';

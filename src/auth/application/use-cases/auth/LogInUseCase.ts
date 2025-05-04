@@ -8,7 +8,7 @@ import { ResultType, SuccessResult } from '../../../../libs/error-handling/resul
 import { CreateDeviceDTO } from '../../../api/models/dto/create.device.dto';
 import { LogInDto } from '../../../api/models/dto/LogInDto';
 import { PairTokensType } from '../../../api/models/dto/pair.tokens.type';
-import { DeviceRepository, UserTypeOrmRepository } from '../../../repositories';
+import { DeviceRepository, UserRepository } from '../../../repositories';
 import { AuthService, TokenService } from '../../services';
 
 export class LogInCommand {
@@ -21,7 +21,7 @@ export class LogInUseCase implements ICommandHandler<LogInCommand> {
     private manager: EntityManager,
     private authService: AuthService,
     private tokenService: TokenService,
-    private userRepository: UserTypeOrmRepository,
+    private userRepository: UserRepository,
     private deviceRepository: DeviceRepository,
   ) {}
 

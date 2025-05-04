@@ -4,8 +4,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { randomBytes } from 'crypto';
 
-import { User, UserEmailConfirmation, YandexUser } from '../../../../libs/db/entity';
-import { DeviceRepository } from '../../../repositories';
+import { User, UserEmailConfirmation } from '../../../../libs/db/entity';
+import { DeviceRepository, EmailConfirmationRepository, UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
 export class UpsertYandexUserCommand {
@@ -20,7 +20,7 @@ export class UpsertYandexUserCommand {
 }
 
 export interface YandexAuthResult {
-  user: User;
+  userId: string;
   accessToken: string;
   refreshToken: string;
 }
@@ -31,6 +31,8 @@ export class UpsertYandexUserUseCase implements ICommandHandler<UpsertYandexUser
     private manager: EntityManager,
     private tokenService: TokenService,
     private deviceRepository: DeviceRepository,
+    private userRepository: UserRepository,
+    private emailConfirmationRepository: EmailConfirmationRepository,
   ) {}
 
   async execute(command: UpsertYandexUserCommand): Promise<YandexAuthResult> {
@@ -38,18 +40,12 @@ export class UpsertYandexUserUseCase implements ICommandHandler<UpsertYandexUser
 
     return this.manager.transaction(async (em) => {
       // Ищем пользователя по yandexId
-      const userByYandexlId = await em
-        .createQueryBuilder(User, 'u')
-        .select('uec.email', 'email')
-        .innerJoin(YandexUser, 'yu', 'yu.userId = u.id')
-        .innerJoin(UserEmailConfirmation, 'uec', 'uec.userId = u.id')
-        .where('uec.email = :email', { email })
-        .getRawOne<{ email: string }>();
+      const userByYandex = await this.userRepository.getUserCreatedByYandex(em, email);
 
-      let user: User;
+      let userId: string = userByYandex?.id;
 
       // Если пользователя нет, создаем нового
-      if (!userByYandexlId) {
+      if (!userByYandex) {
         // Проверяем, не зарегистрирован ли уже пользователь с таким email
         const existingUser = await em
           .createQueryBuilder(User, 'u')
@@ -61,36 +57,24 @@ export class UpsertYandexUserUseCase implements ICommandHandler<UpsertYandexUser
 
         if (existingUser) {
           // Если пользователь с таким email уже есть, связываем его с Яндекс-аккаунтом
-          await em.save(
-            em.create(YandexUser, {
-              yandexId,
-              userId: existingUser.id,
-            }),
-          );
+          userId = existingUser.id;
+          await this.userRepository.createYandexUser(em, { yandexId, userId });
         } else {
           // Создаем нового пользователя
-          user = await em.save(
-            em.create(User, {
-              login: username,
-              passwordHash: randomBytes(16).toString('base64'),
-            }),
-          );
+          const user = await this.userRepository.create(em, {
+            login: username,
+            passwordHash: randomBytes(16).toString('base64'),
+          });
+          userId = user.id;
 
-          await em.save(
-            em.create(UserEmailConfirmation, {
-              userId: user.id,
-              email,
-              isConfirmed: true,
-            }),
-          );
+          await this.emailConfirmationRepository.create(em, {
+            userId: user.id,
+            email,
+            isConfirmed: true,
+          });
 
           // связываем его с Яндекс-аккаунтом
-          await em.save(
-            em.create(YandexUser, {
-              yandexId,
-              userId: user.id,
-            }),
-          );
+          await this.userRepository.createYandexUser(em, { yandexId, userId });
         }
       }
 
@@ -99,7 +83,7 @@ export class UpsertYandexUserUseCase implements ICommandHandler<UpsertYandexUser
 
       // Генерируем токены
       const { accessToken, refreshToken } = await this.tokenService.signTokens({
-        userId: user.id,
+        userId,
         deviceId,
         issuedAt: issuedAt.toISOString(),
       });
@@ -107,14 +91,14 @@ export class UpsertYandexUserUseCase implements ICommandHandler<UpsertYandexUser
       // Создаем устройство
       const deviceDto = {
         id: deviceId,
-        userId: user.id,
+        userId,
         deviceName,
         ip,
         issuedAt,
       };
       await this.deviceRepository.createDevice(em, deviceDto);
 
-      return { user, accessToken, refreshToken };
+      return { userId, accessToken, refreshToken };
     });
   }
 }

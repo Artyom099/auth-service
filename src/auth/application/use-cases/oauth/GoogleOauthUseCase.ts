@@ -8,7 +8,7 @@ import { ProviderDataType } from './utils/types';
 
 import { AppConfig } from '../../../../config';
 import { OauthServicesTypesEnum } from '../../../enums/OauthServicesTypesEnum';
-import { UserTypeOrmRepository } from '../../../repositories';
+import { UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
 export class GoogleOauthCommand extends BaseOauthCommand {}
@@ -20,7 +20,7 @@ export class GoogleOauthUseCase extends BaseOauthUseCase<GoogleOauthCommand> {
   constructor(
     protected manager: EntityManager,
     protected tokenService: TokenService,
-    protected usersRepository: UserTypeOrmRepository,
+    protected usersRepository: UserRepository,
     @Inject(AppConfig.name) protected appConfig: AppConfig,
     @Inject('GOOGLE-AUTH') protected readonly googleApi: OAuth2Client,
   ) {

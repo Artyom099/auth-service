@@ -8,7 +8,7 @@ import { DeepPartial, EntityManager } from 'typeorm';
 import { ErrorResult } from '../../../../libs/error-handling/result';
 import { generateConfirmationCode } from '../../../../libs/utils';
 import { RegistrationRequestDto } from '../../../api/models/input/RegistrationRequestDto';
-import { EmailConfirmationRepository, UserTypeOrmRepository } from '../../../repositories';
+import { EmailConfirmationRepository, UserRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
 export class RegistrationCommand {
@@ -22,7 +22,7 @@ export class RegistrationUseCase implements ICommandHandler<RegistrationCommand>
   constructor(
     private manager: EntityManager,
     private emailService: EmailService,
-    private userRepository: UserTypeOrmRepository,
+    private userRepository: UserRepository,
     private emailConfirmationRepository: EmailConfirmationRepository,
   ) {}
 

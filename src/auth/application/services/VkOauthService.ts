@@ -1,10 +1,10 @@
 import { HttpService } from '@nestjs/axios';
-import { Injectable, Inject, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 
 import { AppConfig } from '../../../config';
 import { SuccessResult, SuccessResultType } from '../../../libs/error-handling/result';
-import { UserTypeOrmRepository } from '../../repositories';
+import { UserRepository } from '../../repositories';
 
 interface VkTokenResponse {
   access_token: string;
@@ -24,7 +24,7 @@ interface VkUserInfo {
 export class VkOauthService {
   constructor(
     private readonly httpService: HttpService,
-    private readonly userRepository: UserTypeOrmRepository,
+    private readonly userRepository: UserRepository,
     @Inject(AppConfig.name) private readonly appConfig: AppConfig,
   ) {}
 

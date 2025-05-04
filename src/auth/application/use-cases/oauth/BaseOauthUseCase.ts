@@ -8,7 +8,7 @@ import { ConnectProviderType, ProviderDataType } from './utils/types';
 
 import { ErrorResult, InternalErrorCode } from '../../../../libs/error-handling/result';
 import { OauthServicesTypesEnum } from '../../../enums/OauthServicesTypesEnum';
-import { UserTypeOrmRepository } from '../../../repositories';
+import { UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
 export class BaseOauthCommand {
@@ -22,7 +22,7 @@ export abstract class BaseOauthUseCase<T extends BaseOauthCommand> implements IC
   constructor(
     protected manager: EntityManager,
     protected tokenService: TokenService,
-    protected usersRepository: UserTypeOrmRepository,
+    protected usersRepository: UserRepository,
   ) {}
 
   async execute(command: T) {

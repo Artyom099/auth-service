@@ -4,14 +4,14 @@ import * as request from 'supertest';
 import { EntityManager } from 'typeorm';
 
 import { AppModule } from '../../src/AppModule';
-import { UserTypeOrmRepository } from '../../src/auth';
+import { UserRepository } from '../../src/auth';
 import { RegistrationRequestDto } from '../../src/auth/api/models/input/RegistrationRequestDto';
 import { User } from '../../src/libs/db/entity';
 
 describe('Auth Registration (e2e)', () => {
   let app: INestApplication;
   let entityManager: EntityManager;
-  let userRepository: UserTypeOrmRepository;
+  let userRepository: UserRepository;
   let dto: RegistrationRequestDto;
 
   beforeAll(async () => {
@@ -23,7 +23,7 @@ describe('Auth Registration (e2e)', () => {
     await app.init();
 
     entityManager = app.get(EntityManager);
-    userRepository = app.get(UserTypeOrmRepository);
+    userRepository = app.get(UserRepository);
 
     // Очищаем базу данных перед каждым тестом
     await entityManager.clear(User);

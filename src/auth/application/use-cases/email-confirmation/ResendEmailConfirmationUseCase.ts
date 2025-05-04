@@ -6,8 +6,7 @@ import { randomUUID } from 'crypto';
 
 import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
 import { UpdateCodeDto } from '../../../api/models/dto/UpdateCodeDto';
-import { EmailConfirmationRepository } from '../../../repositories';
-import { UserTypeOrmRepository } from '../../../repositories';
+import { EmailConfirmationRepository, UserRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
 export class ResendEmailConfirmationCommand {
@@ -19,7 +18,7 @@ export class ResendEmailConfirmationUseCase implements ICommandHandler<ResendEma
   constructor(
     private manager: EntityManager,
     private emailService: EmailService,
-    private userRepository: UserTypeOrmRepository,
+    private userRepository: UserRepository,
     private emailConfirmationRepository: EmailConfirmationRepository,
   ) {}
 

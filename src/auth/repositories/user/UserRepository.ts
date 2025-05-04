@@ -1,64 +1,128 @@
-// import { Injectable } from '@nestjs/common';
-// import { Prisma, User } from '@prisma/client';
+import { Injectable } from '@nestjs/common';
+import { DeepPartial, EntityManager } from 'typeorm';
 
-// import { PrismaService } from '../../../../prisma/prisma.service';
-// import { TransactionType } from '../../../libs/db';
-// import { OauthServicesTypesEnum } from '../../enums/OauthServicesTypesEnum';
+import { OauthVkUser, User, UserEmailConfirmation, YandexUser } from '../../../libs/db/entity';
+import { OauthServicesTypesEnum } from '../../enums/OauthServicesTypesEnum';
 
-// @Injectable()
-// export class UserRepository {
-//   constructor(private prisma: PrismaService) {}
+@Injectable()
+export class UserRepository {
+  async getByProvider(em: EntityManager, provider: OauthServicesTypesEnum, id: number | string): Promise<User> {
+    return em.findOne(User, {
+      where: { [provider]: { id } },
+      relations: [provider],
+    });
+  }
 
-//   async getByProvider(provider: OauthServicesTypesEnum, id: number | string, tx?: TransactionType): Promise<User> {
-//     const context = tx || this.prisma;
+  async getUser(
+    em: EntityManager,
+    params: any, // todo - Partial<User>,
+    additionalFields?: any, // todo - string[],
+  ): Promise<User> {
+    return em.findOne(User, {
+      where: params,
+      relations: additionalFields,
+    });
+  }
 
-//     return context.user.findFirst({
-//       where: { [provider]: { id } },
-//       include: { [provider]: true },
-//     });
-//   }
+  async isUserExistByLoginOrEmail(em: EntityManager, loginOrEmail: string): Promise<boolean> {
+    const qb = em
+      .createQueryBuilder(User, 'u')
+      .innerJoin(UserEmailConfirmation, 'eci', 'eci.userId = u.id')
+      .where('u.login = :loginOrEmail')
+      .orWhere('eci.email = :loginOrEmail')
+      .setParameters({ loginOrEmail });
 
-//   async getUser<T extends Prisma.UserInclude>(
-//     params: Prisma.UserWhereInput,
-//     additionalFields?: T,
-//     tx?: TransactionType,
-//   ): Promise<Prisma.UserGetPayload<{ include: T }>> {
-//     const context = tx || this.prisma;
+    return qb.getExists();
+  }
 
-//     return context.user.findFirst({ where: params, include: additionalFields });
-//   }
+  async getUserByLoginOrEmail(
+    em: EntityManager,
+    loginOrEmail: string,
+  ): Promise<{ id: string; email: string; isConfirmed: boolean; passwordHash: string }> {
+    const qb = em
+      .createQueryBuilder(User, 'u')
+      .select('u.id', 'id')
+      .addSelect('uec.email', 'email')
+      .addSelect('uec.isConfirmed', 'isConfirmed')
+      .addSelect('u.passwordHash', 'passwordHash')
+      .innerJoin(UserEmailConfirmation, 'uec', 'uec.userId = u.id')
+      .where('u.login = :loginOrEmail')
+      .orWhere('uec.email = :loginOrEmail')
+      .setParameters({ loginOrEmail });
 
-//   async getUserByLoginOrEmail(loginOrEmail: string, tx?: TransactionType): Promise<User> {
-//     const context = tx || this.prisma;
+    return qb.getRawOne<{ id: string; email: string; isConfirmed: boolean; passwordHash: string }>();
+  }
 
-//     return context.user.findFirst({
-//       where: {
-//         OR: [{ login: loginOrEmail }, { email: loginOrEmail }],
-//       },
-//     });
-//   }
+  async create(em: EntityManager, dto: DeepPartial<User>): Promise<User> {
+    return em.save<User>(em.create(User, dto));
+  }
 
-//   async create(data: Prisma.UserCreateInput, tx?: TransactionType): Promise<{ id: number }> {
-//     const context = tx || this.prisma;
+  async delete(em: EntityManager, id: string): Promise<void> {
+    await em.delete(User, id);
+  }
 
-//     return context.user.create({
-//       data,
-//       select: { id: true },
-//     });
-//   }
+  async connectProviderToUser(
+    em: EntityManager,
+    id: string,
+    dto: any, // todo - fix type
+  ): Promise<void> {
+    await em.update(User, id, dto);
+  }
 
-//   async deleteUser(id: number, tx?: TransactionType): Promise<void> {
-//     const context = tx || this.prisma;
+  /**
+   * Получает пользователя по ID VK
+   */
+  async getUserByVkId(em: EntityManager, id: string): Promise<User> {
+    const qb = em
+      .createQueryBuilder(User, 'u')
+      .innerJoin(OauthVkUser, 'ovk', 'ovk.userId = u.id')
+      .where('ovk.vkId = :id', { id });
 
-//     await context.user.delete({ where: { id } });
-//   }
+    return qb.getOne();
+  }
 
-//   async update(id: number, user: Prisma.UserUpdateInput, tx?: TransactionType): Promise<void> {
-//     const context = tx || this.prisma;
+  /**
+   * Генерирует пользователя при регистрации через OAuth
+   */
+  async createVkUser(em: EntityManager, userId: string, vkId: number) {
+    await em.save(
+      em.create(OauthVkUser, {
+        userId,
+        vkId,
+      }),
+    );
+  }
 
-//     await context.user.update({
-//       where: { id },
-//       data: user,
-//     });
-//   }
-// }
+  /**
+   * поиск пользователя зарегистрированного через yandex по email
+   */
+  public async getUserCreatedByYandex(
+    em: EntityManager,
+    email: string,
+  ): Promise<{
+    id: string;
+    email: string;
+  }> {
+    const qb = em
+      .createQueryBuilder(User, 'u')
+      .select('u.id', 'id')
+      .select('uec.email', 'email')
+      .innerJoin(YandexUser, 'yu', 'yu.userId = u.id')
+      .innerJoin(UserEmailConfirmation, 'uec', 'uec.userId = u.id')
+      .where('uec.email = :email', { email });
+
+    return qb.getRawOne<{ id: string; email: string }>();
+  }
+
+  /**
+   * создание пользователя через яндекс
+   */
+  public async createYandexUser(em: EntityManager, dto: DeepPartial<YandexUser>): Promise<void> {
+    await em.save(
+      em.create(YandexUser, {
+        yandexId: dto.yandexId,
+        userId: dto.userId,
+      }),
+    );
+  }
+}

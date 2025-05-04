@@ -5,13 +5,13 @@ import { EntityManager } from 'typeorm';
 import { TokenService } from './TokenService';
 
 import { ResultType, SuccessResult } from '../../../libs/error-handling/result';
-import { DeviceRepository, UserTypeOrmRepository } from '../../repositories';
+import { DeviceRepository, UserRepository } from '../../repositories';
 
 @Injectable()
 export class AuthService {
   constructor(
     private tokenService: TokenService,
-    private userRepository: UserTypeOrmRepository,
+    private userRepository: UserRepository,
     private deviceRepository: DeviceRepository,
   ) {}
 

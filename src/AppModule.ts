@@ -31,7 +31,7 @@ import {
   TokenService,
   UpdatePasswordUseCase,
   UserQueryRepository,
-  UserTypeOrmRepository,
+  UserRepository,
   VkOauthService,
   VkOauthUseCase,
 } from './auth';
@@ -69,7 +69,7 @@ const useCases = [
 ];
 
 const repositories = [
-  UserTypeOrmRepository,
+  UserRepository,
   UserQueryRepository,
   DeviceRepository,
   DeviceQueryRepository,
@@ -141,6 +141,6 @@ const infrastructureModules = [AppConfigModule];
       inject: [AppConfig.name],
     },
   ],
-  exports: [UserTypeOrmRepository],
+  exports: [UserRepository],
 })
 export class AppModule {}

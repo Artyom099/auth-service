@@ -6,7 +6,7 @@ import { EntityManager } from 'typeorm';
 
 import { ResultType } from '../../../../libs/error-handling/result';
 import { generateConfirmationCode } from '../../../../libs/utils';
-import { PasswordRecoveryRepository, UserTypeOrmRepository } from '../../../repositories';
+import { PasswordRecoveryRepository, UserRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
 export class PasswordRecoveryCommand {
@@ -18,7 +18,7 @@ export class PasswordRecoveryUseCase implements ICommandHandler<PasswordRecovery
   constructor(
     private manager: EntityManager,
     private emailService: EmailService,
-    private userRepository: UserTypeOrmRepository,
+    private userRepository: UserRepository,
     private passwordRecoveryRepository: PasswordRecoveryRepository,
   ) {}
 
