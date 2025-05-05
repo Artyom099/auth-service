@@ -9,6 +9,12 @@ import * as querystring from 'querystring';
 import { AppConfig } from '../../../config';
 import { UpsertYandexUserCommand } from '../../application/use-cases/yandex/UpsertYandexUserUseCase';
 
+export type TYandexCallbackResponseDto = {
+  userId: string;
+  accessToken: string;
+  refreshToken: string;
+};
+
 @ApiTags('Auth')
 @Controller('yandex')
 export class YandexOauthController {
@@ -33,7 +39,11 @@ export class YandexOauthController {
   @ApiResponse({ status: HttpStatus.OK, description: 'Successfully authenticated' })
   @ApiResponse({ status: HttpStatus.UNAUTHORIZED, description: 'Authentication failed' })
   @HttpCode(HttpStatus.OK)
-  async handleCallback(@Query('code') code: string, @Req() req: Request, @Res() res: Response) {
+  async handleCallback(
+    @Query('code') code: string,
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<TYandexCallbackResponseDto> {
     const startTime = new Date();
 
     if (!code) {

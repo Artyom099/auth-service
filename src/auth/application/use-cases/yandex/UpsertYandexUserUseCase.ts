@@ -7,6 +7,7 @@ import { randomBytes } from 'crypto';
 import { User, UserEmailConfirmation } from '../../../../libs/db/entity';
 import { DeviceRepository, EmailConfirmationRepository, UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
+import { TYandexCallbackResponseDto } from 'src/auth/api/controllers/YandexOauthController';
 
 export class UpsertYandexUserCommand {
   constructor(
@@ -19,12 +20,6 @@ export class UpsertYandexUserCommand {
   ) {}
 }
 
-export interface YandexAuthResult {
-  userId: string;
-  accessToken: string;
-  refreshToken: string;
-}
-
 @CommandHandler(UpsertYandexUserCommand)
 export class UpsertYandexUserUseCase implements ICommandHandler<UpsertYandexUserCommand> {
   constructor(
@@ -35,7 +30,7 @@ export class UpsertYandexUserUseCase implements ICommandHandler<UpsertYandexUser
     private emailConfirmationRepository: EmailConfirmationRepository,
   ) {}
 
-  async execute(command: UpsertYandexUserCommand): Promise<YandexAuthResult> {
+  async execute(command: UpsertYandexUserCommand): Promise<TYandexCallbackResponseDto> {
     const { yandexId, email, username, deviceName, ip } = command;
 
     return this.manager.transaction(async (em) => {
