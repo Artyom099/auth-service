@@ -22,16 +22,29 @@ In progress
 
 ```mermaid
 sequenceDiagram
+  participant user
   participant client
   participant server
-  client->>oauth provider: Hello John, how are you?
-  loop HealthCheck
-    oauth provider->>oauth provider: Fight against hypochondria
-  end
-  Note right of oauth provider: Rational thoughts <br/>prevail!
-  oauth provider-->>client: Great!
-  oauth provider->>server: How about you?
-  server-->>oauth provider: Jolly good!
+  participant oauth provider
+  
+  user->>+client: войти с помощью Яндекс
+  client->>client: генерация параметров
+  client->>-oauth provider: перенаправление на Яндекс
+  oauth provider->>user: Спрашивает разрешение предоставить сервису данные пользователя
+  user->>oauth provider: Пользователь соглашается
+  
+  Note right of oauth provider: Генерация кода авторизации
+  oauth provider->>oauth provider: 
+  
+  oauth provider->>server: Передача кода
+  server->>oauth provider: Запрос на получение токена по коду
+  oauth provider->>server: Передача токена
+  server->>oauth provider: Запрос на получение данных пользователя по токену
+  oauth provider->>server: Передача данных пользователя
+
+  server->>server: Создание аккаунта пользователя
+  server->>client: Отправка пары токенов
+  client->>user: Домашняя страница сервиса
 ```
 
 ### Сервис предоставляет следующие API:
