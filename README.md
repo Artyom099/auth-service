@@ -27,22 +27,33 @@ sequenceDiagram
   participant server
   participant oauth provider
   
-  user->>+client: войти с помощью Яндекс
-  client->>client: генерация параметров
-  client->>-oauth provider: перенаправление на Яндекс
-  oauth provider->>user: Спрашивает разрешение предоставить сервису данные пользователя
-  user->>oauth provider: Пользователь соглашается
+  user->>+client: Войти с помощью Яндекс
+  activate client
+  Note right of client: Генерация<br>параметров
+  client->>client: 
   
-  Note right of oauth provider: Генерация кода авторизации
+  activate oauth provider
+  client->>+oauth provider: Перенаправление на Яндекс
+  deactivate client
+  oauth provider->>+user: Спрашивает разрешение предоставить сервису данные пользователя
+  deactivate oauth provider
+  
+  user->>-oauth provider: Пользователь соглашается
+  
+  activate oauth provider
+  Note right of oauth provider: Генерация<br>кода авторизации
   oauth provider->>oauth provider: 
   
   oauth provider->>server: Передача кода
+  deactivate oauth provider
+  
   server->>oauth provider: Запрос на получение токена по коду
   oauth provider->>server: Передача токена
   server->>oauth provider: Запрос на получение данных пользователя по токену
   oauth provider->>server: Передача данных пользователя
 
-  server->>server: Создание аккаунта пользователя
+  Note right of server: Создание аккаунта<br>пользователя
+  server->>server: 
   server->>client: Отправка пары токенов
   client->>user: Домашняя страница сервиса
 ```
