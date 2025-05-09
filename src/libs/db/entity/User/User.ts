@@ -1,7 +1,6 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 import { Device } from '../Device';
-import { OauthVkUser } from '../OauthVkUser';
 import { UserEmailConfirmation } from '../UserEmailConfirmation';
 import { UserPasswordRecovery } from '../UserPasswordRecovery';
 import { YandexUser } from '../YandexUser';
@@ -46,9 +45,6 @@ export class User {
 
   @OneToOne(() => UserPasswordRecovery)
   userPasswordRecovery?: UserPasswordRecovery;
-
-  @OneToOne(() => OauthVkUser)
-  oauthVkUser?: OauthVkUser;
 
   @OneToOne(() => YandexUser)
   yandexUser?: YandexUser;
