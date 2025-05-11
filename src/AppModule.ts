@@ -33,14 +33,16 @@ import {
   UserQueryRepository,
   UserRepository,
 } from './auth';
+import { AdminController } from './auth/api/AdminController';
 import { YandexOauthController } from './auth/api/controllers/YandexOauthController';
 import { UpsertYandexUserUseCase } from './auth/application/use-cases/yandex/UpsertYandexUserUseCase';
+import { RoleQueryRepository } from './auth/repositories/role/RoleQueryRepository';
 import { AppConfig, AppConfigModule } from './config';
 import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
-import { entities } from './libs/db/entity';
+import { entities } from './libs/db/entities';
 import { EmailAdapter } from './libs/email';
 
-const controllers = [AuthController, DeviceController, StartController, YandexOauthController];
+const controllers = [AuthController, DeviceController, StartController, YandexOauthController, AdminController];
 
 const services = [EmailService, AuthService, TokenService];
 
@@ -72,6 +74,7 @@ const repositories = [
   DeviceQueryRepository,
   EmailConfirmationRepository,
   PasswordRecoveryRepository,
+  RoleQueryRepository,
 ];
 
 const infrastructureModules = [AppConfigModule];

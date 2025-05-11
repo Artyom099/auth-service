@@ -2,7 +2,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { DataSourceOptions } from 'typeorm/data-source/DataSourceOptions';
 
-import { entities } from './entity';
+import { entities } from './entities';
 import * as migrations from './migration';
 
 const { PG_HOST, PG_PORT, PG_USER, PG_PASSWORD, PG_DB } = process.env;
