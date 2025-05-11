@@ -8,6 +8,9 @@ export class AccessObject {
   @Column()
   type: string;
 
-  @Column()
+  @Column({
+    name: 'parent_name',
+    nullable: true,
+  })
   parentName?: string;
 }

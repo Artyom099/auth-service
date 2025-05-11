@@ -41,6 +41,7 @@ import { AppConfig, AppConfigModule } from './config';
 import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
 import { entities } from './libs/db/entities';
 import { EmailAdapter } from './libs/email';
+import { AccessObjectQueryRepository } from './auth/repositories/access-object/AccessObjectQueryRepository';
 
 const controllers = [AuthController, DeviceController, StartController, YandexOauthController, AdminController];
 
@@ -140,6 +141,7 @@ const infrastructureModules = [AppConfigModule];
       }),
       inject: [AppConfig.name],
     },
+    AccessObjectQueryRepository,
   ],
   exports: [UserRepository],
 })

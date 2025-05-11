@@ -78,4 +78,4 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     await queryRunner.query(`DELETE FROM action`);
     await queryRunner.query(`DELETE FROM access_object`);
   }
-} 
+}

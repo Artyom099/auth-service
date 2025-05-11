@@ -2,9 +2,13 @@ import { Entity, PrimaryColumn } from 'typeorm';
 
 @Entity('right')
 export class Right {
-  @PrimaryColumn()
+  @PrimaryColumn({
+    name: 'action_name',
+  })
   actionName: string;
 
-  @PrimaryColumn()
+  @PrimaryColumn({
+    name: 'role_name',
+  })
   roleName: string;
 }
