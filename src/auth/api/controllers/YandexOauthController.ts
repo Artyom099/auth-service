@@ -7,13 +7,8 @@ import { CookieOptions, Request, Response } from 'express';
 import * as querystring from 'querystring';
 
 import { AppConfig } from '../../../config';
+import { TYandexCallbackResponseDto } from '../../../libs/dto';
 import { UpsertYandexUserCommand } from '../../application/use-cases/yandex/UpsertYandexUserUseCase';
-
-export type TYandexCallbackResponseDto = {
-  userId: string;
-  accessToken: string;
-  refreshToken: string;
-};
 
 @ApiTags('Auth')
 @Controller('yandex')

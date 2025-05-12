@@ -4,10 +4,9 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { randomBytes } from 'crypto';
 
-import { User, UserEmailConfirmation } from '../../../../libs/db/entity';
 import { DeviceRepository, EmailConfirmationRepository, UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
-import { TYandexCallbackResponseDto } from 'src/auth/api/controllers/YandexOauthController';
+import { TYandexCallbackResponseDto } from 'src/libs/dto';
 
 export class UpsertYandexUserCommand {
   constructor(
@@ -42,13 +41,7 @@ export class UpsertYandexUserUseCase implements ICommandHandler<UpsertYandexUser
       // Если пользователя нет, создаем нового
       if (!userByYandex) {
         // Проверяем, не зарегистрирован ли уже пользователь с таким email
-        const existingUser = await em
-          .createQueryBuilder(User, 'u')
-          .select('u.id', 'id')
-          .addSelect('uec.email', 'email')
-          .innerJoin(UserEmailConfirmation, 'uec', 'uec.userId = u.id')
-          .where('uec.email = :email', { email })
-          .getRawOne<{ id: string; email: string }>();
+        const existingUser = await this.userRepository.getExistingYandexUser(em, email);
 
         if (existingUser) {
           // Если пользователь с таким email уже есть, связываем его с Яндекс-аккаунтом

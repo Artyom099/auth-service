@@ -11,7 +11,7 @@ export class AccessObjectQueryRepository {
   async getAccessObjectTree(): Promise<AccessObjectNodeOutputModel[]> {
     // Получаем все объекты доступа
     const accessObjects = await this.manager.find(AccessObject);
-    
+
     // Получаем все связи объектов с действиями
     const objectActions = await this.manager.find(AccessObjectAction, {
       relations: ['action'],
@@ -19,6 +19,7 @@ export class AccessObjectQueryRepository {
 
     // Создаем мапу действий для каждого объекта
     const objectActionsMap = new Map<string, Action[]>();
+
     objectActions.forEach((oa) => {
       const actions = objectActionsMap.get(oa.objectName) || [];
       actions.push(oa.action);
@@ -26,15 +27,10 @@ export class AccessObjectQueryRepository {
     });
 
     // Создаем дерево объектов
-    const tree = this.buildTree(accessObjects, objectActionsMap);
-
-    return tree;
+    return this.buildTree(accessObjects, objectActionsMap);
   }
 
-  private buildTree(
-    objects: AccessObject[],
-    objectActionsMap: Map<string, Action[]>,
-  ): AccessObjectNodeOutputModel[] {
+  private buildTree(objects: AccessObject[], objectActionsMap: Map<string, Action[]>): AccessObjectNodeOutputModel[] {
     // Создаем мапу объектов для быстрого доступа
     const objectsMap = new Map<string, AccessObject>();
     objects.forEach((obj) => objectsMap.set(obj.name, obj));
@@ -52,9 +48,7 @@ export class AccessObjectQueryRepository {
     objectActionsMap: Map<string, Action[]>,
   ): AccessObjectNodeOutputModel {
     // Находим все дочерние объекты
-    const children = Array.from(objectsMap.values()).filter(
-      (obj) => obj.parentName === object.name,
-    );
+    const children = Array.from(objectsMap.values()).filter((obj) => obj.parentName === object.name);
 
     // Создаем узел дерева
     return {
@@ -69,4 +63,4 @@ export class AccessObjectQueryRepository {
         : undefined,
     };
   }
-} 
+}

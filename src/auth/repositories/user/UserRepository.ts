@@ -99,4 +99,18 @@ export class UserRepository {
       }),
     );
   }
+
+  /**
+   * Проверяем, не зарегистрирован ли уже пользователь с таким email
+   */
+  public async getExistingYandexUser(em: EntityManager, email: string): Promise<{ id: string; email: string }> {
+    const qb = em
+      .createQueryBuilder(User, 'u')
+      .select('u.id', 'id')
+      .addSelect('uec.email', 'email')
+      .innerJoin(UserEmailConfirmation, 'uec', 'uec.userId = u.id')
+      .where('uec.email = :email', { email });
+
+    return qb.getRawOne<{ id: string; email: string }>();
+  }
 }
