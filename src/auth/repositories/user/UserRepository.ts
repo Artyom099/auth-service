@@ -82,7 +82,7 @@ export class UserRepository {
     const qb = em
       .createQueryBuilder(User, 'u')
       .select('u.id', 'id')
-      .select('uec.email', 'email')
+      .addSelect('uec.email', 'email')
       .innerJoin(YandexUser, 'yu', 'yu.userId = u.id')
       .innerJoin(UserEmailConfirmation, 'uec', 'uec.userId = u.id')
       .where('uec.email = :email', { email });
