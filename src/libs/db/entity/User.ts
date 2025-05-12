@@ -1,9 +1,9 @@
 import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { Device } from '../Device';
-import { UserEmailConfirmation } from '../UserEmailConfirmation';
-import { UserPasswordRecovery } from '../UserPasswordRecovery';
-import { YandexUser } from '../YandexUser';
+import { Device } from './Device';
+import { UserEmailConfirmation } from './UserEmailConfirmation';
+import { UserPasswordRecovery } from './UserPasswordRecovery';
+import { YandexUser } from './YandexUser';
 
 @Entity('user')
 export class User {

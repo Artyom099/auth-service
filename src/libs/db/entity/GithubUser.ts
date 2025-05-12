@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
-import { User } from '../User';
+import { User } from './User';
 
 @Entity('github_user')
 export class GithubUser {

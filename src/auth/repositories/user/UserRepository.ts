@@ -1,10 +1,8 @@
-import { Injectable } from '@nestjs/common';
 import { DeepPartial, EntityManager } from 'typeorm';
 
 import { User, UserEmailConfirmation, YandexUser } from '../../../libs/db/entity';
 import { OauthServicesTypesEnum } from '../../enums/OauthServicesTypesEnum';
 
-@Injectable()
 export class UserRepository {
   async getByProvider(em: EntityManager, provider: OauthServicesTypesEnum, id: number | string): Promise<User> {
     return em.findOne(User, {

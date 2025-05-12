@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 
-import { User } from '../User';
+import { User } from './User';
 
 @Entity('yandex_user')
 export class YandexUser {

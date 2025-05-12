@@ -1,22 +1,22 @@
 import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
 
-import { User } from '../User';
+import { User } from './User';
 
-@Entity('user_email_confirmation')
-export class UserEmailConfirmation {
+@Entity('user_password_recovery')
+export class UserPasswordRecovery {
   @Column({
-    name: 'confirmation_code',
+    name: 'recovery_code',
     type: 'varchar',
-    nullable: true,
+    nullable: false,
     length: 50,
     unique: true,
   })
-  confirmationCode: string;
+  recoveryCode: string;
 
   @Column({
     name: 'expiration_date',
     type: 'timestamp with time zone',
-    nullable: true,
+    nullable: false,
   })
   expirationDate: Date;
 
@@ -27,15 +27,6 @@ export class UserEmailConfirmation {
     default: false,
   })
   isConfirmed: boolean;
-
-  @Column({
-    name: 'email',
-    type: 'varchar',
-    nullable: false,
-    length: 50,
-    unique: true,
-  })
-  email: string;
 
   @OneToOne(() => User, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })

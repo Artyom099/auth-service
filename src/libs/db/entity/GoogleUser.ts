@@ -1,6 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
-import { User } from '../User';
+import { User } from './User';
 
 @Entity('GoogleUser')
 export class GoogleUser {
