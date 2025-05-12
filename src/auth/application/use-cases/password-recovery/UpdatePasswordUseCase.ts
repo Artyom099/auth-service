@@ -4,8 +4,8 @@ import { hash } from 'bcryptjs';
 import { isAfter } from 'date-fns';
 import { EntityManager } from 'typeorm';
 
+import { UpdatePasswordRequestDto } from '../../../../libs/dto/input/UpdatePasswordRequestDto';
 import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
-import { UpdatePasswordRequestDto } from '../../../api/models/input/UpdatePasswordRequestDto';
 import { PasswordRecoveryRepository } from '../../../repositories';
 
 export class UpdatePasswordCommand {

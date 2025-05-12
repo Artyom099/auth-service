@@ -5,9 +5,9 @@ import { add } from 'date-fns';
 import { User } from 'src/libs/db/entity';
 import { DeepPartial, EntityManager } from 'typeorm';
 
+import { RegistrationRequestDto } from '../../../../libs/dto/input/RegistrationRequestDto';
 import { ErrorResult } from '../../../../libs/error-handling/result';
 import { generateConfirmationCode } from '../../../../libs/utils';
-import { RegistrationRequestDto } from '../../../api/models/input/RegistrationRequestDto';
 import { EmailConfirmationRepository, UserRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 

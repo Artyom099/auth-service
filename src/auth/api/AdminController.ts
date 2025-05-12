@@ -1,10 +1,8 @@
 import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { EntityManager } from 'typeorm';
 
-import { AccessObjectNodeOutputModel } from './models/output/AccessObjectTreeOutputModel';
-import { RoleOutputModel } from './models/output/RoleOutputModel';
-
+import { AccessObjectNodeResponseDto } from '../../libs/dto/output/AccessObjectNodeResponseDto';
+import { RoleGetResponseDto } from '../../libs/dto/output/RoleGetResponseDto';
 import { RoleQueryRepository } from '../repositories';
 import { AccessObjectQueryRepository } from '../repositories/access-object/AccessObjectQueryRepository';
 
@@ -13,7 +11,6 @@ import { AccessObjectQueryRepository } from '../repositories/access-object/Acces
 export class AdminController {
   constructor(
     private roleQueryRepository: RoleQueryRepository,
-    private manager: EntityManager,
     private readonly accessObjectQueryRepository: AccessObjectQueryRepository,
   ) {}
 
@@ -21,10 +18,10 @@ export class AdminController {
   @ApiResponse({
     status: 200,
     description: 'Список ролей успешно получен',
-    type: [RoleOutputModel],
+    type: [RoleGetResponseDto],
   })
   @Get('roles')
-  async getRoles(): Promise<RoleOutputModel[]> {
+  async getRoles(): Promise<RoleGetResponseDto[]> {
     return this.roleQueryRepository.getRoles();
   }
 
@@ -33,9 +30,9 @@ export class AdminController {
   @ApiResponse({
     status: 200,
     description: 'Returns tree of access objects with their actions',
-    type: [AccessObjectNodeOutputModel],
+    type: [AccessObjectNodeResponseDto],
   })
-  async getAccessObjectTree(): Promise<AccessObjectNodeOutputModel[]> {
+  async getAccessObjectTree(): Promise<AccessObjectNodeResponseDto[]> {
     return this.accessObjectQueryRepository.getAccessObjectTree();
   }
 }

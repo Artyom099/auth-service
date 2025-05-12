@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 
 import { User, UserEmailConfirmation } from '../../../libs/db/entity';
-import { GetUserInfoResponseDto } from '../../api/models/view/GetUserInfoResponseDto';
+import { GetUserInfoResponseDto } from '../../../libs/dto/GetUserInfoResponseDto';
 
 @Injectable()
 export class UserQueryRepository {

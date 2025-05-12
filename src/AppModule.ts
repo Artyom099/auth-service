@@ -34,8 +34,8 @@ import {
   UpdatePasswordUseCase,
   UserQueryRepository,
   UserRepository,
+  YandexOauthController,
 } from './auth';
-import { YandexOauthController } from './auth/api/controllers/YandexOauthController';
 import { UpsertYandexUserUseCase } from './auth/application/use-cases/yandex/UpsertYandexUserUseCase';
 import { AccessObjectQueryRepository } from './auth/repositories/access-object/AccessObjectQueryRepository';
 import { AppConfig, AppConfigModule } from './config';

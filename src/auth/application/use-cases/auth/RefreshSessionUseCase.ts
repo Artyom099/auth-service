@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EntityManager } from 'typeorm';
 
+import { PairTokensType } from '../../../../libs/dto/pair.tokens.type';
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
-import { PairTokensType } from '../../../api/models/dto/pair.tokens.type';
 import { DeviceRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 

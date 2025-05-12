@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 
 import { AccessObject, AccessObjectAction, Action } from '../../../libs/db/entity';
-import { AccessObjectNodeOutputModel } from '../../api/models/output/AccessObjectTreeOutputModel';
+import { AccessObjectNodeResponseDto } from '../../../libs/dto/output/AccessObjectNodeResponseDto';
 
 @Injectable()
 export class AccessObjectQueryRepository {
   constructor(private manager: EntityManager) {}
 
-  async getAccessObjectTree(): Promise<AccessObjectNodeOutputModel[]> {
+  async getAccessObjectTree(): Promise<AccessObjectNodeResponseDto[]> {
     // Получаем все объекты доступа
     const accessObjects = await this.manager.find(AccessObject);
 
@@ -30,7 +30,7 @@ export class AccessObjectQueryRepository {
     return this.buildTree(accessObjects, objectActionsMap);
   }
 
-  private buildTree(objects: AccessObject[], objectActionsMap: Map<string, Action[]>): AccessObjectNodeOutputModel[] {
+  private buildTree(objects: AccessObject[], objectActionsMap: Map<string, Action[]>): AccessObjectNodeResponseDto[] {
     // Создаем мапу объектов для быстрого доступа
     const objectsMap = new Map<string, AccessObject>();
     objects.forEach((obj) => objectsMap.set(obj.name, obj));
@@ -46,7 +46,7 @@ export class AccessObjectQueryRepository {
     object: AccessObject,
     objectsMap: Map<string, AccessObject>,
     objectActionsMap: Map<string, Action[]>,
-  ): AccessObjectNodeOutputModel {
+  ): AccessObjectNodeResponseDto {
     // Находим все дочерние объекты
     const children = Array.from(objectsMap.values()).filter((obj) => obj.parentName === object.name);
 

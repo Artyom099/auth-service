@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 
-export class RoleOutputModel {
+export class RoleGetResponseDto {
   @ApiProperty({
     description: 'Название роли',
     example: 'admin',

@@ -1,7 +1,7 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
-import { TAccessTokenPayload } from '../../auth/api/models/dto/TAccessTokenPayload';
+import { TAccessTokenPayload } from '../dto/TAccessTokenPayload';
 
 /**
  * декоратор, который достает userId из request, если ендпоинт защищен AuthGuard

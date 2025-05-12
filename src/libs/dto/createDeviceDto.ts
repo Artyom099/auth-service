@@ -1,4 +1,4 @@
-export type CreateDeviceDTO = {
+export type CreateDeviceDto = {
   id: string;
   userId: string;
   ip: string;

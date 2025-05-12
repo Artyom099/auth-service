@@ -1,7 +1,7 @@
 import { EntityManager } from 'typeorm';
 
 import { User, UserPasswordRecovery } from '../../../libs/db/entity';
-import { UpdateRecoveryCodeDto } from '../../api/models/dto/UpdateRecoveryCodeDto';
+import { UpdateRecoveryCodeDto } from '../../../libs/dto/UpdateRecoveryCodeDto';
 
 export class PasswordRecoveryRepository {
   async getRecoveryData(em: EntityManager, code: string): Promise<UserPasswordRecovery> {

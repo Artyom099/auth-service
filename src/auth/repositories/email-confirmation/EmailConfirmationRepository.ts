@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DeepPartial, EntityManager } from 'typeorm';
 
 import { UserEmailConfirmation } from '../../../libs/db/entity';
-import { UpdateCodeDto } from '../../api/models/dto/UpdateCodeDto';
+import { UpdateCodeDto } from '../../../libs/dto/UpdateCodeDto';
 
 @Injectable()
 export class EmailConfirmationRepository {

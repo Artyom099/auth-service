@@ -2,9 +2,9 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { AppConfig } from '../../../config';
-import { PairTokensType } from '../../api/models/dto/pair.tokens.type';
-import { TAccessTokenPayload } from '../../api/models/dto/TAccessTokenPayload';
-import { TRefreshTokenPayload } from '../../api/models/dto/TRefreshTokenPayload';
+import { PairTokensType } from '../../../libs/dto/pair.tokens.type';
+import { TAccessTokenPayload } from '../../../libs/dto/TAccessTokenPayload';
+import { TRefreshTokenPayload } from '../../../libs/dto/TRefreshTokenPayload';
 
 @Injectable()
 export class TokenService {

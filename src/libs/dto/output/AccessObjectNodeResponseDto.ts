@@ -14,7 +14,7 @@ export class ActionOutputModel {
   type: string;
 }
 
-export class AccessObjectNodeOutputModel {
+export class AccessObjectNodeResponseDto {
   @ApiProperty({
     description: 'Название объекта доступа',
     example: 'users',
@@ -35,8 +35,8 @@ export class AccessObjectNodeOutputModel {
 
   @ApiProperty({
     description: 'Дочерние объекты',
-    type: [AccessObjectNodeOutputModel],
+    type: [AccessObjectNodeResponseDto],
     nullable: true,
   })
-  children?: AccessObjectNodeOutputModel[];
+  children?: AccessObjectNodeResponseDto[];
 }

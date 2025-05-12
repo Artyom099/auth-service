@@ -17,18 +17,17 @@ import { CommandBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 import { CookieOptions, Response } from 'express';
 
-import { LogInDto } from './models/dto/LogInDto';
-import { PairTokensType } from './models/dto/pair.tokens.type';
-import { CodeInputModel } from './models/input/code.input.model';
-import { EmailInputModel } from './models/input/email.input.model';
-import { LogInInputModel } from './models/input/log.in.input.model';
-import { OauthInputModel } from './models/input/oauth.input.model';
-import { RegistrationRequestDto } from './models/input/RegistrationRequestDto';
-import { UpdatePasswordRequestDto } from './models/input/UpdatePasswordRequestDto';
-import { GetUserInfoResponseDto } from './models/view/GetUserInfoResponseDto';
-
 import { AppConfig } from '../../config';
 import { CurrentUserId, RefreshToken } from '../../libs/decorators';
+import { GetUserInfoResponseDto } from '../../libs/dto/GetUserInfoResponseDto';
+import { CodeInputModel } from '../../libs/dto/input/code.input.model';
+import { EmailInputModel } from '../../libs/dto/input/email.input.model';
+import { LogInRequestDto } from '../../libs/dto/input/logInRequestDto';
+import { OauthInputModel } from '../../libs/dto/input/oauth.input.model';
+import { RegistrationRequestDto } from '../../libs/dto/input/RegistrationRequestDto';
+import { UpdatePasswordRequestDto } from '../../libs/dto/input/UpdatePasswordRequestDto';
+import { LogInDto } from '../../libs/dto/LogInDto';
+import { PairTokensType } from '../../libs/dto/pair.tokens.type';
 import { ResultType, SuccessResult } from '../../libs/error-handling/result';
 import {
   ConfirmPasswordRecoveryApi,
@@ -126,7 +125,7 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(
     @Headers('user-agent') deviceName: string,
-    @Body() body: LogInInputModel,
+    @Body() body: LogInRequestDto,
     @Ip() ip: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ResultType<PairTokensType>> {

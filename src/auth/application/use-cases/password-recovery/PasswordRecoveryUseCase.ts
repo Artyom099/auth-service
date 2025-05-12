@@ -1,9 +1,9 @@
 import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { add } from 'date-fns';
-import { UpdateRecoveryCodeDto } from 'src/auth/api/models/dto/UpdateRecoveryCodeDto';
 import { EntityManager } from 'typeorm';
 
+import { UpdateRecoveryCodeDto } from '../../../../libs/dto/UpdateRecoveryCodeDto';
 import { ResultType } from '../../../../libs/error-handling/result';
 import { generateConfirmationCode } from '../../../../libs/utils';
 import { PasswordRecoveryRepository, UserRepository } from '../../../repositories';

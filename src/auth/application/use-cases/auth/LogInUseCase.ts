@@ -4,10 +4,10 @@ import { EntityManager } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
+import { CreateDeviceDto } from '../../../../libs/dto/createDeviceDto';
+import { LogInDto } from '../../../../libs/dto/LogInDto';
+import { PairTokensType } from '../../../../libs/dto/pair.tokens.type';
 import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
-import { CreateDeviceDTO } from '../../../api/models/dto/create.device.dto';
-import { LogInDto } from '../../../api/models/dto/LogInDto';
-import { PairTokensType } from '../../../api/models/dto/pair.tokens.type';
 import { DeviceRepository, UserRepository } from '../../../repositories';
 import { AuthService, TokenService } from '../../services';
 
@@ -55,7 +55,7 @@ export class LogInUseCase implements ICommandHandler<LogInCommand> {
         issuedAt: issuedAt.toISOString(),
       });
 
-      const dto: CreateDeviceDTO = {
+      const dto: CreateDeviceDto = {
         id: deviceId,
         userId,
         ip,

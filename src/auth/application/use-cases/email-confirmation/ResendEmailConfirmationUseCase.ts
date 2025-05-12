@@ -4,8 +4,8 @@ import { EntityManager } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
+import { UpdateCodeDto } from '../../../../libs/dto/UpdateCodeDto';
 import { ErrorResult, InternalErrorCode, ResultType } from '../../../../libs/error-handling/result';
-import { UpdateCodeDto } from '../../../api/models/dto/UpdateCodeDto';
 import { EmailConfirmationRepository, UserRepository } from '../../../repositories';
 import { EmailService } from '../../services';
 
