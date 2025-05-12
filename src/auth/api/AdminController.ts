@@ -2,9 +2,10 @@ import { Controller, Get } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { EntityManager } from 'typeorm';
 
-import { RoleQueryRepository } from '../repositories/role/RoleQueryRepository';
-import { RoleOutputModel } from './models/output/RoleOutputModel';
 import { AccessObjectNodeOutputModel } from './models/output/AccessObjectTreeOutputModel';
+import { RoleOutputModel } from './models/output/RoleOutputModel';
+
+import { RoleQueryRepository } from '../repositories';
 import { AccessObjectQueryRepository } from '../repositories/access-object/AccessObjectQueryRepository';
 
 @ApiTags('Admin')

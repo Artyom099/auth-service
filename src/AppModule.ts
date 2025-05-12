@@ -7,6 +7,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { google } from 'googleapis';
 
 import {
+  AdminController,
   AuthController,
   AuthService,
   ConfirmEmailUseCase,
@@ -27,21 +28,20 @@ import {
   RefreshSessionUseCase,
   RegistrationUseCase,
   ResendEmailConfirmationUseCase,
+  RoleQueryRepository,
   StartController,
   TokenService,
   UpdatePasswordUseCase,
   UserQueryRepository,
   UserRepository,
 } from './auth';
-import { AdminController } from './auth/api/AdminController';
 import { YandexOauthController } from './auth/api/controllers/YandexOauthController';
 import { UpsertYandexUserUseCase } from './auth/application/use-cases/yandex/UpsertYandexUserUseCase';
-import { RoleQueryRepository } from './auth/repositories/role/RoleQueryRepository';
+import { AccessObjectQueryRepository } from './auth/repositories/access-object/AccessObjectQueryRepository';
 import { AppConfig, AppConfigModule } from './config';
 import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
 import { entities } from './libs/db/entities';
 import { EmailAdapter } from './libs/email';
-import { AccessObjectQueryRepository } from './auth/repositories/access-object/AccessObjectQueryRepository';
 
 const controllers = [AuthController, DeviceController, StartController, YandexOauthController, AdminController];
 

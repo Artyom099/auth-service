@@ -12,4 +12,4 @@ export class RoleOutputModel {
     example: 'Администратор системы',
   })
   description: string;
-} 
+}

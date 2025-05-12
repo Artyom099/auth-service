@@ -1,4 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { TYandexCallbackResponseDto } from 'src/libs/dto';
 import { EntityManager } from 'typeorm';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -6,7 +7,6 @@ import { randomBytes } from 'crypto';
 
 import { DeviceRepository, EmailConfirmationRepository, UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
-import { TYandexCallbackResponseDto } from 'src/libs/dto';
 
 export class UpsertYandexUserCommand {
   constructor(

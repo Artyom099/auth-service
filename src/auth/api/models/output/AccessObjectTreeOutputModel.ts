@@ -39,4 +39,4 @@ export class AccessObjectNodeOutputModel {
     nullable: true,
   })
   children?: AccessObjectNodeOutputModel[];
-} 
+}
