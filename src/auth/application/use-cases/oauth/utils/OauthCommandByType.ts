@@ -1,4 +1,4 @@
-import { OauthServicesTypesEnum } from 'src/auth/enums/OauthServicesTypesEnum';
+import { OauthServicesTypesEnum } from 'src/libs/enums/OauthServicesTypesEnum';
 
 import { BaseOauthCommand } from '../BaseOauthUseCase';
 import { GithubOauthCommand } from '../GithubOauthUseCase';

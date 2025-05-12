@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { DeepPartial, EntityManager } from 'typeorm';
 
 import { User, UserEmailConfirmation } from '../../../libs/db/entity';
-import { OauthServicesTypesEnum } from '../../enums/OauthServicesTypesEnum';
+import { OauthServicesTypesEnum } from '../../../libs/enums/OauthServicesTypesEnum';
 
 @Injectable()
 export class UserTypeOrmRepository {

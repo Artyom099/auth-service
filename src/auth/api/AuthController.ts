@@ -28,6 +28,7 @@ import { RegistrationRequestDto } from '../../libs/dto/input/RegistrationRequest
 import { UpdatePasswordRequestDto } from '../../libs/dto/input/UpdatePasswordRequestDto';
 import { LogInDto } from '../../libs/dto/LogInDto';
 import { PairTokensType } from '../../libs/dto/pair.tokens.type';
+import { OauthServicesTypesEnum } from '../../libs/enums/OauthServicesTypesEnum';
 import { ResultType, SuccessResult } from '../../libs/error-handling/result';
 import {
   ConfirmPasswordRecoveryApi,
@@ -55,7 +56,6 @@ import {
   UpdatePasswordCommand,
 } from '../application';
 import { OauthCommandByType } from '../application/use-cases/oauth/utils/OauthCommandByType';
-import { OauthServicesTypesEnum } from '../enums/OauthServicesTypesEnum';
 import { AuthGuard } from '../guard';
 import { UserQueryRepository } from '../repositories';
 

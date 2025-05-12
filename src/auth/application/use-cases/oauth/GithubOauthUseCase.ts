@@ -9,7 +9,7 @@ import { BaseOauthCommand, BaseOauthUseCase } from './BaseOauthUseCase';
 import { ProviderDataType } from './utils/types';
 
 import { AppConfig } from '../../../../config';
-import { OauthServicesTypesEnum } from '../../../enums/OauthServicesTypesEnum';
+import { OauthServicesTypesEnum } from '../../../../libs/enums/OauthServicesTypesEnum';
 import { UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 

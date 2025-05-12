@@ -6,8 +6,8 @@ import { randomUUID } from 'crypto';
 
 import { ConnectProviderType, ProviderDataType } from './utils/types';
 
+import { OauthServicesTypesEnum } from '../../../../libs/enums/OauthServicesTypesEnum';
 import { ErrorResult, InternalErrorCode } from '../../../../libs/error-handling/result';
-import { OauthServicesTypesEnum } from '../../../enums/OauthServicesTypesEnum';
 import { UserRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
