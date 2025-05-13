@@ -7,4 +7,6 @@ export class Action {
 
   @Column()
   type: string;
+
+  // todo - join table
 }
