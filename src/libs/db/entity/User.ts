@@ -1,6 +1,16 @@
-import { Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  OneToMany,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 import { Device } from './Device';
+import { Role } from './Role';
 import { UserEmailConfirmation } from './UserEmailConfirmation';
 import { UserPasswordRecovery } from './UserPasswordRecovery';
 import { YandexUser } from './YandexUser';
@@ -48,4 +58,21 @@ export class User {
 
   @OneToOne(() => YandexUser)
   yandexUser?: YandexUser;
+
+  /**
+   * роли, которые имеет пользователь
+   */
+  @ManyToMany(() => Role, (r) => r.users)
+  @JoinTable({
+    name: 'user_role',
+    joinColumn: {
+      name: 'user_id',
+      referencedColumnName: 'id',
+    },
+    inverseJoinColumn: {
+      name: 'role_name',
+      referencedColumnName: 'name',
+    },
+  })
+  roles: Role[];
 }

@@ -1,14 +1,25 @@
-import { Entity, PrimaryColumn } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+
+import { Action } from './Action';
+import { Role } from './Role';
 
 @Entity('right')
 export class Right {
+  @PrimaryColumn({
+    name: 'role_name',
+  })
+  roleName: string;
+
   @PrimaryColumn({
     name: 'action_name',
   })
   actionName: string;
 
-  @PrimaryColumn({
-    name: 'role_name',
-  })
-  roleName: string;
+  @ManyToOne(() => Role, (r) => r.name)
+  @JoinColumn({ name: 'role_name', referencedColumnName: 'name' })
+  role: Role;
+
+  @ManyToOne(() => Action, (a) => a.name)
+  @JoinColumn({ name: 'action_name', referencedColumnName: 'name' })
+  action: Action;
 }

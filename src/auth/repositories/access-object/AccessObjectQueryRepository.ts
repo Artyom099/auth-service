@@ -8,6 +8,10 @@ import { AccessObjectNodeResponseDto } from '../../../libs/dto/output/AccessObje
 export class AccessObjectQueryRepository {
   constructor(private manager: EntityManager) {}
 
+  /**
+   * Запрос еть в обсидиане todo
+   * Так же надо будет сделать функцию flatToNestedTree
+   */
   async getAccessObjectTree(): Promise<AccessObjectNodeResponseDto[]> {
     // Получаем все объекты доступа
     const accessObjects = await this.manager.find(AccessObject);

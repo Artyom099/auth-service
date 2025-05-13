@@ -1,5 +1,6 @@
 import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 
+import { AccessObject } from './AccessObject';
 import { Action } from './Action';
 
 @Entity('access_object_action')
@@ -14,7 +15,11 @@ export class AccessObjectAction {
   })
   actionName: string;
 
-  @ManyToOne(() => Action)
+  @ManyToOne(() => AccessObject, (ao) => ao.name)
+  @JoinColumn({ name: 'object_name', referencedColumnName: 'name' })
+  accessObject: AccessObject;
+
+  @ManyToOne(() => Action, (a) => a.name)
   @JoinColumn({ name: 'action_name', referencedColumnName: 'name' })
   action: Action;
 }
