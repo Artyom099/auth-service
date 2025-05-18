@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, Length } from 'class-validator';
 
-export class EmailInputModel {
+export class EmailRequestDto {
   @ApiProperty({
     minimum: 6,
     maximum: 80,

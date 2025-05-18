@@ -7,11 +7,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { google } from 'googleapis';
 
 import {
+  AccessObjectQueryRepository,
   AdminController,
   AuthController,
   AuthService,
   ConfirmEmailUseCase,
   ConfirmPasswordRecoveryUseCase,
+  CreateRoleUseCase,
   DeleteDeviceUseCase,
   DeleteOtherDevicesUseCase,
   DeviceController,
@@ -25,6 +27,7 @@ import {
   LogOutUseCase,
   PasswordRecoveryRepository,
   PasswordRecoveryUseCase,
+  ReassignRightsUseCase,
   RefreshSessionUseCase,
   RegistrationUseCase,
   ResendEmailConfirmationUseCase,
@@ -32,12 +35,11 @@ import {
   StartController,
   TokenService,
   UpdatePasswordUseCase,
+  UpsertYandexUserUseCase,
   UserQueryRepository,
   UserRepository,
   YandexOauthController,
 } from './auth';
-import { UpsertYandexUserUseCase } from './auth/application/use-cases/yandex/UpsertYandexUserUseCase';
-import { AccessObjectQueryRepository } from './auth/repositories/access-object/AccessObjectQueryRepository';
 import { AppConfig, AppConfigModule } from './config';
 import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
 import { entities } from './libs/db/entities';
@@ -66,6 +68,9 @@ const useCases = [
 
   DeleteDeviceUseCase,
   DeleteOtherDevicesUseCase,
+
+  ReassignRightsUseCase,
+  CreateRoleUseCase,
 ];
 
 const repositories = [
@@ -76,6 +81,7 @@ const repositories = [
   EmailConfirmationRepository,
   PasswordRecoveryRepository,
   RoleQueryRepository,
+  AccessObjectQueryRepository,
 ];
 
 const infrastructureModules = [AppConfigModule];
@@ -141,7 +147,6 @@ const infrastructureModules = [AppConfigModule];
       }),
       inject: [AppConfig.name],
     },
-    AccessObjectQueryRepository,
   ],
   exports: [UserRepository],
 })

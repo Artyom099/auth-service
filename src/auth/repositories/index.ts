@@ -1,3 +1,4 @@
+export * from './access-object';
 export * from './device';
 export * from './email-confirmation';
 export * from './password-recovery';

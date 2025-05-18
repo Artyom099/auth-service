@@ -4,10 +4,10 @@ import { EntityManager } from 'typeorm';
 
 import { randomUUID } from 'crypto';
 
-import { CreateDeviceDto } from '../../../../libs/dto/createDeviceDto';
 import { LogInDto } from '../../../../libs/dto/LogInDto';
-import { PairTokensType } from '../../../../libs/dto/pair.tokens.type';
+import { TDeviceCreateDto } from '../../../../libs/dto/TDeviceCreateDto';
 import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { TPairTokens } from '../../../../libs/types';
 import { DeviceRepository, UserRepository } from '../../../repositories';
 import { AuthService, TokenService } from '../../services';
 
@@ -25,7 +25,7 @@ export class LogInUseCase implements ICommandHandler<LogInCommand> {
     private deviceRepository: DeviceRepository,
   ) {}
 
-  async execute(command: LogInCommand): Promise<ResultType<PairTokensType>> {
+  async execute(command: LogInCommand): Promise<ResultType<TPairTokens>> {
     const { email, password, deviceName, ip } = command.dto;
 
     return this.manager.transaction(async (em) => {
@@ -55,7 +55,7 @@ export class LogInUseCase implements ICommandHandler<LogInCommand> {
         issuedAt: issuedAt.toISOString(),
       });
 
-      const dto: CreateDeviceDto = {
+      const dto: TDeviceCreateDto = {
         id: deviceId,
         userId,
         ip,

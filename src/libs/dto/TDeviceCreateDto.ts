@@ -1,4 +1,4 @@
-export type CreateDeviceDto = {
+export type TDeviceCreateDto = {
   id: string;
   userId: string;
   ip: string;

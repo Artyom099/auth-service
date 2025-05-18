@@ -20,14 +20,13 @@ import { CookieOptions, Response } from 'express';
 import { AppConfig } from '../../config';
 import { CurrentUserId, RefreshToken } from '../../libs/decorators';
 import { GetUserInfoResponseDto } from '../../libs/dto/GetUserInfoResponseDto';
-import { CodeInputModel } from '../../libs/dto/input/code.input.model';
-import { EmailInputModel } from '../../libs/dto/input/email.input.model';
+import { ConfirmationCodeRequestDto } from '../../libs/dto/input/ConfirmationCodeRequestDto';
+import { EmailRequestDto } from '../../libs/dto/input/EmailRequestDto';
 import { LogInRequestDto } from '../../libs/dto/input/logInRequestDto';
 import { OauthInputModel } from '../../libs/dto/input/oauth.input.model';
 import { RegistrationRequestDto } from '../../libs/dto/input/RegistrationRequestDto';
 import { UpdatePasswordRequestDto } from '../../libs/dto/input/UpdatePasswordRequestDto';
 import { LogInDto } from '../../libs/dto/LogInDto';
-import { PairTokensType } from '../../libs/dto/pair.tokens.type';
 import { OauthServicesTypesEnum } from '../../libs/enums/OauthServicesTypesEnum';
 import { ResultType, SuccessResult } from '../../libs/error-handling/result';
 import {
@@ -43,6 +42,7 @@ import {
   ResendConfirmationCodeApi,
   UpdatePasswordApi,
 } from '../../libs/swagger';
+import { TPairTokens } from '../../libs/types';
 import {
   BaseOauthCommand,
   ConfirmEmailCommand,
@@ -88,28 +88,28 @@ export class AuthController {
   @ConfirmRegistrationApi()
   @Post('registration-confirmation')
   @HttpCode(HttpStatus.OK)
-  async confirmRegistration(@Body() body: CodeInputModel): Promise<void> {
+  async confirmRegistration(@Body() body: ConfirmationCodeRequestDto): Promise<void> {
     return this.commandBus.execute(new ConfirmEmailCommand(body.code));
   }
 
   @ResendConfirmationCodeApi()
   @Post('resend-confirmation-code')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async resendConfirmationCode(@Body() body: EmailInputModel): Promise<void> {
+  async resendConfirmationCode(@Body() body: EmailRequestDto): Promise<void> {
     return this.commandBus.execute(new ResendEmailConfirmationCommand(body.email));
   }
 
   @PasswordRecoveryApi()
   @Post('password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async passwordRecovery(@Body() body: EmailInputModel): Promise<void> {
+  async passwordRecovery(@Body() body: EmailRequestDto): Promise<void> {
     return this.commandBus.execute(new PasswordRecoveryCommand(body.email));
   }
 
   @ConfirmPasswordRecoveryApi()
   @Post('confirm-password-recovery')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async confirmPasswordRecovery(@Body() body: CodeInputModel): Promise<void> {
+  async confirmPasswordRecovery(@Body() body: ConfirmationCodeRequestDto): Promise<void> {
     return this.commandBus.execute(new ConfirmPasswordRecoveryCommand(body.code));
   }
 
@@ -128,7 +128,7 @@ export class AuthController {
     @Body() body: LogInRequestDto,
     @Ip() ip: string,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<ResultType<PairTokensType>> {
+  ): Promise<ResultType<TPairTokens>> {
     const dto: LogInDto = {
       email: body.email,
       password: body.password,
@@ -156,7 +156,7 @@ export class AuthController {
   async refreshSession(
     @RefreshToken() token: string,
     @Res({ passthrough: true }) res: Response,
-  ): Promise<ResultType<PairTokensType>> {
+  ): Promise<ResultType<TPairTokens>> {
     let refreshResult = await this.commandBus.execute<unknown, ResultType<any>>(new RefreshSessionCommand(token));
 
     if (refreshResult.hasError) {
@@ -199,7 +199,7 @@ export class AuthController {
     if (!OauthCommand) throw new BadRequestException();
 
     try {
-      const { accessToken, refreshToken } = await this.commandBus.execute<BaseOauthCommand, PairTokensType>(
+      const { accessToken, refreshToken } = await this.commandBus.execute<BaseOauthCommand, TPairTokens>(
         new OauthCommand(body.code),
       );
 

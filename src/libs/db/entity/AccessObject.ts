@@ -2,13 +2,17 @@ import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from 'typeorm';
 
 import { Action } from './Action';
 
+export enum EAccessObjectType {
+  APP = 'APP',
+}
+
 @Entity('access_object')
 export class AccessObject {
   @PrimaryColumn()
   name: string;
 
   @Column()
-  type: string;
+  type: EAccessObjectType;
 
   @Column({
     name: 'parent_name',

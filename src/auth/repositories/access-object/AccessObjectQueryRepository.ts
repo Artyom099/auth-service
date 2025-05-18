@@ -3,15 +3,27 @@ import { EntityManager } from 'typeorm';
 
 import { AccessObject, AccessObjectAction, Action } from '../../../libs/db/entity';
 import { AccessObjectNodeResponseDto } from '../../../libs/dto/output/AccessObjectNodeResponseDto';
+import { flatToNestedTree, TFlatTreeItem } from '../../../libs/utils';
 
 @Injectable()
 export class AccessObjectQueryRepository {
   constructor(private manager: EntityManager) {}
 
   /**
-   * Запрос еть в обсидиане todo
+   * Запрос есть в обсидиане todo
    * Так же надо будет сделать функцию flatToNestedTree
    */
+  public async calculateRightTree(): Promise<any> {
+    const rolesCte = [];
+
+    // todo - запрос копируем полностью
+    const qb = this.manager.createQueryBuilder();
+
+    const flatTree = await qb.getRawMany<TFlatTreeItem>();
+
+    return flatToNestedTree(flatTree);
+  }
+
   async getAccessObjectTree(): Promise<AccessObjectNodeResponseDto[]> {
     // Получаем все объекты доступа
     const accessObjects = await this.manager.find(AccessObject);

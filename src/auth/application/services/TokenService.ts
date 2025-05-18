@@ -2,9 +2,8 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { AppConfig } from '../../../config';
-import { PairTokensType } from '../../../libs/dto/pair.tokens.type';
 import { TAccessTokenPayload } from '../../../libs/dto/TAccessTokenPayload';
-import { TRefreshTokenPayload } from '../../../libs/dto/TRefreshTokenPayload';
+import { TPairTokens, TRefreshTokenPayload } from '../../../libs/types';
 
 @Injectable()
 export class TokenService {
@@ -13,7 +12,7 @@ export class TokenService {
     @Inject(AppConfig.name) private appConfig: AppConfig,
   ) {}
 
-  async signTokens(payload: TRefreshTokenPayload): Promise<PairTokensType> {
+  async signTokens(payload: TRefreshTokenPayload): Promise<TPairTokens> {
     const accessToken = await this.jwtService.signAsync(
       { userId: payload.userId },
       { expiresIn: this.appConfig.settings.jwt.ACCESS_TOKEN_LIFETIME_SECONDS },

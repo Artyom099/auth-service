@@ -1,8 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EntityManager } from 'typeorm';
 
-import { PairTokensType } from '../../../../libs/dto/pair.tokens.type';
 import { ErrorResult, InternalErrorCode, ResultType, SuccessResult } from '../../../../libs/error-handling/result';
+import { TPairTokens } from '../../../../libs/types';
 import { DeviceRepository } from '../../../repositories';
 import { TokenService } from '../../services';
 
@@ -18,7 +18,7 @@ export class RefreshSessionUseCase implements ICommandHandler<RefreshSessionComm
     private deviceRepository: DeviceRepository,
   ) {}
 
-  async execute(command: RefreshSessionCommand): Promise<ResultType<PairTokensType>> {
+  async execute(command: RefreshSessionCommand): Promise<ResultType<TPairTokens>> {
     const { token } = command;
 
     return this.manager.transaction(async (em) => {

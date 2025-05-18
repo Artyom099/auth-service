@@ -1,13 +1,16 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-import { RightReassignRequestDto, RightReassignResponseDto } from '../../libs/dto';
+import {
+  RightReassignRequestDto,
+  RightReassignResponseDto,
+  RoleCreateRequestDto,
+  RoleGetResponseDto,
+} from '../../libs/dto';
 import { AccessObjectNodeResponseDto } from '../../libs/dto/output/AccessObjectNodeResponseDto';
-import { RoleGetResponseDto } from '../../libs/dto/output/RoleGetResponseDto';
-import { ReassignRightsCommand } from '../application';
-import { RoleQueryRepository } from '../repositories';
-import { AccessObjectQueryRepository } from '../repositories/access-object/AccessObjectQueryRepository';
+import { CreateRoleCommand, ReassignRightsCommand } from '../application';
+import { AccessObjectQueryRepository, RoleQueryRepository } from '../repositories';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -25,9 +28,18 @@ export class AdminController {
     type: [RoleGetResponseDto],
   })
   @Get('roles')
+  @HttpCode(200)
   async getRoles(): Promise<RoleGetResponseDto[]> {
     return this.roleQueryRepository.getRoles();
   }
+
+  @Post('role')
+  @HttpCode(201)
+  async createRole(@Body() body: RoleCreateRequestDto) {
+    return this.commandBus.execute(new CreateRoleCommand(body));
+  }
+
+  async getAccessObjects() {}
 
   @ApiOperation({ summary: 'Get access object tree' })
   @ApiResponse({
@@ -36,6 +48,7 @@ export class AdminController {
     type: [AccessObjectNodeResponseDto],
   })
   @Get('access_object/tree')
+  @HttpCode(200)
   async getAccessObjectTree(): Promise<AccessObjectNodeResponseDto[]> {
     return this.accessObjectQueryRepository.getAccessObjectTree();
   }

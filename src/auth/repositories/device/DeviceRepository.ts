@@ -1,10 +1,10 @@
 import { EntityManager, Equal, Not } from 'typeorm';
 
 import { Device } from '../../../libs/db/entity';
-import { CreateDeviceDto } from '../../../libs/dto/createDeviceDto';
+import { TDeviceCreateDto } from '../../../libs/dto/TDeviceCreateDto';
 
 export class DeviceRepository {
-  async createDevice(em: EntityManager, dto: CreateDeviceDto): Promise<void> {
+  async createDevice(em: EntityManager, dto: TDeviceCreateDto): Promise<void> {
     await em.save(em.create(Device, dto));
   }
 
