@@ -4,6 +4,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
 import { AccessObject } from '../../libs/db/entity';
 import {
+  AccessObjectCalculateRightsRequestDto,
   RightReassignRequestDto,
   RightReassignResponseDto,
   RoleCreateRequestDto,
@@ -53,8 +54,8 @@ export class AdminController {
 
   @HttpCode(200)
   @Get('access_object/calculate_rights')
-  calculateRightTree() {
-    return this.accessObjectQueryRepository.calculateRightTree();
+  calculateRightTree(@Body() dto: AccessObjectCalculateRightsRequestDto) {
+    return this.accessObjectQueryRepository.calculateRightTree(dto);
   }
 
   @ApiOperation({ summary: 'Get access object tree' })

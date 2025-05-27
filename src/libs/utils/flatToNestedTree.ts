@@ -2,9 +2,13 @@ import { EAccessObjectType, EActionType } from '../db/entity';
 
 export type TFlatTreeItem = {
   objectName: string;
+  objectParentName: string;
   objectType: EAccessObjectType;
+
   actionName: string;
   actionType: EActionType;
+  actionDescription: string;
+
   ownGrant: boolean;
   parentGrant: boolean; // todo - для этого поля надо делать иерархию ролей
 };
@@ -12,6 +16,7 @@ export type TFlatTreeItem = {
 export type TActionGrant = {
   actionName: string;
   objectType: EAccessObjectType;
+  actionDescription: string;
   ownGrant: boolean;
   parentGrant: boolean;
 };
