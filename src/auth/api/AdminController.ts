@@ -2,6 +2,7 @@ import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
+import { AccessObject } from '../../libs/db/entity';
 import {
   RightReassignRequestDto,
   RightReassignResponseDto,
@@ -9,7 +10,7 @@ import {
   RoleGetResponseDto,
 } from '../../libs/dto';
 import { AccessObjectNodeResponseDto } from '../../libs/dto/output/AccessObjectNodeResponseDto';
-import { CreateRoleCommand, ReassignRightsCommand } from '../application';
+import { CreateRoleCommand, CreateSeedingCommand, ReassignRightsCommand } from '../application';
 import { AccessObjectQueryRepository, RoleQueryRepository } from '../repositories';
 
 @ApiTags('Admin')
@@ -17,9 +18,14 @@ import { AccessObjectQueryRepository, RoleQueryRepository } from '../repositorie
 export class AdminController {
   constructor(
     private commandBus: CommandBus,
-    private roleQueryRepository: RoleQueryRepository,
+    private readonly roleQueryRepository: RoleQueryRepository,
     private readonly accessObjectQueryRepository: AccessObjectQueryRepository,
   ) {}
+
+  @Post('seeding')
+  async seeding(@Body() body: { action: 'up' | 'down' }): Promise<string> {
+    return this.commandBus.execute(new CreateSeedingCommand(body));
+  }
 
   @ApiOperation({ summary: 'Получить список ролей' })
   @ApiResponse({
@@ -39,7 +45,17 @@ export class AdminController {
     return this.commandBus.execute(new CreateRoleCommand(body));
   }
 
-  async getAccessObjects() {}
+  @Get('access_object')
+  @HttpCode(200)
+  async getAccessObjects(): Promise<AccessObject[]> {
+    return this.accessObjectQueryRepository.getAccessObjects();
+  }
+
+  @HttpCode(200)
+  @Get('access_object/calculate_rights')
+  calculateRightTree() {
+    return this.accessObjectQueryRepository.calculateRightTree();
+  }
 
   @ApiOperation({ summary: 'Get access object tree' })
   @ApiResponse({

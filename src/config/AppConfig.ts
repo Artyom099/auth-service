@@ -36,7 +36,7 @@ export type SettingsType = {
   jwt: JwtSettings;
   oauth: OauthSettings;
   backend: BackData;
-  frontend: FrontData;
+  // frontend: FrontData;
 };
 
 export class OriginSettings {
@@ -92,15 +92,15 @@ export class BackData {
   }
 }
 
-export class FrontData {
-  FRONTEND_PASSWORD_RESET_URL: string;
-  FRONTEND_EMAIL_CONFIRMATION_URL: string;
-
-  constructor(envVariables: EnvironmentVariable) {
-    this.FRONTEND_PASSWORD_RESET_URL = envVariables.FRONTEND_PASSWORD_RESET_URL!;
-    this.FRONTEND_EMAIL_CONFIRMATION_URL = envVariables.FRONTEND_EMAIL_CONFIRMATION_URL!;
-  }
-}
+// export class FrontData {
+//   FRONTEND_PASSWORD_RESET_URL: string;
+//   FRONTEND_EMAIL_CONFIRMATION_URL: string;
+//
+//   constructor(envVariables: EnvironmentVariable) {
+//     this.FRONTEND_PASSWORD_RESET_URL = envVariables.FRONTEND_PASSWORD_RESET_URL!;
+//     this.FRONTEND_EMAIL_CONFIRMATION_URL = envVariables.FRONTEND_EMAIL_CONFIRMATION_URL!;
+//   }
+// }
 
 export type OauthParamsType = {
   CLIENT_ID: string;
@@ -166,7 +166,7 @@ const originSettings = new OriginSettings(process.env);
 const emailSettings = new EmailSettings(process.env);
 const jwtSettings = new JwtSettings(process.env);
 const backData = new BackData(process.env);
-const frontData = new FrontData(process.env);
+// const frontData = new FrontData(process.env);
 const oauthSettings = new OauthSettings(process.env);
 
 export const appConfig = new AppConfig(envSettings, {
@@ -175,5 +175,5 @@ export const appConfig = new AppConfig(envSettings, {
   jwt: jwtSettings,
   backend: backData,
   oauth: oauthSettings,
-  frontend: frontData,
+  // frontend: frontData,
 });

@@ -1,3 +1,4 @@
+export * from './CreateSeedingUseCase';
 export * from './auth';
 export * from './device';
 export * from './email-confirmation';

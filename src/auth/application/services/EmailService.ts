@@ -8,11 +8,12 @@ import { ResultType, SuccessResult } from '../../../libs/error-handling/result';
 export class EmailService {
   constructor(
     private emailAdapter: EmailAdapter,
-    @Inject(AppConfig.name) private appConfig: AppConfig,
+    @Inject(AppConfig.name)
+    private appConfig: AppConfig,
   ) {}
 
   async sendEmailConfirmationMessage(email: string, confirmationCode: string): Promise<ResultType<null>> {
-    const domain = this.appConfig.settings.frontend.FRONTEND_EMAIL_CONFIRMATION_URL;
+    const domain = 'link';
 
     const message = `
       <h1>Thanks for your registration</h1>
@@ -33,7 +34,7 @@ export class EmailService {
   }
 
   async sendPasswordRecoveryMessage(email: string, recoveryCode: string): Promise<ResultType<null>> {
-    const domain = this.appConfig.settings.frontend.FRONTEND_PASSWORD_RESET_URL;
+    const domain = 'link';
 
     const message = `
       <h1>Password recovery</h1>

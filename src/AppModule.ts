@@ -14,6 +14,7 @@ import {
   ConfirmEmailUseCase,
   ConfirmPasswordRecoveryUseCase,
   CreateRoleUseCase,
+  CreateSeedingUseCase,
   DeleteDeviceUseCase,
   DeleteOtherDevicesUseCase,
   DeviceController,
@@ -71,6 +72,7 @@ const useCases = [
 
   ReassignRightsUseCase,
   CreateRoleUseCase,
+  CreateSeedingUseCase,
 ];
 
 const repositories = [

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 
-import { AccessObject, AccessObjectAction, Action } from '../../../libs/db/entity';
+import { AccessObject, AccessObjectAction, Action, Role } from '../../../libs/db/entity';
 import { AccessObjectNodeResponseDto } from '../../../libs/dto/output/AccessObjectNodeResponseDto';
 import { flatToNestedTree, TFlatTreeItem } from '../../../libs/utils';
 
@@ -10,20 +10,48 @@ export class AccessObjectQueryRepository {
   constructor(private manager: EntityManager) {}
 
   /**
+   * Список всех объектов доступа системы
+   */
+  public async getAccessObjects(): Promise<AccessObject[]> {
+    return this.manager.find(AccessObject);
+  }
+
+  /**
    * Запрос есть в обсидиане todo
    * Так же надо будет сделать функцию flatToNestedTree
    */
   public async calculateRightTree(): Promise<any> {
-    const rolesCte = [];
+    const rolesCte = [
+      this.manager.createQueryBuilder().select('r.name', 'name').from(Role, 'r'),
+
+      this.manager.createQueryBuilder().select('r.name', 'name').from(Role, 'r'),
+    ]
+      .map((qb) => qb.getQuery())
+      .join(' union all ');
 
     // todo - запрос копируем полностью
-    const qb = this.manager.createQueryBuilder();
+    const qb = this.manager
+      .createQueryBuilder()
+      .addCommonTableExpression(rolesCte, 'roles', {
+        recursive: true,
+        columnNames: ['name'],
+      })
+      .select([
+        'object_cte.name as "objectName"',
+        'object_cte.type as "objectType"',
+        'action_cte.name as "actionName"',
+        'action_cte.type as "actionType"',
+        'action_cte.ownGrant as "ownGrant"',
+        'action_cte.parentGrant as "parentGrant"',
+      ])
+      .from('object_cte', 'object_cte');
 
     const flatTree = await qb.getRawMany<TFlatTreeItem>();
 
     return flatToNestedTree(flatTree);
   }
 
+  // todo - удалить
   async getAccessObjectTree(): Promise<AccessObjectNodeResponseDto[]> {
     // Получаем все объекты доступа
     const accessObjects = await this.manager.find(AccessObject);

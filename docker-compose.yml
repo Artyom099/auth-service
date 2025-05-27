@@ -14,7 +14,7 @@ services:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=vgy78uhb
       - POSTGRES_HOST_AUTH_METHOD=trust
-      - PGSSLMODE=disable
+#      - PGSSLMODE=disable
     # название контейнера
     container_name: postgres
     # тема для постоянного хранения данных (при пересборке не удаляется)
@@ -53,7 +53,7 @@ services:
       - PG_DB=auth_service
       - APP_PORT=3001
       - POSTGRES_HOST_AUTH_METHOD=trust
-      - PGSSLMODE=disable
+#      - PGSSLMODE=disable
     # определяем порядок запуска - app запускается после postgres_db
     depends_on:
       postgres_db:
@@ -69,7 +69,7 @@ services:
       - '3001:3001'
     # проверка здоровья сервиса
     healthcheck:
-      test: [ "CMD", "curl", "-f", "http://localhost:3001/health" ]
+      test: [ "CMD", "curl", "-f", "http://localhost:3001/start" ]
       interval: 30s
       timeout: 10s
       retries: 3

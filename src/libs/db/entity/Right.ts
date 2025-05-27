@@ -3,6 +3,11 @@ import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { Action } from './Action';
 import { Role } from './Role';
 
+export interface IRight {
+  roleName: string;
+  actionName: string;
+}
+
 @Entity('right')
 export class Right {
   @PrimaryColumn({

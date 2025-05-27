@@ -9,6 +9,11 @@ export enum EActionType {
   SPECIAL = 's',
 }
 
+export interface IAction {
+  name: string;
+  type: EActionType;
+}
+
 @Entity('action')
 export class Action {
   @PrimaryColumn()

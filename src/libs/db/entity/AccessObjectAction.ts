@@ -3,6 +3,11 @@ import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import { AccessObject } from './AccessObject';
 import { Action } from './Action';
 
+export interface IAccessObjectAction {
+  objectName: string;
+  actionName: string;
+}
+
 @Entity('access_object_action')
 export class AccessObjectAction {
   @PrimaryColumn({

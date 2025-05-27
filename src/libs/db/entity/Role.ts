@@ -3,6 +3,11 @@ import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from 'typeorm';
 import { Action } from './Action';
 import { User } from './User';
 
+export interface IRole {
+  name: string;
+  description: string;
+}
+
 @Entity('role')
 export class Role {
   @PrimaryColumn()

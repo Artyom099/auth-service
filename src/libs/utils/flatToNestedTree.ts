@@ -23,6 +23,18 @@ export type TNestedTreeItem = {
   children?: TNestedTreeItem[];
 };
 
+/**
+ * accessObject1 --> ...
+ * |
+ * |__accessObject11 --> [action1, action2, ...]
+ * |  |__accessObject111 --> [action1, action2, ...]
+ * |
+ * |__accessObject12 --> [action1, action2, ...]
+ *    |__accessObject121 --> [action1, action2, ...]
+ *    |__accessObject122 --> [action1, action2, ...]
+ *
+ * accessObject2 --> ...
+ */
 export function flatToNestedTree(flatTree: TFlatTreeItem[]): TNestedTreeItem[] {
   return [
     {

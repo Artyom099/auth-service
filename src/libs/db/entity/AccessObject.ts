@@ -4,10 +4,18 @@ import { Action } from './Action';
 
 export enum EAccessObjectType {
   APP = 'APP',
+  TAB = 'TAB',
+  BUTTON = 'BUTTON',
+}
+
+export interface IAccessObject {
+  name: string;
+  type: EAccessObjectType;
+  parentName?: string;
 }
 
 @Entity('access_object')
-export class AccessObject {
+export class AccessObject implements IAccessObject {
   @PrimaryColumn()
   name: string;
 
