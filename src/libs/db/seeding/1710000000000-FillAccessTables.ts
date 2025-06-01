@@ -39,6 +39,8 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
   private readonly action: { [key: string]: IAction } = {
     readDevice: { name: 'read_device', type: EActionType.READ },
     deleteDevice: { name: 'delete_device', type: EActionType.WRITE },
+    readRoles: { name: 'read_roles', type: EActionType.READ },
+    createRoles: { name: 'create_roles', type: EActionType.WRITE },
   };
 
   private readonly role: { [key: string]: IRole } = {
@@ -52,12 +54,13 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
   // todo
   private readonly objectActions: IAccessObjectAction[] = [
     { objectName: this.objects.device.name, actionName: this.action.readDevice.name },
+    { objectName: this.objects.device.name, actionName: this.action.deleteDevice.name },
   ];
 
   // todo
   private readonly rights: IRight[] = [
     { roleName: this.role.admin.name, actionName: this.action.readDevice.name },
-    { roleName: this.role.admin.name, actionName: this.action.deleteDevice.name },
+    // { roleName: this.role.admin.name, actionName: this.action.deleteDevice.name },
   ];
 
   public async up(queryRunner: QueryRunner): Promise<void> {

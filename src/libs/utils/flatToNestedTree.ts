@@ -15,7 +15,7 @@ export type TFlatTreeItem = {
 
 export type TActionGrant = {
   actionName: string;
-  objectType: EAccessObjectType;
+  actionType: EActionType;
   actionDescription: string;
   ownGrant: boolean;
   parentGrant: boolean;
@@ -52,7 +52,7 @@ export function flatToNestedTree(flatTree: TFlatTreeItem[]): TNestedTreeItem[] {
   flatTree.forEach((item) => {
     const action: TActionGrant = {
       actionName: item.actionName,
-      objectType: item.objectType,
+      actionType: item.actionType,
       actionDescription: item.actionDescription,
       ownGrant: item.ownGrant,
       parentGrant: item.parentGrant,
@@ -66,6 +66,7 @@ export function flatToNestedTree(flatTree: TFlatTreeItem[]): TNestedTreeItem[] {
   const uniqueObjects = Array.from(new Set(flatTree.map((item) => item.objectName)));
   uniqueObjects.forEach((objectName) => {
     const firstItem = flatTree.find((item) => item.objectName === objectName)!;
+    
     itemMap.set(objectName, {
       objectName: firstItem.objectName,
       objectType: firstItem.objectType,
