@@ -50,27 +50,30 @@ export function flatToNestedTree(flatTree: TFlatTreeItem[]): TNestedTreeItem[] {
   // Группируем действия по объектам
   const actionsByObject = new Map<string, TActionGrant[]>();
   flatTree.forEach((item) => {
-    const action: TActionGrant = {
-      actionName: item.actionName,
-      actionType: item.actionType,
-      actionDescription: item.actionDescription,
-      ownGrant: item.ownGrant,
-      parentGrant: item.parentGrant,
-    };
+    // Проверяем, что все необходимые поля для действия присутствуют
+    if (item.actionName) {
+      const action: TActionGrant = {
+        actionName: item.actionName,
+        actionType: item.actionType,
+        actionDescription: item.actionDescription,
+        ownGrant: item.ownGrant,
+        parentGrant: item.parentGrant,
+      };
 
-    const existingActions = actionsByObject.get(item.objectName) || [];
-    actionsByObject.set(item.objectName, [...existingActions, action]);
+      const existingActions = actionsByObject.get(item.objectName) || [];
+      actionsByObject.set(item.objectName, [...existingActions, action]);
+    }
   });
 
   // Первый проход: создаем все узлы без связей
   const uniqueObjects = Array.from(new Set(flatTree.map((item) => item.objectName)));
   uniqueObjects.forEach((objectName) => {
     const firstItem = flatTree.find((item) => item.objectName === objectName)!;
-    
+
     itemMap.set(objectName, {
       objectName: firstItem.objectName,
       objectType: firstItem.objectType,
-      actions: actionsByObject.get(objectName),
+      actions: actionsByObject.get(objectName) || [],
       children: [],
     });
   });

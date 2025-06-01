@@ -51,13 +51,13 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     user: { name: 'user', description: 'Имеет доступ к паре вкладок и только на чтение' },
   };
 
-  // todo
+  // todo - связь объекта и бизнес-действия
   private readonly objectActions: IAccessObjectAction[] = [
     { objectName: this.objects.device.name, actionName: this.action.readDevice.name },
-    { objectName: this.objects.device.name, actionName: this.action.deleteDevice.name },
+    { objectName: this.objects.deleteDevice.name, actionName: this.action.deleteDevice.name },
   ];
 
-  // todo
+  // todo - права роли
   private readonly rights: IRight[] = [
     { roleName: this.role.admin.name, actionName: this.action.readDevice.name },
     // { roleName: this.role.admin.name, actionName: this.action.deleteDevice.name },
