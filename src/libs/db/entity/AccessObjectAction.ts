@@ -9,7 +9,7 @@ export interface IAccessObjectAction {
 }
 
 @Entity('access_object_action')
-export class AccessObjectAction {
+export class AccessObjectAction implements IAccessObjectAction {
   @PrimaryColumn({
     name: 'object_name',
   })

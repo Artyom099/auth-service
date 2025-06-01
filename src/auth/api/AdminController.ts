@@ -32,7 +32,6 @@ export class AdminController {
   @ApiResponse({
     status: 200,
     description: 'Список ролей успешно получен',
-    type: [RoleGetResponseDto],
   })
   @Get('roles')
   @HttpCode(200)

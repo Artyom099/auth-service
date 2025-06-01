@@ -5,16 +5,16 @@ import { User } from './User';
 
 export interface IRole {
   name: string;
-  description: string;
+  description?: string;
 }
 
 @Entity('role')
-export class Role {
+export class Role implements IRole {
   @PrimaryColumn()
   name: string;
 
   @Column()
-  description: string;
+  description?: string;
 
   /**
    * пользователи, которым выдана текущая роль

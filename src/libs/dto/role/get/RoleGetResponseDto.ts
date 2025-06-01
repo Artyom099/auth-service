@@ -11,5 +11,5 @@ export class RoleGetResponseDto {
     description: 'Описание роли',
     example: 'Администратор системы',
   })
-  description: string;
+  description?: string;
 }
