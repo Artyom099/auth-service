@@ -29,8 +29,8 @@ export class DeviceRepository {
       userId,
       id: Not(Equal(id)),
     });
-    console.log({ deleteResult });
 
+    // возвращаем количество удаленных девайсов
     return { deletedCount: deleteResult.affected };
   }
 }

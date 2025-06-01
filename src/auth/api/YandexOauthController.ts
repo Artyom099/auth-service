@@ -8,7 +8,7 @@ import * as querystring from 'querystring';
 
 import { AppConfig } from '../../config';
 import { TYandexCallbackResponseDto } from '../../libs/dto';
-import { UpsertYandexUserCommand } from '../application/use-cases/yandex/UpsertYandexUserUseCase';
+import { UpsertYandexUserCommand } from '../application';
 
 @ApiTags('Auth')
 @Controller('yandex')

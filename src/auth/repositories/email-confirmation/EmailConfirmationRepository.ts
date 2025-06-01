@@ -1,10 +1,8 @@
-import { Injectable } from '@nestjs/common';
 import { DeepPartial, EntityManager } from 'typeorm';
 
 import { UserEmailConfirmation } from '../../../libs/db/entity';
 import { UpdateCodeDto } from '../../../libs/dto/UpdateCodeDto';
 
-@Injectable()
 export class EmailConfirmationRepository {
   async confirmEmail(em: EntityManager, userId: string): Promise<void> {
     await em.update(UserEmailConfirmation, { userId }, { isConfirmed: true });

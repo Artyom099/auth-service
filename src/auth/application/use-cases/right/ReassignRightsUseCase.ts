@@ -25,7 +25,6 @@ export class ReassignRightsUseCase implements ICommandHandler<ReassignRightsComm
 
       const repository = em.getRepository(Right);
       const existRights = await repository.findBy({ roleName });
-      console.log({existRights});
 
       if (existRights.length) {
         await repository.createQueryBuilder().delete().where(existRights).execute();

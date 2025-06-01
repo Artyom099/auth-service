@@ -25,12 +25,6 @@ export class DeleteOtherDevicesUseCase implements ICommandHandler<DeleteOtherDev
 
     return this.manager.transaction(async (em) => {
       const payload = await this.tokenService.verifyRefreshToken(token);
-      /**
-       * todo
-       * В токене почему-то всегда лежит такой deviceId, из-за этого удаление не работает
-       * deviceId: 'f4acbc10-369d-46f2-b9c8-224cd5dc86a5',
-       */
-      console.log({ payload });
 
       const deletedCount = await this.deviceRepository.deleteOtherDevices(em, payload.deviceId, userId);
 
