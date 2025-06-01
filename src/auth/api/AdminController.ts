@@ -39,6 +39,7 @@ export class AdminController {
   async getRoles(): Promise<RoleGetResponseDto[]> {
     return this.roleQueryRepository.getRoles();
   }
+  // todo - возможно сделать апи на отображение дерева ролей
 
   @Post('role')
   @HttpCode(201)

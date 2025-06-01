@@ -142,6 +142,8 @@ export class AccessObjectQueryRepository {
       .orderBy('access_objects."objectParentName"', 'ASC', 'NULLS FIRST')
       .setParameters({ roleName });
 
+    console.log({ sql: qb.getQueryAndParameters() });
+
     const flatTree = await qb.getRawMany<TFlatTreeItem>();
 
     console.log({ flatTree });
