@@ -56,7 +56,7 @@ export class AdminController {
   }
 
   @HttpCode(200)
-  @Get('access_object/calculate_rights')
+  @Post('access_object/calculate_rights')
   calculateRightTree(@Body() dto: AccessObjectCalculateRightsRequestDto): Promise<TNestedTreeItem[]> {
     return this.accessObjectQueryRepository.calculateRightTree(dto);
   }

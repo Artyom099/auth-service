@@ -25,9 +25,10 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     role: { name: 'role', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     right: { name: 'right', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     service: { name: 'service', type: EAccessObjectType.TAB, parentName: 'auth-service' },
+    accessObject: { name: 'access_object', type: EAccessObjectType.TAB, parentName: 'auth-service' },
 
     // кнопки текущего сервиса
-    grantRevokeAccess: { name: 'grant_revoke_access', type: EAccessObjectType.BUTTON, parentName: 'right' },
+    grantRevokeAccess: { name: 'grant_revoke_access', type: EAccessObjectType.BUTTON, parentName: 'access_object' },
     deleteDevice: { name: 'delete_device', type: EAccessObjectType.BUTTON, parentName: 'device' },
 
     // другие сервисы
@@ -37,10 +38,11 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
 
   // можем ли выдать доступ на весь сервис? - скорее нет
   private readonly action: { [key: string]: IAction } = {
-    readDevice: { name: 'read_device', type: EActionType.READ },
-    deleteDevice: { name: 'delete_device', type: EActionType.WRITE },
-    readRoles: { name: 'read_roles', type: EActionType.READ },
-    createRoles: { name: 'create_roles', type: EActionType.WRITE },
+    readDevice: { name: 'read_device', type: EActionType.READ, description: 'Чтение вкладки Девайсы' },
+    deleteDevice: { name: 'delete_device', type: EActionType.WRITE, description: 'Удаление девайсов пользователя' },
+    readRoles: { name: 'read_roles', type: EActionType.READ, description: 'Чтени вкладки Роли' },
+    createRoles: { name: 'create_roles', type: EActionType.WRITE, description: 'Создание ролей' },
+    grantAccess: { name: 'grant_access', type: EActionType.SPECIAL, description: 'Выдача и отзыв прав роли' },
   };
 
   private readonly role: { [key: string]: IRole } = {
@@ -55,12 +57,14 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
   private readonly objectActions: IAccessObjectAction[] = [
     { objectName: this.objects.device.name, actionName: this.action.readDevice.name },
     { objectName: this.objects.deleteDevice.name, actionName: this.action.deleteDevice.name },
+    { objectName: this.objects.grantRevokeAccess.name, actionName: this.action.grantAccess.name },
   ];
 
   // todo - права роли
   private readonly rights: IRight[] = [
     { roleName: this.role.admin.name, actionName: this.action.readDevice.name },
-    // { roleName: this.role.admin.name, actionName: this.action.deleteDevice.name },
+    { roleName: this.role.admin.name, actionName: this.action.deleteDevice.name },
+    { roleName: this.role.admin.name, actionName: this.action.grantAccess.name },
   ];
 
   public async up(queryRunner: QueryRunner): Promise<void> {
