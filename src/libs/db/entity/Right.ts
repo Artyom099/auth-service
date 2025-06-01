@@ -9,7 +9,7 @@ export interface IRight {
 }
 
 @Entity('right')
-export class Right {
+export class Right implements IRight {
   @PrimaryColumn({
     name: 'role_name',
   })

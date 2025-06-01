@@ -1,3 +1,9 @@
+import { EAccessObjectType } from '../../../db/entity';
+import { TActionGrant } from '../../../utils';
+
 export class AccessObjectCalculateRightsResponseDto {
-  // todo
+  objectName: string;
+  objectType: EAccessObjectType;
+  actions: TActionGrant[];
+  children: AccessObjectCalculateRightsResponseDto[];
 }

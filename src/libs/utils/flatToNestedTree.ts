@@ -10,7 +10,7 @@ export type TFlatTreeItem = {
   actionDescription: string;
 
   ownGrant: boolean;
-  parentGrant: boolean; // todo - для этого поля надо делать иерархию ролей
+  parentGrant: boolean;
 };
 
 export type TActionGrant = {
@@ -41,10 +41,61 @@ export type TNestedTreeItem = {
  * accessObject2 --> ...
  */
 export function flatToNestedTree(flatTree: TFlatTreeItem[]): TNestedTreeItem[] {
-  return [
-    {
-      objectName: 'market',
-      objectType: EAccessObjectType.APP,
-    },
-  ];
+  // Создаем мапу для быстрого доступа к элементам по objectName
+  const itemMap = new Map<string, TNestedTreeItem>();
+
+  // Создаем корневой массив для элементов верхнего уровня
+  const rootItems: TNestedTreeItem[] = [];
+
+  // Группируем действия по объектам
+  const actionsByObject = new Map<string, TActionGrant[]>();
+  flatTree.forEach((item) => {
+    const action: TActionGrant = {
+      actionName: item.actionName,
+      objectType: item.objectType,
+      actionDescription: item.actionDescription,
+      ownGrant: item.ownGrant,
+      parentGrant: item.parentGrant,
+    };
+
+    const existingActions = actionsByObject.get(item.objectName) || [];
+    actionsByObject.set(item.objectName, [...existingActions, action]);
+  });
+
+  // Первый проход: создаем все узлы без связей
+  const uniqueObjects = Array.from(new Set(flatTree.map((item) => item.objectName)));
+  uniqueObjects.forEach((objectName) => {
+    const firstItem = flatTree.find((item) => item.objectName === objectName)!;
+    itemMap.set(objectName, {
+      objectName: firstItem.objectName,
+      objectType: firstItem.objectType,
+      actions: actionsByObject.get(objectName),
+      children: [],
+    });
+  });
+
+  // Второй проход: устанавливаем связи между узлами
+  uniqueObjects.forEach((objectName) => {
+    const firstItem = flatTree.find((item) => item.objectName === objectName)!;
+    const node = itemMap.get(objectName)!;
+
+    if (!firstItem.objectParentName) {
+      // Если это корневой элемент, добавляем его в rootItems
+      rootItems.push(node);
+    } else {
+      // Если это дочерний элемент, добавляем его в children родителя
+      const parent = itemMap.get(firstItem.objectParentName);
+      if (parent) {
+        if (!parent.children) {
+          parent.children = [];
+        }
+        parent.children.push(node);
+      } else {
+        // Если родитель не найден, считаем элемент корневым
+        rootItems.push(node);
+      }
+    }
+  });
+
+  return rootItems;
 }

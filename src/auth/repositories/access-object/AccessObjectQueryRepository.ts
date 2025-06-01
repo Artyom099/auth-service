@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 
-import { AccessObject, AccessObjectAction, Action, Right, Role } from '../../../libs/db/entity';
+import { AccessObject, AccessObjectAction, Action, Right, Role, RoleHierarchy } from '../../../libs/db/entity';
 import { AccessObjectCalculateRightsRequestDto } from '../../../libs/dto';
 import { AccessObjectNodeResponseDto } from '../../../libs/dto/output/AccessObjectNodeResponseDto';
-import { flatToNestedTree, TFlatTreeItem } from '../../../libs/utils';
+import { flatToNestedTree, TFlatTreeItem, TNestedTreeItem } from '../../../libs/utils';
 
 @Injectable()
 export class AccessObjectQueryRepository {
@@ -21,26 +21,24 @@ export class AccessObjectQueryRepository {
    * Запрос есть в обсидиане todo
    * Так же надо будет сделать функцию flatToNestedTree
    */
-  public async calculateRightTree(dto: AccessObjectCalculateRightsRequestDto): Promise<any> {
+  public async calculateRightTree(dto: AccessObjectCalculateRightsRequestDto): Promise<TNestedTreeItem[]> {
     const { roleName } = dto;
 
     const rolesCte = [
       this.manager
         .createQueryBuilder()
         .select('r.name', 'name')
-        .addSelect('r.status', 'status')
-        .addSelect('r.parentName', 'parentName')
+        .addSelect('h.parentName', 'parentName')
         .from(Role, 'r')
-        .leftJoin('RoleHierarchy', 'h', 'h.name = r.name')
+        .leftJoin(RoleHierarchy, 'h', 'h.name = r.name')
         .where('r.name = :roleName'),
 
       this.manager
         .createQueryBuilder()
         .select('r.name', 'name')
-        .addSelect('r.status', 'status')
-        .addSelect('r.parentName', 'parentName')
+        .addSelect('h.parentName', 'parentName')
         .from(Role, 'r')
-        .leftJoin('RoleHierarchy', 'h', 'h.name = r.name')
+        .leftJoin(RoleHierarchy, 'h', 'h.name = r.name')
         .innerJoin('roles', 'roles', '"roles"."parentName" = r.name'),
     ]
       .map((qb) => qb.getQuery())
@@ -49,13 +47,13 @@ export class AccessObjectQueryRepository {
     const accessObjectsCte = [
       this.manager
         .createQueryBuilder()
-        .select(['o.name as "objectName', 'o.parentName as "objectParentName', 'o.type as "objectType'])
+        .select(['o.name as "objectName"', 'o.parentName as "objectParentName"', 'o.type as "objectType"'])
         .from(AccessObject, 'o')
         .where('o.parentName is null'),
 
       this.manager
         .createQueryBuilder()
-        .select(['o.name as "objectName', 'o.parentName as "objectParentName', 'o.type as "objectType'])
+        .select(['o.name as "objectName"', 'o.parentName as "objectParentName"', 'o.type as "objectType"'])
         .from('access_objects', 'access_objects')
         .innerJoin(AccessObject, 'o', 'o.parentName = access_objects."objectName"'),
     ]
@@ -71,12 +69,12 @@ export class AccessObjectQueryRepository {
       .andWhere((qb1) => {
         const sub1 = qb1
           .subQuery()
-          .select('roles."name"')
+          .select('roles.name', 'name')
           .from('roles', 'roles')
           .where('roles.name = :roleName')
           .getQuery();
 
-        return `r.roleName in ${sub1}}`;
+        return `r.roleName in ${sub1}`;
       })
       .getQuery();
 
@@ -88,12 +86,12 @@ export class AccessObjectQueryRepository {
       .andWhere((qb1) => {
         const sub1 = qb1
           .subQuery()
-          .select('roles."name"')
+          .select('roles.name', 'name')
           .from('roles', 'roles')
           .where('roles.name <> :roleName')
           .getQuery();
 
-        return `r.roleName in ${sub1}}`;
+        return `r.roleName in ${sub1}`;
       })
       .limit(1)
       .getQuery();
@@ -101,11 +99,11 @@ export class AccessObjectQueryRepository {
     const roleActionsCte = this.manager
       .createQueryBuilder()
       .select([
-        'action.name as "actionName',
-        'action.type as "actionType',
-        'action.description as "actionDescription',
-        `(${owmGrantSub}) as "ownGrant`,
-        `(${parentGrantSub}) as "parentGrant`,
+        'action.name as "actionName"',
+        'action.type as "actionType"',
+        'action.description as "actionDescription"',
+        `(${owmGrantSub}) as "ownGrant"`,
+        `(${parentGrantSub}) as "parentGrant"`,
       ])
       .from(Action, 'action')
       .getQuery();

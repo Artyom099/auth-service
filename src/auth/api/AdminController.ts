@@ -11,6 +11,7 @@ import {
   RoleGetResponseDto,
 } from '../../libs/dto';
 import { AccessObjectNodeResponseDto } from '../../libs/dto/output/AccessObjectNodeResponseDto';
+import { TNestedTreeItem } from '../../libs/utils';
 import { CreateRoleCommand, CreateSeedingCommand, ReassignRightsCommand } from '../application';
 import { AccessObjectQueryRepository, RoleQueryRepository } from '../repositories';
 
@@ -39,7 +40,8 @@ export class AdminController {
   async getRoles(): Promise<RoleGetResponseDto[]> {
     return this.roleQueryRepository.getRoles();
   }
-  // todo - возможно сделать апи на отображение дерева ролей
+
+  // todo - возможно сделать апи на отображение дерева ролей roles/get_tree
 
   @Post('role')
   @HttpCode(201)
@@ -55,7 +57,7 @@ export class AdminController {
 
   @HttpCode(200)
   @Get('access_object/calculate_rights')
-  calculateRightTree(@Body() dto: AccessObjectCalculateRightsRequestDto) {
+  calculateRightTree(@Body() dto: AccessObjectCalculateRightsRequestDto): Promise<TNestedTreeItem[]> {
     return this.accessObjectQueryRepository.calculateRightTree(dto);
   }
 

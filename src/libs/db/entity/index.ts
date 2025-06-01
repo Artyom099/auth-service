@@ -4,6 +4,7 @@ export * from './Action';
 export * from './Device';
 export * from './Right';
 export * from './Role';
+export * from './RoleHierarchy';
 export * from './User';
 export * from './UserEmailConfirmation';
 export * from './UserPasswordRecovery';

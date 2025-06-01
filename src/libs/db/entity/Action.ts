@@ -12,15 +12,21 @@ export enum EActionType {
 export interface IAction {
   name: string;
   type: EActionType;
+  description?: string;
 }
 
 @Entity('action')
-export class Action {
+export class Action implements IAction {
   @PrimaryColumn()
   name: string;
 
   @Column()
   type: EActionType;
+
+  @Column({
+    nullable: true,
+  })
+  description?: string;
 
   /**
    * объекты доступа, которым разрешено текущее действие
