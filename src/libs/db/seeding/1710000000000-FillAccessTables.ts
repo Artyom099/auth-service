@@ -27,6 +27,9 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     service: { name: 'service', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     accessObject: { name: 'access_object', type: EAccessObjectType.TAB, parentName: 'auth-service' },
 
+    // roleFlat: { name: 'role_flat', type: EAccessObjectType.TAB, parentName: 'role' },
+    // roleTree: { name: 'role_tree', type: EAccessObjectType.TAB, parentName: 'role' },
+
     // кнопки текущего сервиса
     grantRevokeAccess: { name: 'grant_revoke_access', type: EAccessObjectType.BUTTON, parentName: 'access_object' },
     deleteDevice: { name: 'delete_device', type: EAccessObjectType.BUTTON, parentName: 'device' },

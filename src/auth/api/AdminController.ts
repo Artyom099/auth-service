@@ -10,7 +10,6 @@ import {
   RoleCreateRequestDto,
   RoleGetResponseDto,
 } from '../../libs/dto';
-import { AccessObjectNodeResponseDto } from '../../libs/dto/output/AccessObjectNodeResponseDto';
 import { TNestedTreeItem } from '../../libs/utils';
 import { CreateRoleCommand, CreateSeedingCommand, ReassignRightsCommand } from '../application';
 import { AccessObjectQueryRepository, RoleQueryRepository } from '../repositories';
@@ -55,22 +54,14 @@ export class AdminController {
     return this.accessObjectQueryRepository.getAccessObjects();
   }
 
+  @ApiResponse({
+    status: 200,
+    description: 'Дерево объектов доступа со списком бизнес-действий каждого объекта',
+  })
   @HttpCode(200)
   @Post('access_object/calculate_rights')
   calculateRightTree(@Body() dto: AccessObjectCalculateRightsRequestDto): Promise<TNestedTreeItem[]> {
     return this.accessObjectQueryRepository.calculateRightTree(dto);
-  }
-
-  @ApiOperation({ summary: 'Get access object tree' })
-  @ApiResponse({
-    status: 200,
-    description: 'Дерево объектов доступа со списком бизнес-действий каждого объекта',
-    type: [AccessObjectNodeResponseDto],
-  })
-  @Get('access_object/tree')
-  @HttpCode(200)
-  async getAccessObjectTree(): Promise<AccessObjectNodeResponseDto[]> {
-    return this.accessObjectQueryRepository.getAccessObjectTree();
   }
 
   @ApiResponse({
