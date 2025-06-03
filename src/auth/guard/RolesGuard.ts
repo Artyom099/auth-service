@@ -31,7 +31,7 @@ export class RolesGuard extends AuthGuard {
 
     const request = context.switchToHttp().getRequest();
 
-    const apiName = request.url.replace('/api', '');
+    const apiName = request.url.replace('/api', '').replace('/v1/', '');
     console.log({ request_url: request.url });
     console.log({ apiName });
 

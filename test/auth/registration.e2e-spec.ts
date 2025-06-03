@@ -5,8 +5,8 @@ import { EntityManager } from 'typeorm';
 
 import { AppModule } from '../../src/AppModule';
 import { UserRepository } from '../../src/auth';
-import { RegistrationRequestDto } from '../../src/auth/api/models/input/RegistrationRequestDto';
 import { User } from '../../src/libs/db/entity';
+import { RegistrationRequestDto } from '../../src/libs/dto/input/RegistrationRequestDto';
 
 describe('Auth Registration (e2e)', () => {
   let app: INestApplication;

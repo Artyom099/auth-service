@@ -4,6 +4,8 @@ import {
   AccessObject,
   AccessObjectAction,
   Action,
+  ActionApi,
+  Api,
   EAccessObjectType,
   EActionType,
   IAccessObject,
@@ -28,9 +30,6 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     right: { name: 'right', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     service: { name: 'service', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     accessObject: { name: 'access_object', type: EAccessObjectType.TAB, parentName: 'auth-service' },
-
-    // roleFlat: { name: 'role_flat', type: EAccessObjectType.TAB, parentName: 'role' },
-    // roleTree: { name: 'role_tree', type: EAccessObjectType.TAB, parentName: 'role' },
 
     // кнопки текущего сервиса
     grantRevokeAccess: { name: 'grant_revoke_access', type: EAccessObjectType.BUTTON, parentName: 'access_object' },
@@ -72,11 +71,19 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     { roleName: this.role.admin.name, actionName: this.action.grantAccess.name },
   ];
 
-  // todo - литералы апи - понять, сколько слов сидировать
-  private readonly api: { [key: string]: IApi } = {};
+  // todo - литералы апи - controller/entity/method
+  private readonly api: { [key: string]: IApi } = {
+    roleFlat: { name: 'admin/roles/get_tree' },
+    roleTree: { name: 'admin/roles' },
+    getDevices: { name: 'device' },
+  };
 
   // todo - связи апи и бизнес-действия
-  private readonly actionApis: IActionApi[] = [];
+  private readonly actionApis: IActionApi[] = [
+    { actionName: this.action.readRoles.name, apiName: this.api.roleFlat.name },
+    { actionName: this.action.readRoles.name, apiName: this.api.roleTree.name },
+    { actionName: this.action.readDevice.name, apiName: this.api.getDevices.name },
+  ];
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Заполняем таблицу AccessObject (объекты доступа)
@@ -94,19 +101,21 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
       await queryRunner.manager.getRepository(Role).insert(role);
     }
 
-    // Заполняем таблицу AccessObjectAction (связь объектов и действий)
-    for (const objectAction of this.objectActions) {
-      await queryRunner.manager.getRepository(AccessObjectAction).insert(objectAction);
+    for (const api of Object.values(this.api)) {
+      await queryRunner.manager.getRepository(Api).insert(api);
     }
 
-    // Заполняем таблицу Right (права)
-    for (const right of this.rights) {
-      await queryRunner.manager.getRepository(Right).insert(right);
-    }
+    // создание связей
+    await queryRunner.manager.getRepository(AccessObjectAction).insert(this.objectActions);
+    await queryRunner.manager.getRepository(Right).insert(this.rights);
+    await queryRunner.manager.getRepository(ActionApi).insert(this.actionApis);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     // удаление связей
+    for (const actionApi of this.actionApis) {
+      await queryRunner.manager.getRepository(ActionApi).delete(actionApi);
+    }
     for (const objectAction of this.objectActions) {
       await queryRunner.manager.getRepository(AccessObjectAction).delete(objectAction);
     }
@@ -125,6 +134,10 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
 
     for (const role of Object.values(this.role)) {
       await queryRunner.manager.getRepository(Role).delete(role);
+    }
+
+    for (const api of Object.values(this.api)) {
+      await queryRunner.manager.getRepository(Api).delete(api);
     }
   }
 }
