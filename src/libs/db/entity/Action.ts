@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, PrimaryColumn } from 'typeorm';
 
 import { AccessObject } from './AccessObject';
+import { Api } from './Api';
 import { Role } from './Role';
 
 export enum EActionType {
@@ -39,4 +40,21 @@ export class Action implements IAction {
    */
   @ManyToMany(() => Role, (r) => r.grantedActions)
   roles: Role[];
+
+  /**
+   * апи, доступ к которым нужен для выполнения конкретного действия
+   */
+  @ManyToMany(() => Api, (api) => api.actions)
+  @JoinTable({
+    name: 'action_api',
+    joinColumn: {
+      name: 'action_name',
+      referencedColumnName: 'name',
+    },
+    inverseJoinColumn: {
+      name: 'api_name',
+      referencedColumnName: 'name',
+    },
+  })
+  literals: Api[];
 }

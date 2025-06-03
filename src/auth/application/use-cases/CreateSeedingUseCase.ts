@@ -18,10 +18,10 @@ export class CreateSeedingUseCase implements ICommandHandler<CreateSeedingComman
     return this.manager.transaction(async (em) => {
       const seeding = new FillAccessTables1710000000000();
 
-      if (action === 'up') {
-        await seeding.up(em.queryRunner);
-      } else if (action === 'down') {
-        await seeding.down(em.queryRunner);
+      try {
+        await seeding[action](em.queryRunner);
+      } catch (e) {
+        return e;
       }
 
       return `seeding successfully ${action}`;

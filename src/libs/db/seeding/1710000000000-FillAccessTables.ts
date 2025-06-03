@@ -9,6 +9,8 @@ import {
   IAccessObject,
   IAccessObjectAction,
   IAction,
+  IActionApi,
+  IApi,
   IRight,
   IRole,
   Right,
@@ -69,6 +71,12 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     { roleName: this.role.admin.name, actionName: this.action.deleteDevice.name },
     { roleName: this.role.admin.name, actionName: this.action.grantAccess.name },
   ];
+
+  // todo - литералы апи - понять, сколько слов сидировать
+  private readonly api: { [key: string]: IApi } = {};
+
+  // todo - связи апи и бизнес-действия
+  private readonly actionApis: IActionApi[] = [];
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     // Заполняем таблицу AccessObject (объекты доступа)

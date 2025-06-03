@@ -8,7 +8,7 @@ import { TokenService } from '../application';
 
 /**
  * RolesGuard проверяет, доступна ли пользователю конкретная апи или нет
- * todo - сделать гард
+ * todo - протестировать гард
  */
 @Injectable()
 export class RolesGuard extends AuthGuard {
@@ -35,7 +35,7 @@ export class RolesGuard extends AuthGuard {
     console.log({ request_url: request.url });
     console.log({ apiName });
 
-    const userRoles = await this.authService.getUserRoles();
+    const userRoles = await this.authService.getUserRoles(request.userId);
 
     /**
      * ищем права пользователя к текущей апи или объекту досутпа

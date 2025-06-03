@@ -16,4 +16,6 @@ export class RoleHierarchy implements IRoleHierarchy {
     name: 'parent_name',
   })
   parentName: string;
+
+  // todo @ManyToOne() X2
 }

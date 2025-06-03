@@ -1,12 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { EntityManager } from 'typeorm';
 
-import { AccessObject, AccessObjectAction, Right, Role, RoleHierarchy, User, UserRole } from '../../libs/db/entity';
+import {
+  AccessObject,
+  AccessObjectAction,
+  ActionApi,
+  Api,
+  Right,
+  Role,
+  RoleHierarchy,
+  User,
+  UserRole,
+} from '../../libs/db/entity';
 
 @Injectable()
 export class AuthService {
   constructor(private readonly manager: EntityManager) {}
 
+  /**
+   * Получение всех ролей, которые доступны пользователю
+   */
   public async getUserRoles(userId: string): Promise<string[]> {
     const rolesCte = [
       this.manager
@@ -60,9 +73,8 @@ export class AuthService {
       .innerJoin(Right, 'r', 'role.name = r.roleName')
       .innerJoin(AccessObjectAction, 'aoa', 'aoa.actionName = r.actionName')
       .innerJoin(AccessObject, 'ao', 'ao.name = aoa.objectName')
-      // todo 2 - add ActionApi, Api
-      .innerJoin('ActionApi', 'aa', 'aa.actionName = r.actionName')
-      .innerJoin('Api', 'api', 'api.name = aa.apiName')
+      .innerJoin(ActionApi, 'aa', 'aa.actionName = r.actionName')
+      .innerJoin(Api, 'api', 'api.name = aa.apiName')
       .where('role.name in (:...roles)')
       .andWhere('api.name = :apiName')
       .setParameters({ roles, apiName });

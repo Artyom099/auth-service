@@ -23,7 +23,7 @@ export class AdminController {
     private readonly accessObjectQueryRepository: AccessObjectQueryRepository,
   ) {}
 
-  @Post('seeding')
+  @Post('seeding') // системная апи для наката сидинга в бд
   async seeding(@Body() body: { action: 'up' | 'down' }): Promise<string> {
     return this.commandBus.execute(new CreateSeedingCommand(body));
   }
