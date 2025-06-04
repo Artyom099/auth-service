@@ -1,4 +1,6 @@
-import { Entity, PrimaryColumn } from 'typeorm';
+import { Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
+
+import { Role } from './Role';
 
 export interface IRoleHierarchy {
   name: string;
@@ -17,5 +19,11 @@ export class RoleHierarchy implements IRoleHierarchy {
   })
   parentName: string;
 
-  // todo @ManyToOne() X2
+  @ManyToOne(() => Role, (r) => r.name)
+  @JoinColumn({ name: 'name', referencedColumnName: 'name' })
+  role: Role;
+
+  @ManyToOne(() => Role, (r) => r.name)
+  @JoinColumn({ name: 'parent_name', referencedColumnName: 'name' })
+  parentRole: Role;
 }

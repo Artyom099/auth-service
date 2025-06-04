@@ -5,19 +5,18 @@ import { ApiTags } from '@nestjs/swagger';
 import { CurrentUserId, RefreshToken } from '../../libs/decorators';
 import { DeleteDeviceApi, DeleteOtherDevicesApi, GetDevicesApi } from '../../libs/swagger';
 import { DeleteDeviceCommand, DeleteOtherDevicesCommand } from '../application';
-import { AuthGuard, RolesGuard } from '../guard';
+import { RolesGuard } from '../guard';
 import { DeviceQueryRepository } from '../repositories';
 
 @ApiTags('Device')
 @Controller('device')
-@UseGuards(AuthGuard)
+@UseGuards(RolesGuard)
 export class DeviceController {
   constructor(
     private commandBus: CommandBus,
     private deviceQueryRepository: DeviceQueryRepository,
   ) {}
 
-  @UseGuards(RolesGuard)
   @GetDevicesApi()
   @Get()
   @HttpCode(HttpStatus.OK)

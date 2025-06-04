@@ -19,6 +19,7 @@ import {
   Right,
   Role,
   RoleHierarchy,
+  UserRole,
 } from '../entity';
 
 export class FillAccessTables1710000000000 implements MigrationInterface {
@@ -59,6 +60,7 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
    * admin
    * user
    * |__engineer
+   *    |__hr
    *    |__manager
    *       |__moderator
    */
@@ -67,12 +69,14 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     moderator: { name: 'moderator', description: '' },
     engineer: { name: 'engineer', description: 'Имеет доступ только к сервису авторизации' },
     manager: { name: 'manager', description: 'Имеет доступ ко всему только на чтение' },
-    user: { name: 'user', description: 'Имеет доступ к паре вкладок и только на чтение' },
+    user: { name: 'user', description: 'Имеет динамичский доступ' },
+    hr: { name: 'hr', description: 'Имеет динамичский доступ' },
   };
 
   private readonly hierarchy: IRoleHierarchy[] = [
     { name: this.role.engineer.name, parentName: this.role.user.name },
     { name: this.role.manager.name, parentName: this.role.engineer.name },
+    { name: this.role.hr.name, parentName: this.role.engineer.name },
     { name: this.role.moderator.name, parentName: this.role.manager.name },
   ];
 
@@ -97,6 +101,8 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     roleFlat: { name: 'admin/roles' },
     roleTree: { name: 'admin/roles/get_tree' },
     getDevices: { name: 'device' },
+    // deleteDevice: { name: 'device/delete' },
+    // deleteDevices: { name: 'device/delete_other' },
     readProfile: { name: 'auth/me' },
     updatePassword: { name: 'auth/update-password' },
   };
@@ -132,6 +138,8 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.manager.getRepository(UserRole).delete({});
+
     // удаление связей
     for (const actionApi of this.actionApis) {
       await queryRunner.manager.getRepository(ActionApi).delete(actionApi);

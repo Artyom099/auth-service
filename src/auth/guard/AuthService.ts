@@ -38,7 +38,7 @@ export class AuthService {
         .addSelect('h.parentName', 'parentName')
         .from(Role, 'r')
         .leftJoin(RoleHierarchy, 'h', 'h.name = r.name')
-        .innerJoin('roles', 'roles', '"roles"."parentName" = r.name'), // идем вверх !! по дереву
+        .innerJoin('roles', 'roles', '"roles"."parentName" = r.name'), // идем вверх по дереву
     ]
       .map((qb) => qb.getQuery())
       .join(' union all ');
@@ -53,14 +53,9 @@ export class AuthService {
       })
       .setParameters({ userId });
 
-    console.log({ sql: qb.getQueryAndParameters() });
+    const userRoles = await qb.getRawMany<{ name: string }>();
 
-    const userRoles = await qb.getRawMany<{ name: string; parentName: string }>();
-    console.log({ userRoles });
-
-    const roles = userRoles.map((role) => role.name);
-
-    return ['admin'];
+    return userRoles.map((role) => role.name);
   }
 
   /**
