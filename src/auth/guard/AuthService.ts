@@ -38,7 +38,7 @@ export class AuthService {
         .addSelect('h.parentName', 'parentName')
         .from(Role, 'r')
         .leftJoin(RoleHierarchy, 'h', 'h.name = r.name')
-        .innerJoin('roles', 'roles', '"roles"."parentName" = r.name'),
+        .innerJoin('roles', 'roles', '"roles"."parentName" = r.name'), // идем вверх !! по дереву
     ]
       .map((qb) => qb.getQuery())
       .join(' union all ');

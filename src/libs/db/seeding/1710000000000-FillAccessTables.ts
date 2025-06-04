@@ -15,8 +15,10 @@ import {
   IApi,
   IRight,
   IRole,
+  IRoleHierarchy,
   Right,
   Role,
+  RoleHierarchy,
 } from '../entity';
 
 export class FillAccessTables1710000000000 implements MigrationInterface {
@@ -25,15 +27,17 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     authService: { name: 'auth-service', type: EAccessObjectType.APP },
 
     // вкладки текущего сервиса
+    profile: { name: 'profile', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     device: { name: 'device', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     role: { name: 'role', type: EAccessObjectType.TAB, parentName: 'auth-service' },
-    right: { name: 'right', type: EAccessObjectType.TAB, parentName: 'auth-service' },
-    service: { name: 'service', type: EAccessObjectType.TAB, parentName: 'auth-service' },
+    // right: { name: 'right', type: EAccessObjectType.TAB, parentName: 'auth-service' },
+    // service: { name: 'service', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     accessObject: { name: 'access_object', type: EAccessObjectType.TAB, parentName: 'auth-service' },
 
     // кнопки текущего сервиса
     grantRevokeAccess: { name: 'grant_revoke_access', type: EAccessObjectType.BUTTON, parentName: 'access_object' },
     deleteDevice: { name: 'delete_device', type: EAccessObjectType.BUTTON, parentName: 'device' },
+    updatePassword: { name: 'update_password', type: EAccessObjectType.BUTTON, parentName: 'profile' },
 
     // другие сервисы
     storageService: { name: 'storage-service', type: EAccessObjectType.APP },
@@ -47,8 +51,17 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     readRoles: { name: 'read_roles', type: EActionType.READ, description: 'Чтени вкладки Роли' },
     createRoles: { name: 'create_roles', type: EActionType.WRITE, description: 'Создание ролей' },
     grantAccess: { name: 'grant_access', type: EActionType.SPECIAL, description: 'Выдача и отзыв прав роли' },
+    readProfile: { name: 'read_profile', type: EActionType.READ, description: 'Чтение вкладки Профиль' },
+    updatePassword: { name: 'update_password', type: EActionType.WRITE, description: 'Обновление пароля' },
   };
 
+  /**
+   * admin
+   * user
+   * |__engineer
+   *    |__manager
+   *       |__moderator
+   */
   private readonly role: { [key: string]: IRole } = {
     admin: { name: 'admin', description: 'Имеет доступ ко всем компонентам системы' },
     moderator: { name: 'moderator', description: '' },
@@ -57,11 +70,19 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     user: { name: 'user', description: 'Имеет доступ к паре вкладок и только на чтение' },
   };
 
+  private readonly hierarchy: IRoleHierarchy[] = [
+    { name: this.role.engineer.name, parentName: this.role.user.name },
+    { name: this.role.manager.name, parentName: this.role.engineer.name },
+    { name: this.role.moderator.name, parentName: this.role.manager.name },
+  ];
+
   // todo - связь объекта и бизнес-действия
   private readonly objectActions: IAccessObjectAction[] = [
     { objectName: this.objects.device.name, actionName: this.action.readDevice.name },
     { objectName: this.objects.deleteDevice.name, actionName: this.action.deleteDevice.name },
     { objectName: this.objects.grantRevokeAccess.name, actionName: this.action.grantAccess.name },
+    { objectName: this.objects.profile.name, actionName: this.action.readProfile.name },
+    { objectName: this.objects.updatePassword.name, actionName: this.action.updatePassword.name },
   ];
 
   // todo - права роли
@@ -73,9 +94,11 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
 
   // todo - литералы апи - controller/entity/method
   private readonly api: { [key: string]: IApi } = {
-    roleFlat: { name: 'admin/roles/get_tree' },
-    roleTree: { name: 'admin/roles' },
+    roleFlat: { name: 'admin/roles' },
+    roleTree: { name: 'admin/roles/get_tree' },
     getDevices: { name: 'device' },
+    readProfile: { name: 'auth/me' },
+    updatePassword: { name: 'auth/update-password' },
   };
 
   // todo - связи апи и бизнес-действия
@@ -83,24 +106,20 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     { actionName: this.action.readRoles.name, apiName: this.api.roleFlat.name },
     { actionName: this.action.readRoles.name, apiName: this.api.roleTree.name },
     { actionName: this.action.readDevice.name, apiName: this.api.getDevices.name },
+    { actionName: this.action.readProfile.name, apiName: this.api.readProfile.name },
+    { actionName: this.action.updatePassword.name, apiName: this.api.updatePassword.name },
   ];
 
   public async up(queryRunner: QueryRunner): Promise<void> {
-    // Заполняем таблицу AccessObject (объекты доступа)
     for (const accessObject of Object.values(this.objects)) {
       await queryRunner.manager.getRepository(AccessObject).insert(accessObject);
     }
-
-    // Заполняем таблицу Action (действия)
     for (const action of Object.values(this.action)) {
       await queryRunner.manager.getRepository(Action).insert(action);
     }
-
-    // Заполняем таблицу Role (роли)
     for (const role of Object.values(this.role)) {
       await queryRunner.manager.getRepository(Role).insert(role);
     }
-
     for (const api of Object.values(this.api)) {
       await queryRunner.manager.getRepository(Api).insert(api);
     }
@@ -109,6 +128,7 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     await queryRunner.manager.getRepository(AccessObjectAction).insert(this.objectActions);
     await queryRunner.manager.getRepository(Right).insert(this.rights);
     await queryRunner.manager.getRepository(ActionApi).insert(this.actionApis);
+    await queryRunner.manager.getRepository(RoleHierarchy).insert(this.hierarchy);
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
@@ -122,20 +142,20 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     for (const right of this.rights) {
       await queryRunner.manager.getRepository(Right).delete(right);
     }
+    for (const hierarchy of this.hierarchy) {
+      await queryRunner.manager.getRepository(RoleHierarchy).delete(hierarchy);
+    }
 
     // удаление сущностей
     for (const accessObject of Object.values(this.objects)) {
       await queryRunner.manager.getRepository(AccessObject).delete(accessObject);
     }
-
     for (const action of Object.values(this.action)) {
       await queryRunner.manager.getRepository(Action).delete(action);
     }
-
     for (const role of Object.values(this.role)) {
       await queryRunner.manager.getRepository(Role).delete(role);
     }
-
     for (const api of Object.values(this.api)) {
       await queryRunner.manager.getRepository(Api).delete(api);
     }

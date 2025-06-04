@@ -9,9 +9,12 @@ import {
   RightReassignResponseDto,
   RoleCreateRequestDto,
   RoleGetResponseDto,
+  RoleGetTreeRequestDto,
+  RoleGetTreeResponseDto,
+  UserRoleCreateDto,
 } from '../../libs/dto';
 import { TNestedTreeItem } from '../../libs/utils';
-import { CreateRoleCommand, CreateSeedingCommand, ReassignRightsCommand } from '../application';
+import { CreateRoleCommand, CreateSeedingCommand, CreateUserRoleCommand, ReassignRightsCommand } from '../application';
 import { AccessObjectQueryRepository, RoleQueryRepository } from '../repositories';
 
 @ApiTags('Admin')
@@ -39,12 +42,22 @@ export class AdminController {
     return this.roleQueryRepository.getRoles();
   }
 
-  // todo - возможно сделать апи на отображение дерева ролей roles/get_tree
+  @Post('roles/get_tree')
+  @HttpCode(200)
+  async getRolesTree(@Body() body: RoleGetTreeRequestDto): Promise<RoleGetTreeResponseDto[]> {
+    return this.roleQueryRepository.getRolesTree(body);
+  }
 
   @Post('role')
   @HttpCode(201)
   async createRole(@Body() body: RoleCreateRequestDto) {
     return this.commandBus.execute(new CreateRoleCommand(body));
+  }
+
+  @Post('user_role/create')
+  @HttpCode(201)
+  createUserRole(@Body() body: UserRoleCreateDto) {
+    return this.commandBus.execute(new CreateUserRoleCommand(body));
   }
 
   @Get('access_object')

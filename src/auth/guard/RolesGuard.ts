@@ -8,7 +8,7 @@ import { TokenService } from '../application';
 
 /**
  * RolesGuard проверяет, доступна ли пользователю конкретная апи или нет
- * todo - протестировать гард
+ * todo - применить гард ко всем апи
  */
 @Injectable()
 export class RolesGuard extends AuthGuard {

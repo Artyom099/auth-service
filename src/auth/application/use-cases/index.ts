@@ -6,4 +6,5 @@ export * from './oauth';
 export * from './password-recovery';
 export * from './right';
 export * from './role';
+export * from './userRole';
 export * from './yandex';
