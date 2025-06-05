@@ -13,8 +13,8 @@ import { UpsertYandexUserCommand } from '../application';
 @ApiTags('Auth')
 @Controller('yandex')
 export class YandexOauthController {
-  private REFRESH_TOKEN_COOKIE_KEY = 'refreshToken';
-  private ACCESS_TOKEN_COOKIE_KEY = 'accessToken';
+  private readonly REFRESH_TOKEN_COOKIE_KEY = 'refreshToken';
+  private readonly ACCESS_TOKEN_COOKIE_KEY = 'accessToken';
   private readonly cookieOptions: CookieOptions;
 
   constructor(

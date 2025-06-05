@@ -5,7 +5,10 @@ import { AppConfig } from '../../config';
 
 @Injectable()
 export class EmailAdapter {
-  constructor(@Inject(AppConfig.name) private appConfig: AppConfig) {}
+  constructor(
+    @Inject(AppConfig.name)
+    private appConfig: AppConfig,
+  ) {}
 
   async sendEmail(email: string, subject: string, message: string): Promise<boolean> {
     const { EMAIL_HOST, EMAIL_USER, EMAIL_PASSWORD } = this.appConfig.settings.email;

@@ -6,9 +6,9 @@ import { CookieOptions } from 'express';
 @ApiTags('Oauth')
 @Controller('oauth')
 export class OauthController {
-  private REFRESH_TOKEN_COOKIE_KEY = 'refreshToken';
-  private ACCESS_TOKEN_COOKIE_KEY = 'accessToken';
-  private cookieOptions: CookieOptions;
+  private readonly REFRESH_TOKEN_COOKIE_KEY = 'refreshToken';
+  private readonly ACCESS_TOKEN_COOKIE_KEY = 'accessToken';
+  private readonly cookieOptions: CookieOptions;
 
   constructor(private commandBus: CommandBus) {}
 

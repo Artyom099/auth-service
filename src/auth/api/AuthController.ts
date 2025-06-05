@@ -21,7 +21,7 @@ import { CurrentUserId, RefreshToken } from '../../libs/decorators';
 import { GetUserInfoResponseDto } from '../../libs/dto';
 import { ConfirmationCodeRequestDto } from '../../libs/dto/input/ConfirmationCodeRequestDto';
 import { EmailRequestDto } from '../../libs/dto/input/EmailRequestDto';
-import { LogInRequestDto } from '../../libs/dto/input/logInRequestDto';
+import { LogInRequestDto } from '../../libs/dto/input/LogInRequestDto';
 import { OauthInputModel } from '../../libs/dto/input/oauth.input.model';
 import { RegistrationRequestDto } from '../../libs/dto/input/RegistrationRequestDto';
 import { UpdatePasswordRequestDto } from '../../libs/dto/input/UpdatePasswordRequestDto';
@@ -61,14 +61,15 @@ import { UserQueryRepository } from '../repositories';
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  private REFRESH_TOKEN_COOKIE_KEY = 'refreshToken';
-  private ACCESS_TOKEN_COOKIE_KEY = 'accessToken';
+  private readonly REFRESH_TOKEN_COOKIE_KEY = 'refreshToken';
+  private readonly ACCESS_TOKEN_COOKIE_KEY = 'accessToken';
   private readonly cookieOptions: CookieOptions;
 
   constructor(
     private commandBus: CommandBus,
     private userQueryRepository: UserQueryRepository,
-    @Inject(AppConfig.name) private appConfig: AppConfig,
+    @Inject(AppConfig.name)
+    private appConfig: AppConfig,
   ) {
     this.cookieOptions = {
       httpOnly: true,

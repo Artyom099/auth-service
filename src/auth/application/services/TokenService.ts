@@ -8,7 +8,8 @@ import { TAccessTokenPayload, TPairTokens, TRefreshTokenPayload } from '../../..
 export class TokenService {
   constructor(
     private jwtService: JwtService,
-    @Inject(AppConfig.name) private appConfig: AppConfig,
+    @Inject(AppConfig.name)
+    private appConfig: AppConfig,
   ) {}
 
   async signTokens(payload: TRefreshTokenPayload): Promise<TPairTokens> {
