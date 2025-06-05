@@ -2,8 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 
 import { AppConfig } from '../../../config';
-import { TAccessTokenPayload } from '../../../libs/dto/TAccessTokenPayload';
-import { TPairTokens, TRefreshTokenPayload } from '../../../libs/types';
+import { TAccessTokenPayload, TPairTokens, TRefreshTokenPayload } from '../../../libs/types';
 
 @Injectable()
 export class TokenService {

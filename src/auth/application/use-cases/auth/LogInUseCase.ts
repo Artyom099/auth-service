@@ -5,9 +5,8 @@ import { EntityManager } from 'typeorm';
 import { randomUUID } from 'crypto';
 
 import { LogInDto } from '../../../../libs/dto/LogInDto';
-import { TDeviceCreateDto } from '../../../../libs/dto/TDeviceCreateDto';
 import { ResultType, SuccessResult } from '../../../../libs/error-handling/result';
-import { TPairTokens } from '../../../../libs/types';
+import { TDeviceCreateDto, TPairTokens } from '../../../../libs/types';
 import { DeviceRepository, UserRepository } from '../../../repositories';
 import { AuthService, TokenService } from '../../services';
 

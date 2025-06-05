@@ -7,7 +7,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 
-import { GetUserInfoResponseDto } from '../../dto/GetUserInfoResponseDto';
+import { GetUserInfoResponseDto } from '../../dto';
 
 export function MeApi() {
   return applyDecorators(

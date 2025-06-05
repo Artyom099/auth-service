@@ -1,1 +1,1 @@
-export * from './UserRoleCreateDto';
+export * from './crud';

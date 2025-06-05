@@ -18,7 +18,7 @@ import { CookieOptions, Response } from 'express';
 
 import { AppConfig } from '../../config';
 import { CurrentUserId, RefreshToken } from '../../libs/decorators';
-import { GetUserInfoResponseDto } from '../../libs/dto/GetUserInfoResponseDto';
+import { GetUserInfoResponseDto } from '../../libs/dto';
 import { ConfirmationCodeRequestDto } from '../../libs/dto/input/ConfirmationCodeRequestDto';
 import { EmailRequestDto } from '../../libs/dto/input/EmailRequestDto';
 import { LogInRequestDto } from '../../libs/dto/input/logInRequestDto';
