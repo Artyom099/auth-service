@@ -7,7 +7,6 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
-  Ip,
   Param,
   Post,
   Res,
@@ -124,9 +123,10 @@ export class AuthController {
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(
+    // @Ip() ip: string, // непонятно, какой заголовок парсит декоратор
     @Headers('user-agent') deviceName: string,
+    @Headers('X-Forwarded-For') ip: string,
     @Body() body: LogInRequestDto,
-    @Ip() ip: string,
     @Res({ passthrough: true }) res: Response,
   ): Promise<ResultType<TPairTokens>> {
     const dto: LogInDto = {

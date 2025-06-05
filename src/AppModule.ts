@@ -34,7 +34,7 @@ import {
   RegistrationUseCase,
   ResendEmailConfirmationUseCase,
   RoleQueryRepository,
-  StartController,
+  SystemController,
   TokenService,
   UpdatePasswordUseCase,
   UpsertYandexUserUseCase,
@@ -47,7 +47,7 @@ import { AuthServicePgDataSource, DataSourceConfig } from './libs/db';
 import { entities } from './libs/db/entities';
 import { EmailAdapter } from './libs/email';
 
-const controllers = [AuthController, DeviceController, StartController, YandexOauthController, AdminController];
+const controllers = [AuthController, DeviceController, SystemController, YandexOauthController, AdminController];
 
 const services = [EmailService, AuthService, TokenService];
 

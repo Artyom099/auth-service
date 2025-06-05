@@ -93,6 +93,7 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
 
   // todo - права роли
   private readonly rights: IRight[] = [
+    { roleName: this.role.admin.name, actionName: this.action.readProfile.name },
     { roleName: this.role.admin.name, actionName: this.action.readDevice.name },
     { roleName: this.role.admin.name, actionName: this.action.deleteDevice.name },
     { roleName: this.role.admin.name, actionName: this.action.grantAccess.name },
@@ -109,6 +110,7 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     readProfile: { name: 'auth/me' },
     updatePassword: { name: 'auth/update-password' },
     passwordRecovery: { name: 'auth/password-recovery' },
+    reassignRight: { name: 'admin/right/reassign' },
   };
 
   // todo - связи апи и бизнес-действия
@@ -123,6 +125,8 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
 
     { actionName: this.action.updatePassword.name, apiName: this.api.updatePassword.name },
     { actionName: this.action.updatePassword.name, apiName: this.api.passwordRecovery.name },
+
+    { actionName: this.action.grantAccess.name, apiName: this.api.reassignRight.name },
   ];
 
   public async up(queryRunner: QueryRunner): Promise<void> {

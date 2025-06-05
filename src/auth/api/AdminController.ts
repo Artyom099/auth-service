@@ -14,7 +14,7 @@ import {
   UserRoleCreateDto,
 } from '../../libs/dto';
 import { TNestedTreeItem } from '../../libs/utils';
-import { CreateRoleCommand, CreateSeedingCommand, CreateUserRoleCommand, ReassignRightsCommand } from '../application';
+import { CreateRoleCommand, CreateUserRoleCommand, ReassignRightsCommand } from '../application';
 import { AccessObjectQueryRepository, RoleQueryRepository } from '../repositories';
 
 @ApiTags('Admin')
@@ -25,11 +25,6 @@ export class AdminController {
     private readonly roleQueryRepository: RoleQueryRepository,
     private readonly accessObjectQueryRepository: AccessObjectQueryRepository,
   ) {}
-
-  @Post('seeding') // системная апи для наката сидинга в бд
-  async seeding(@Body() body: { action: 'up' | 'down' }): Promise<string> {
-    return this.commandBus.execute(new CreateSeedingCommand(body));
-  }
 
   @ApiOperation({ summary: 'Получить список ролей' })
   @ApiResponse({
