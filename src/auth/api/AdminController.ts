@@ -54,6 +54,7 @@ export class AdminController {
     return this.commandBus.execute(new CreateRoleCommand(body));
   }
 
+  // todo - прикрутить к фронту
   @Post('user_role/create')
   @HttpCode(201)
   createUserRole(@Body() body: UserRoleCreateDto) {

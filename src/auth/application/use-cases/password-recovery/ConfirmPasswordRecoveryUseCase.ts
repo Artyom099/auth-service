@@ -23,6 +23,10 @@ export class ConfirmPasswordRecoveryUseCase implements ICommandHandler<ConfirmPa
     return this.manager.transaction(async (em) => {
       const recoveryData = await this.passwordRecoveryRepository.getRecoveryData(em, code);
 
+      if (!recoveryData) {
+        throw new BadRequestException(`Password recovery recovery with code ${code} not found. You should start it`);
+      }
+
       // если обновление пароля уже подтверждено, кидаем ошибку
       if (recoveryData.isConfirmed) {
         throw new BadRequestException(`Password recovery with code ${code} already confirmed`);

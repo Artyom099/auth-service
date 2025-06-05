@@ -1,4 +1,4 @@
-import { Controller, Delete, Get, HttpCode, HttpStatus, Param, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -25,16 +25,16 @@ export class DeviceController {
   }
 
   @DeleteOtherDevicesApi()
-  @Delete()
+  @Delete('delete_other')
   @HttpCode(HttpStatus.OK)
   async deleteOtherDevices(@CurrentUserId() userId: string, @RefreshToken() token: string) {
     return this.commandBus.execute(new DeleteOtherDevicesCommand(userId, token));
   }
 
   @DeleteDeviceApi()
-  @Delete(':id')
+  @Delete('delete')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deleteDevice(@Param('id') id: string, @CurrentUserId() userId: string) {
-    return this.commandBus.execute(new DeleteDeviceCommand(id, userId));
+  async deleteDevice(@CurrentUserId() userId: string, @Body() body: { id: string }) {
+    return this.commandBus.execute(new DeleteDeviceCommand(body.id, userId));
   }
 }

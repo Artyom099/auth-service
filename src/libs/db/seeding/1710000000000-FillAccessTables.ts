@@ -31,9 +31,9 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     profile: { name: 'profile', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     device: { name: 'device', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     role: { name: 'role', type: EAccessObjectType.TAB, parentName: 'auth-service' },
+    accessObject: { name: 'access_object', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     // right: { name: 'right', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     // service: { name: 'service', type: EAccessObjectType.TAB, parentName: 'auth-service' },
-    accessObject: { name: 'access_object', type: EAccessObjectType.TAB, parentName: 'auth-service' },
 
     // кнопки текущего сервиса
     grantRevokeAccess: { name: 'grant_revoke_access', type: EAccessObjectType.BUTTON, parentName: 'access_object' },
@@ -47,8 +47,8 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
 
   // можем ли выдать доступ на весь сервис? - скорее нет
   private readonly action: { [key: string]: IAction } = {
-    readDevice: { name: 'read_device', type: EActionType.READ, description: 'Чтение вкладки Девайсы' },
-    deleteDevice: { name: 'delete_device', type: EActionType.WRITE, description: 'Удаление девайсов пользователя' },
+    readDevice: { name: 'read_device', type: EActionType.READ, description: 'Чтение вкладки Устройства' },
+    deleteDevice: { name: 'delete_device', type: EActionType.WRITE, description: 'Удаление сессий пользователя' },
     readRoles: { name: 'read_roles', type: EActionType.READ, description: 'Чтени вкладки Роли' },
     createRoles: { name: 'create_roles', type: EActionType.WRITE, description: 'Создание ролей' },
     grantAccess: { name: 'grant_access', type: EActionType.SPECIAL, description: 'Выдача и отзыв прав роли' },
@@ -60,24 +60,26 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
    * admin
    * user
    * |__engineer
-   *    |__hr
+   *    |__sys_admin
    *    |__manager
    *       |__moderator
    */
   private readonly role: { [key: string]: IRole } = {
-    admin: { name: 'admin', description: 'Имеет доступ ко всем компонентам системы' },
-    moderator: { name: 'moderator', description: '' },
+    admin: { name: 'admin', description: 'Имеет доступ ко всем компонентам' },
+    moderator: { name: 'moderator', description: 'Модерирует систему' },
     engineer: { name: 'engineer', description: 'Имеет доступ только к сервису авторизации' },
     manager: { name: 'manager', description: 'Имеет доступ ко всему только на чтение' },
     user: { name: 'user', description: 'Имеет динамичский доступ' },
-    hr: { name: 'hr', description: 'Имеет динамичский доступ' },
+    sysAdmin: { name: 'sys_admin', description: 'Имеет динамичский доступ' },
+    dba: { name: 'dba', description: 'Доступ к базе данных' },
   };
 
   private readonly hierarchy: IRoleHierarchy[] = [
     { name: this.role.engineer.name, parentName: this.role.user.name },
     { name: this.role.manager.name, parentName: this.role.engineer.name },
-    { name: this.role.hr.name, parentName: this.role.engineer.name },
+    { name: this.role.sysAdmin.name, parentName: this.role.engineer.name },
     { name: this.role.moderator.name, parentName: this.role.manager.name },
+    { name: this.role.dba.name, parentName: this.role.sysAdmin.name },
   ];
 
   // todo - связь объекта и бизнес-действия
@@ -94,6 +96,7 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     { roleName: this.role.admin.name, actionName: this.action.readDevice.name },
     { roleName: this.role.admin.name, actionName: this.action.deleteDevice.name },
     { roleName: this.role.admin.name, actionName: this.action.grantAccess.name },
+    { roleName: this.role.admin.name, actionName: this.action.updatePassword.name },
   ];
 
   // todo - литералы апи - controller/entity/method
@@ -101,19 +104,25 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     roleFlat: { name: 'admin/roles' },
     roleTree: { name: 'admin/roles/get_tree' },
     getDevices: { name: 'device' },
-    // deleteDevice: { name: 'device/delete' },
-    // deleteDevices: { name: 'device/delete_other' },
+    deleteDevice: { name: 'device/delete' },
+    deleteOtherDevices: { name: 'device/delete_other' },
     readProfile: { name: 'auth/me' },
     updatePassword: { name: 'auth/update-password' },
+    passwordRecovery: { name: 'auth/password-recovery' },
   };
 
   // todo - связи апи и бизнес-действия
   private readonly actionApis: IActionApi[] = [
+    { actionName: this.action.readProfile.name, apiName: this.api.readProfile.name },
     { actionName: this.action.readRoles.name, apiName: this.api.roleFlat.name },
     { actionName: this.action.readRoles.name, apiName: this.api.roleTree.name },
+
     { actionName: this.action.readDevice.name, apiName: this.api.getDevices.name },
-    { actionName: this.action.readProfile.name, apiName: this.api.readProfile.name },
+    { actionName: this.action.deleteDevice.name, apiName: this.api.deleteDevice.name },
+    { actionName: this.action.deleteDevice.name, apiName: this.api.deleteOtherDevices.name },
+
     { actionName: this.action.updatePassword.name, apiName: this.api.updatePassword.name },
+    { actionName: this.action.updatePassword.name, apiName: this.api.passwordRecovery.name },
   ];
 
   public async up(queryRunner: QueryRunner): Promise<void> {
