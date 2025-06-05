@@ -15,6 +15,7 @@ export class UserQueryRepository {
       .addSelect('u.login', 'login')
       .addSelect('uec.email', 'email')
       .innerJoin(UserEmailConfirmation, 'uec', 'uec.userId = u.id')
+      // todo - приджоинить роли, чтобы возвращать роли
       .where({ id });
 
     return qb.getRawOne<GetUserInfoResponseDto>();

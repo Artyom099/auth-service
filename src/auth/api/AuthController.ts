@@ -174,9 +174,9 @@ export class AuthController {
 
   @MeApi()
   @UseGuards(AuthGuard)
-  @Get('me')
+  @Get('me') // user/get_info
   @HttpCode(HttpStatus.OK)
-  async me(@CurrentUserId() userId: string): Promise<GetUserInfoResponseDto> {
+  async getUserInfo(@CurrentUserId() userId: string): Promise<GetUserInfoResponseDto> {
     return this.userQueryRepository.getUserInfo(userId);
   }
 
