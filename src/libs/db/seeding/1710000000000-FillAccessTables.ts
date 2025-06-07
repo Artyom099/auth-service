@@ -132,7 +132,7 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
   ];
 
   private readonly adminUserId = '688987db-6d1d-4d83-9934-fd0b23a09789';
-  private readonly userUserId = '688987db-6d1d-4d83-9934-fd0b23a09789';
+  private readonly userUserId = '9e4d9b7d-fab1-47ec-8e18-bd7f4b191b06';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     for (const accessObject of Object.values(this.objects)) {
