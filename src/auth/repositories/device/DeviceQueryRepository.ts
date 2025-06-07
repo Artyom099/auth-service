@@ -8,6 +8,9 @@ export class DeviceQueryRepository {
   constructor(private manager: EntityManager) {}
 
   async getDevices(userId: string): Promise<Device[]> {
-    return this.manager.findBy(Device, { userId });
+    return this.manager.find(Device, {
+      where: { userId },
+      order: { issuedAt: 'desc' },
+    });
   }
 }

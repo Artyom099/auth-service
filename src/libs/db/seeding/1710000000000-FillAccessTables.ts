@@ -98,6 +98,8 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     { roleName: this.role.admin.name, actionName: this.action.deleteDevice.name },
     { roleName: this.role.admin.name, actionName: this.action.grantAccess.name },
     { roleName: this.role.admin.name, actionName: this.action.updatePassword.name },
+    { roleName: this.role.admin.name, actionName: this.action.readRoles.name },
+    { roleName: this.role.admin.name, actionName: this.action.createRoles.name },
   ];
 
   // todo - литералы апи - controller/entity/method
@@ -129,6 +131,9 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     { actionName: this.action.grantAccess.name, apiName: this.api.reassignRight.name },
   ];
 
+  private readonly adminUserId = '688987db-6d1d-4d83-9934-fd0b23a09789';
+  private readonly userUserId = '688987db-6d1d-4d83-9934-fd0b23a09789';
+
   public async up(queryRunner: QueryRunner): Promise<void> {
     for (const accessObject of Object.values(this.objects)) {
       await queryRunner.manager.getRepository(AccessObject).insert(accessObject);
@@ -148,9 +153,16 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     await queryRunner.manager.getRepository(Right).insert(this.rights);
     await queryRunner.manager.getRepository(ActionApi).insert(this.actionApis);
     await queryRunner.manager.getRepository(RoleHierarchy).insert(this.hierarchy);
+
+    const userRoleRepo = queryRunner.manager.getRepository(UserRole);
+
+    await userRoleRepo.insert({ userId: this.adminUserId, roleName: this.role.admin.name });
+    await userRoleRepo.insert({ userId: this.adminUserId, roleName: this.role.dba.name });
+    await userRoleRepo.insert({ userId: this.userUserId, roleName: this.role.user.name });
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
+    await queryRunner.manager.getRepository(Right).delete({});
     await queryRunner.manager.getRepository(UserRole).delete({});
 
     // удаление связей

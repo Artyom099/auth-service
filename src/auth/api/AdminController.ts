@@ -11,11 +11,14 @@ import {
   RoleGetResponseDto,
   RoleGetTreeRequestDto,
   RoleGetTreeResponseDto,
+  UserGetListResponseDto,
+  UserGetRolesRequestDto,
+  UserGetRolesResponseDto,
   UserRoleCreateDto,
 } from '../../libs/dto';
 import { TNestedTreeItem } from '../../libs/utils';
 import { CreateRoleCommand, CreateUserRoleCommand, ReassignRightsCommand } from '../application';
-import { AccessObjectQueryRepository, RoleQueryRepository } from '../repositories';
+import { AccessObjectQueryRepository, RoleQueryRepository, UserQueryRepository } from '../repositories';
 
 @ApiTags('Admin')
 @Controller('admin')
@@ -23,18 +26,27 @@ export class AdminController {
   constructor(
     private commandBus: CommandBus,
     private readonly roleQueryRepository: RoleQueryRepository,
+    private readonly userQueryRepository: UserQueryRepository,
     private readonly accessObjectQueryRepository: AccessObjectQueryRepository,
   ) {}
 
   @ApiOperation({ summary: 'Получить список ролей' })
-  @ApiResponse({
-    status: 200,
-    description: 'Список ролей успешно получен',
-  })
   @Get('roles')
   @HttpCode(200)
   async getRoles(): Promise<RoleGetResponseDto[]> {
     return this.roleQueryRepository.getRoles();
+  }
+
+  @Get('user/get_list')
+  @HttpCode(200)
+  async getUserList(): Promise<UserGetListResponseDto[]> {
+    return this.userQueryRepository.getUserList();
+  }
+
+  @Post('user/get_roles')
+  @HttpCode(200)
+  async getUserRoles(@Body() body: UserGetRolesRequestDto): Promise<UserGetRolesResponseDto[]> {
+    return this.userQueryRepository.getUserRoles(body);
   }
 
   @Post('roles/get_tree')
