@@ -2,7 +2,7 @@ import { BadRequestException } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { EntityManager } from 'typeorm';
 
-import { Role } from '../../../../libs/db/entity';
+import { Role, RoleHierarchy } from '../../../../libs/db/entity';
 import { RoleCreateRequestDto } from '../../../../libs/dto';
 
 export class CreateRoleCommand {
@@ -15,16 +15,26 @@ export class CreateRoleUseCase implements ICommandHandler<CreateRoleCommand> {
 
   async execute(command: CreateRoleCommand) {
     const { dto } = command;
-    const { name } = dto;
+    const { name, parentName } = dto;
 
     return this.manager.transaction(async (em) => {
-      const role = await em.exists(Role, { where: { name } });
-
-      if (role) {
+      const isRoleExist = await em.exists(Role, { where: { name } });
+      if (isRoleExist) {
         throw new BadRequestException(`role with name ${name} already exists`);
       }
 
-      return em.save(em.create(Role, dto));
+      const isParentRoleExist = await em.exists(Role, { where: { name: parentName } });
+      if (!isParentRoleExist) {
+        throw new BadRequestException(`parent role with name ${parentName} does not exist`);
+      }
+
+      const isHierarchyExist = await em.exists(RoleHierarchy, { where: dto });
+      if (!isHierarchyExist) {
+        throw new BadRequestException(`hierarchy with name ${name} and parent name ${parentName} already exists`);
+      }
+
+      await em.save(em.create(Role, { name: dto.name, description: dto.description }));
+      await em.save(em.create(RoleHierarchy, { name: dto.name, parentName: dto.parentName }));
     });
   }
 }

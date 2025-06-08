@@ -8,5 +8,10 @@ export class RoleCreateRequestDto {
   @IsString()
   @IsOptional()
   @MaxLength(250)
-  description: string;
+  description?: string;
+
+  @IsString()
+  @IsOptional()
+  @MaxLength(100)
+  parentName?: string;
 }
