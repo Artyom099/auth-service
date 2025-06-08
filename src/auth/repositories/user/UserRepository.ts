@@ -13,8 +13,8 @@ export class UserRepository {
 
   async getUser(
     em: EntityManager,
-    params: any, // todo - Partial<User>,
-    additionalFields?: any, // todo - string[],
+    params: any, // @todo - Partial<User>,
+    additionalFields?: any, // @todo - string[],
   ): Promise<User> {
     return em.findOne(User, {
       where: params,
@@ -62,7 +62,7 @@ export class UserRepository {
   async connectProviderToUser(
     em: EntityManager,
     id: string,
-    dto: any, // todo - fix type
+    dto: any, // @todo - fix type
   ): Promise<void> {
     await em.update(User, id, dto);
   }

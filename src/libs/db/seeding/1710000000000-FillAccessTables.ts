@@ -31,6 +31,7 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     profile: { name: 'profile', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     device: { name: 'device', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     role: { name: 'role', type: EAccessObjectType.TAB, parentName: 'auth-service' },
+    users: { name: 'users', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     accessObject: { name: 'access_object', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     // right: { name: 'right', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     // service: { name: 'service', type: EAccessObjectType.TAB, parentName: 'auth-service' },
