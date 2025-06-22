@@ -23,6 +23,23 @@ import {
 } from '../entity';
 
 export class FillAccessTables1710000000000 implements MigrationInterface {
+  /**
+   * authService
+   * |__profile
+   * |  |__updatePassword
+   * |
+   * |__device
+   * |  |__deleteDevice
+   * |
+   * |__role
+   * |  |__createRole
+   * |
+   * |__accessObject
+   * |  |__grantRevokeAccess
+   * |
+   * |__users
+   *    |__assignRole
+   */
   private readonly objects: { [key: string]: IAccessObject } = {
     // текущий сервис
     authService: { name: 'auth-service', type: EAccessObjectType.APP },
@@ -31,8 +48,8 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     profile: { name: 'profile', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     device: { name: 'device', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     role: { name: 'role', type: EAccessObjectType.TAB, parentName: 'auth-service' },
-    users: { name: 'users', type: EAccessObjectType.TAB, parentName: 'auth-service' },
     accessObject: { name: 'access_object', type: EAccessObjectType.TAB, parentName: 'auth-service' },
+    users: { name: 'users', type: EAccessObjectType.TAB, parentName: 'auth-service' },
 
     // кнопки текущего сервиса
     grantRevokeAccess: { name: 'grant_revoke_access', type: EAccessObjectType.BUTTON, parentName: 'access_object' },
@@ -46,7 +63,7 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     paymentService: { name: 'payment-service', type: EAccessObjectType.APP },
   };
 
-  // можем ли выдать доступ на весь сервис? - скорее нет
+  // можем ли выдать доступ на весь сервис? - нет, только на его бизнес-действия
   private readonly action: { [key: string]: IAction } = {
     readDevice: { name: 'read_device', type: EActionType.READ, description: 'Чтение вкладки Устройства' },
     deleteDevice: { name: 'delete_device', type: EActionType.WRITE, description: 'Удаление сессий пользователя' },
@@ -55,6 +72,9 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     grantAccess: { name: 'grant_access', type: EActionType.SPECIAL, description: 'Выдача и отзыв прав роли' },
     readProfile: { name: 'read_profile', type: EActionType.READ, description: 'Чтение вкладки Профиль' },
     updatePassword: { name: 'update_password', type: EActionType.WRITE, description: 'Обновление пароля' },
+    assignRole: { name: 'assign_role', type: EActionType.SPECIAL, description: 'Выдача роли пользователю' },
+    getUsers: { name: 'get_users', type: EActionType.READ, description: 'Чтение пользователей' },
+    readCalculateRights: { name: 'read_calc_rights', type: EActionType.READ, description: 'Чтение дерева доступов' },
   };
 
   /**
@@ -84,12 +104,32 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
   ];
 
   // todo - связь объекта и бизнес-действия
+  /**
+   * --- action -> accessObject ---
+   *
+   * readProfile -> profile
+   * updatePassword -> updatePassword
+   *
+   * readDevice -> device
+   * deleteDevice -> deleteDevice
+   *
+   * readRoles -> role
+   * createRoles -> createRole
+   * grantAccess -> grantRevokeAccess
+   * assignRole -> assignRole
+   * getUsers -> user
+   * accessObject -> readCalculateRights
+   */
   private readonly objectActions: IAccessObjectAction[] = [
     { objectName: this.objects.device.name, actionName: this.action.readDevice.name },
     { objectName: this.objects.deleteDevice.name, actionName: this.action.deleteDevice.name },
     { objectName: this.objects.grantRevokeAccess.name, actionName: this.action.grantAccess.name },
     { objectName: this.objects.profile.name, actionName: this.action.readProfile.name },
     { objectName: this.objects.updatePassword.name, actionName: this.action.updatePassword.name },
+    { objectName: this.objects.role.name, actionName: this.action.readRoles.name },
+    { objectName: this.objects.assignRole.name, actionName: this.action.assignRole.name },
+    { objectName: this.objects.users.name, actionName: this.action.getUsers.name },
+    { objectName: this.objects.accessObject.name, actionName: this.action.readCalculateRights.name },
   ];
 
   // todo - права роли
@@ -101,12 +141,21 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     { roleName: this.role.admin.name, actionName: this.action.updatePassword.name },
     { roleName: this.role.admin.name, actionName: this.action.readRoles.name },
     { roleName: this.role.admin.name, actionName: this.action.createRoles.name },
+    { roleName: this.role.admin.name, actionName: this.action.assignRole.name },
+    { roleName: this.role.admin.name, actionName: this.action.getUsers.name },
+    { roleName: this.role.admin.name, actionName: this.action.readCalculateRights.name },
+
+    { roleName: this.role.user.name, actionName: this.action.readDevice.name },
+    { roleName: this.role.user.name, actionName: this.action.deleteDevice.name },
+    { roleName: this.role.user.name, actionName: this.action.readProfile.name },
+    { roleName: this.role.user.name, actionName: this.action.updatePassword.name },
   ];
 
   // todo - литералы апи - controller/entity/method
   private readonly api: { [key: string]: IApi } = {
     roleFlat: { name: 'admin/roles' },
     roleTree: { name: 'admin/roles/get_tree' },
+    roleCreate: { name: 'admin/roles/create' },
     getDevices: { name: 'device' },
     deleteDevice: { name: 'device/delete' },
     deleteOtherDevices: { name: 'device/delete_other' },
@@ -114,22 +163,48 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     updatePassword: { name: 'auth/update-password' },
     passwordRecovery: { name: 'auth/password-recovery' },
     reassignRight: { name: 'admin/right/reassign' },
+    calculateRights: { name: 'admin/access_object/calculate_rights' },
+    userRoleCreate: { name: 'admin/user_role/create' },
+    getUsers: { name: 'admin/user/get_list' },
   };
 
   // todo - связи апи и бизнес-действия
+  /**
+   * --- action -> api ---
+   *
+   * readProfile -> readProfile
+   * updatePassword -> updatePassword, passwordRecovery
+   *
+   * readDevice -> getDevices
+   * deleteDevice -> deleteDevice, deleteOtherDevices
+   *
+   * readRoles -> roleFlat, roleTree
+   * createRoles -> roleCreate
+   * grantAccess -> reassignRight, calculateRights
+   * assignRole -> userRoleCreate
+   * getUsers -> getUsers
+   * readCalculateRights -> calculateRights
+   */
   private readonly actionApis: IActionApi[] = [
+    // профиль
     { actionName: this.action.readProfile.name, apiName: this.api.readProfile.name },
-    { actionName: this.action.readRoles.name, apiName: this.api.roleFlat.name },
-    { actionName: this.action.readRoles.name, apiName: this.api.roleTree.name },
+    { actionName: this.action.updatePassword.name, apiName: this.api.updatePassword.name },
+    { actionName: this.action.updatePassword.name, apiName: this.api.passwordRecovery.name },
 
+    // девайсы
     { actionName: this.action.readDevice.name, apiName: this.api.getDevices.name },
     { actionName: this.action.deleteDevice.name, apiName: this.api.deleteDevice.name },
     { actionName: this.action.deleteDevice.name, apiName: this.api.deleteOtherDevices.name },
 
-    { actionName: this.action.updatePassword.name, apiName: this.api.updatePassword.name },
-    { actionName: this.action.updatePassword.name, apiName: this.api.passwordRecovery.name },
-
+    // роли и права
+    { actionName: this.action.readRoles.name, apiName: this.api.roleFlat.name },
+    { actionName: this.action.readRoles.name, apiName: this.api.roleTree.name },
+    { actionName: this.action.createRoles.name, apiName: this.api.roleCreate.name },
+    { actionName: this.action.grantAccess.name, apiName: this.api.calculateRights.name },
     { actionName: this.action.grantAccess.name, apiName: this.api.reassignRight.name },
+    { actionName: this.action.assignRole.name, apiName: this.api.userRoleCreate.name },
+    { actionName: this.action.getUsers.name, apiName: this.api.getUsers.name },
+    { actionName: this.action.readCalculateRights.name, apiName: this.api.calculateRights.name },
   ];
 
   private readonly adminUserId = '688987db-6d1d-4d83-9934-fd0b23a09789';
@@ -158,7 +233,6 @@ export class FillAccessTables1710000000000 implements MigrationInterface {
     const userRoleRepo = queryRunner.manager.getRepository(UserRole);
 
     await userRoleRepo.insert({ userId: this.adminUserId, roleName: this.role.admin.name });
-    await userRoleRepo.insert({ userId: this.adminUserId, roleName: this.role.dba.name });
     await userRoleRepo.insert({ userId: this.userUserId, roleName: this.role.user.name });
   }
 

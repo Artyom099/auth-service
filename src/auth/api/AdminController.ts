@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, Post } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Post, UseGuards } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
@@ -18,6 +18,7 @@ import {
 } from '../../libs/dto';
 import { TNestedTreeItem } from '../../libs/utils';
 import { CreateRoleCommand, CreateUserRoleCommand, ReassignRightsCommand } from '../application';
+import { RolesGuard } from '../guard';
 import { AccessObjectQueryRepository, RoleQueryRepository, UserQueryRepository } from '../repositories';
 
 @ApiTags('Admin')
@@ -31,12 +32,14 @@ export class AdminController {
   ) {}
 
   @ApiOperation({ summary: 'Получить список ролей' })
+  @UseGuards(RolesGuard)
   @Get('roles')
   @HttpCode(200)
   async getRoles(): Promise<RoleGetResponseDto[]> {
     return this.roleQueryRepository.getRoles();
   }
 
+  @UseGuards(RolesGuard)
   @Get('user/get_list')
   @HttpCode(200)
   async getUserList(): Promise<UserGetListResponseDto[]> {
@@ -49,18 +52,21 @@ export class AdminController {
     return this.userQueryRepository.getUserRoles(body);
   }
 
+  @UseGuards(RolesGuard)
   @Post('roles/get_tree')
   @HttpCode(200)
   async getRolesTree(@Body() body: RoleGetTreeRequestDto): Promise<RoleGetTreeResponseDto[]> {
     return this.roleQueryRepository.getRolesTree(body);
   }
 
+  @UseGuards(RolesGuard)
   @Post('role/create')
   @HttpCode(201)
   async createRole(@Body() body: RoleCreateRequestDto) {
     return this.commandBus.execute(new CreateRoleCommand(body));
   }
 
+  @UseGuards(RolesGuard)
   @Post('user_role/create')
   @HttpCode(201)
   createUserRole(@Body() body: UserRoleCreateDto) {
@@ -77,6 +83,7 @@ export class AdminController {
     status: 200,
     description: 'Дерево объектов доступа со списком бизнес-действий каждого объекта',
   })
+  @UseGuards(RolesGuard)
   @HttpCode(200)
   @Post('access_object/calculate_rights')
   calculateRightTree(@Body() dto: AccessObjectCalculateRightsRequestDto): Promise<TNestedTreeItem[]> {
@@ -87,6 +94,7 @@ export class AdminController {
     status: 200,
     description: 'Выдача/отзыв права роли на бизнес-действие',
   })
+  @UseGuards(RolesGuard)
   @Post('right/reassign')
   async reassignRights(@Body() dto: RightReassignRequestDto): Promise<RightReassignResponseDto[]> {
     return this.commandBus.execute(new ReassignRightsCommand(dto));
